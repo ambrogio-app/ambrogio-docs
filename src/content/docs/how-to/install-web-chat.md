@@ -16,23 +16,13 @@ The web chat is an optional container that serves a chat page to the browsers of
 
 If people open the chat over HTTPS, the backend address must be HTTPS too: browsers block plain `http://` and `ws://` connections from an HTTPS page.
 
-## 1. Build the image
+## 1. Pull the image
 
-No image of the web chat has been published yet. Build it from the repository:
-
-```bash
-git clone https://github.com/ambrogio-app/ambrogio-web.git
-cd ambrogio-web
-docker build -t ambrogio-web .
-```
-
-If the build stops at the first line with `"" is an invalid OS component`, your Docker uses the classic builder. Pass the platform of the host:
+The image is published for `amd64` and `arm64`:
 
 ```bash
-docker build --build-arg BUILDPLATFORM=linux/amd64 -t ambrogio-web .
+docker pull ghcr.io/ambrogio-app/ambrogio-web:v0.1.0
 ```
-
-Use `linux/arm64` on an ARM host.
 
 ## 2. Write `config.json`
 
@@ -69,7 +59,7 @@ The entry is needed even when the chat and the backend share the same address be
 docker run -d --name ambrogio-web --restart unless-stopped \
   -p 8080:8080 \
   -v /srv/ambrogio-web/config.json:/usr/share/nginx/html/config.json:ro \
-  ambrogio-web
+  ghcr.io/ambrogio-app/ambrogio-web:v0.1.0
 ```
 
 The container listens on port 8080 as an unprivileged user. With Docker Compose, add a service next to the backend:
@@ -77,7 +67,7 @@ The container listens on port 8080 as an unprivileged user. With Docker Compose,
 ```yaml title="compose.yaml"
 services:
   ambrogio-web:
-    image: ambrogio-web
+    image: ghcr.io/ambrogio-app/ambrogio-web:v0.1.0
     restart: unless-stopped
     ports:
       - "8080:8080"

@@ -27,7 +27,7 @@ Checked on 18 October 2026.
 |---|---|---|---|
 | Backend | `v0.1.2` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.1.2` (amd64) | yes |
 | Terminal client | none, version 0.1.0 on `main` | none, run from a checkout | yes |
-| Web chat | none, version 0.1.0 on `main` | none yet, build it from the repository | yes |
+| Web chat | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-web:v0.1.0` (amd64, arm64) | yes |
 | Satellite | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.1.0` (amd64, arm64) | yes |
 
 All four programs start their numbering at 0.1.0 with the `ambrogio.v1` protocol. The terminal client and the satellite are tested against backend commit `58b0df4`, where the protocol was introduced; it has not changed since, and backend 0.1.0 includes it. The web chat is tested against backend `v0.1.0` (commit `a4578db`).
