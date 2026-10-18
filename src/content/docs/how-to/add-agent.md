@@ -62,6 +62,6 @@ Delete or rename the file so that it no longer ends in `.json`, then restart. At
 
 ## See also
 
-- [Agent configuration](/reference/agent-configuration/) for every field and rule.
-- [Agents and the orchestrator](/explanation/agents/) for how the choice is made.
-- [Connect Home Assistant](/how-to/connect-home-assistant/) to give an agent tools.
+- [Agent configuration](../../reference/agent-configuration/) for every field and rule.
+- [Agents and the orchestrator](../../explanation/agents/) for how the choice is made.
+- [Connect Home Assistant](../connect-home-assistant/) to give an agent tools.

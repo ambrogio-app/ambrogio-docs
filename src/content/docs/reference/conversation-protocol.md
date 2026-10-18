@@ -73,7 +73,7 @@ Every turn ends with exactly one of these, after its last stream:
 | `turn.interrupted` | `turnId` | The server stopped before finishing. |
 | `turn.rejected` | `requestId`, `reason`, `message` | Not accepted. Nothing is stored. |
 
-`reason` values are listed in [Messages](/reference/messages/#refusal-reasons). Only `turn.completed` means the outcome is saved. If the session closes after `turn.accepted`, the server still finishes and saves the turn; read the result from the [HTTP API](/reference/http-api/).
+`reason` values are listed in [Messages](../messages/#refusal-reasons). Only `turn.completed` means the outcome is saved. If the session closes after `turn.accepted`, the server still finishes and saves the turn; read the result from the [HTTP API](../http-api/).
 
 ## Protocol errors
 

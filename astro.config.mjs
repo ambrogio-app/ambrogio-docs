@@ -3,8 +3,12 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import mermaid from 'astro-mermaid';
 
+
 // https://astro.build/config
 export default defineConfig({
+	// Published on GitHub Pages under the repository subpath.
+	site: 'https://ambrogio-app.github.io',
+	base: '/ambrogio-docs',
 	integrations: [
 		// astro-mermaid must be registered before Starlight.
 		mermaid({ autoTheme: true }),

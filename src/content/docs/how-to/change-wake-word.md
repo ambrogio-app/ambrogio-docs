@@ -63,5 +63,5 @@ Then add `-v /path/to/folder:/app/models/wakeword:ro` to `docker run`.
 Restart the satellite. If the model name is not in the folder, or the two shared files are missing, the satellite refuses the configuration and exits with `"event":"invalid_configuration"` and `"field":"wakeWord.model"`.
 
 :::caution[Licenses]
-The bundled models are licensed CC BY-NC-SA 4.0, for non-commercial use only. For your own models, keeping track of where they came from and under which license is up to you. See [Bundled models and licenses](/reference/bundled-models/).
+The bundled models are licensed CC BY-NC-SA 4.0, for non-commercial use only. For your own models, keeping track of where they came from and under which license is up to you. See [Bundled models and licenses](../../reference/bundled-models/).
 :::

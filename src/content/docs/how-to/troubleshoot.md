@@ -5,7 +5,7 @@ sidebar:
   label: Troubleshooting
 ---
 
-Start with the logs. The backend and the satellite both write one JSON object per line to standard output. With Docker, read them with `docker logs <container>`. [Logs](/reference/logs/) lists the events.
+Start with the logs. The backend and the satellite both write one JSON object per line to standard output. With Docker, read them with `docker logs <container>`. [Logs](../../reference/logs/) lists the events.
 
 ## The backend does not start
 
@@ -44,14 +44,14 @@ Look at `err.message` and find it in this table.
 
 For errors that come from outside Ambrogio (a library, the network, the operating system), the line shows only the step that failed, not the original message, so no secret can end up in the log.
 
-[Backend configuration](/reference/backend-configuration/) and [Agent configuration](/reference/agent-configuration/) list every rule.
+[Backend configuration](../../reference/backend-configuration/) and [Agent configuration](../../reference/agent-configuration/) list every rule.
 
 ## The terminal client cannot connect
 
 - Check the address from the same computer: `curl http://ambrogio.home.lan:3000/api/conversations`.
 - The client refuses addresses with a user name, password, query string or `#fragment`.
-- If the list loads but sending a message fails, the WebSocket on `/api/session` is being blocked. Behind a proxy, check that it forwards upgrades; see [Put the backend behind HTTPS](/how-to/reverse-proxy-https/).
-- A backend built from a commit older than the `ambrogio.v1` protocol cannot hold a session with the current client. Use a release, or a commit from `58b0df4` onwards; see [Versions and compatibility](/reference/versions/).
+- If the list loads but sending a message fails, the WebSocket on `/api/session` is being blocked. Behind a proxy, check that it forwards upgrades; see [Put the backend behind HTTPS](../reverse-proxy-https/).
+- A backend built from a commit older than the `ambrogio.v1` protocol cannot hold a session with the current client. Use a release, or a commit from `58b0df4` onwards; see [Versions and compatibility](../../reference/versions/).
 
 ## The terminal says to enlarge the window
 
@@ -82,7 +82,7 @@ The satellite checks its whole file before it starts and stops at the first prob
 
 - `"reason":"configuration_unavailable"`: the file does not exist or cannot be read. Check the path after `--config`, or the mount at `/config/satellite.json` in Docker.
 - `"field":"config"`: the file is not a JSON object, or it has a section the satellite does not know. A misspelt section, such as `wakeword` instead of `wakeWord`, ends up here.
-- Any other `field`: that field is wrong. [Satellite configuration](/reference/satellite-configuration/) lists the rules for each one. The usual suspects are a `baseUrl` with spaces or a query string, a `wakeWord.model` that is not in the models folder, a `threshold` outside 0–1, a `replyTimeoutMs` that is not a whole number, and audio selectors with spaces around them.
+- Any other `field`: that field is wrong. [Satellite configuration](../../reference/satellite-configuration/) lists the rules for each one. The usual suspects are a `baseUrl` with spaces or a query string, a `wakeWord.model` that is not in the models folder, a `threshold` outside 0–1, a `replyTimeoutMs` that is not a whole number, and audio selectors with spaces around them.
 
 `invalid_arguments` means the command line was wrong: it must be exactly `--config <file>`.
 
@@ -92,12 +92,12 @@ The satellite plays this whenever an interaction fails on its side: the backend 
 
 ## The satellite says "La voce non è disponibile."
 
-The backend is running without voice and answered in text. [Enable voice](/how-to/enable-voice/) on the backend.
+The backend is running without voice and answered in text. [Enable voice](../enable-voice/) on the backend.
 
 ## The satellite never reacts to the wake word
 
 - Check that the microphone works: `arecord -d 5 test.wav && aplay test.wav`.
-- Make sure the satellite uses the right microphone; see [Choose audio devices](/how-to/choose-audio-devices/).
+- Make sure the satellite uses the right microphone; see [Choose audio devices](../choose-audio-devices/).
 - With the `alexa` model, say only "Alexa".
 - Lower `wakeWord.threshold` a little, for example to `0.4`.
 

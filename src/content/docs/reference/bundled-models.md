@@ -31,7 +31,7 @@ The Vosk speech recognition model is **not** bundled. You download it yourself f
 The wake word models come from the [openWakeWord v0.5.1 release](https://github.com/dscripka/openWakeWord/releases/tag/v0.5.1).
 
 :::caution[Non-commercial use]
-The bundled wake word models are licensed **CC BY-NC-SA 4.0**: you may use them only for non-commercial purposes. If that does not fit your situation, replace them with models whose license does; see [Change the wake word](/how-to/change-wake-word/#add-your-own-wake-word).
+The bundled wake word models are licensed **CC BY-NC-SA 4.0**: you may use them only for non-commercial purposes. If that does not fit your situation, replace them with models whose license does; see [Change the wake word](../../how-to/change-wake-word/#add-your-own-wake-word).
 :::
 
 The satellite also ships two short recordings, `backend-unavailable.wav` and `voice-unavailable.wav`, generated with the Piper *Riccardo* voice (MIT). The model used to make them is not included.

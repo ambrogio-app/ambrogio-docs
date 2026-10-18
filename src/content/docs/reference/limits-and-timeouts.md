@@ -17,7 +17,7 @@ sidebar:
 | Incoming audio streams per session | 1 | no | `session.error` with `audio_busy`. |
 | Model request retries | 0 | no | A model error fails the turn. |
 | Session ping interval | 30 seconds | no | A session that does not answer by the next ping is closed. |
-| Conversations per list page | `listPageSize` (20), at most `maxListPageSize` (100) | yes | See [`conversations.json`](/reference/backend-configuration/#conversationsjson). |
+| Conversations per list page | `listPageSize` (20), at most `maxListPageSize` (100) | yes | See [`conversations.json`](../backend-configuration/#conversationsjson). |
 | Speech synthesis threads | 4, or fewer if the CPU has fewer | no | |
 
 Turns are never queued and never retried automatically.

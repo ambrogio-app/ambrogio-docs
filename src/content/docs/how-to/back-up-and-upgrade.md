@@ -39,7 +39,7 @@ Audio is never stored, so there are no recordings to back up.
 
 ## Upgrade the backend
 
-1. Read [Versions and compatibility](/reference/versions/). A backend that changes the conversation protocol needs matching clients.
+1. Read [Versions and compatibility](../../reference/versions/). A backend that changes the conversation protocol needs matching clients.
 2. Back up the conversations as above.
 3. Get the new image: pull the new tag, or build from the new commit.
 4. Recreate the container with the same `docker run` options and the new image:

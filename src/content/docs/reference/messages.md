@@ -5,7 +5,7 @@ sidebar:
   label: Messages
 ---
 
-These are the messages written by Ambrogio, not by the AI. The backend's messages follow `language` in [`conversations.json`](/reference/backend-configuration/#conversationsjson). The satellite's are recordings in Italian.
+These are the messages written by Ambrogio, not by the AI. The backend's messages follow `language` in [`conversations.json`](../backend-configuration/#conversationsjson). The satellite's are recordings in Italian.
 
 ## Refusal reasons
 

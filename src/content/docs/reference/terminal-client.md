@@ -57,4 +57,4 @@ The client ignores `expectsReply`: the input field is always available.
 
 ## Compatibility
 
-The backend revision this client is tested against is recorded in `system-model/Contracts/TerminalConversation.md` in its repository. See [Versions and compatibility](/reference/versions/).
+The backend revision this client is tested against is recorded in `system-model/Contracts/TerminalConversation.md` in its repository. See [Versions and compatibility](../versions/).

@@ -27,6 +27,10 @@ When a page starts mixing kinds, split it and link the parts.
 - No marketing tone, no filler introductions or summaries, no emoji.
 - Italian product texts (voice messages, terminal interface) are quoted in Italian.
 
+## Links and publishing
+
+The site is published on GitHub Pages at <https://ambrogio-app.github.io/ambrogio-docs/> by `.github/workflows/pages.yml` on every push to `main`, after the CI and the secret scan pass. Because it is served under `/ambrogio-docs/`, links between pages are relative (`../../reference/versions/`), never root-relative (`/reference/versions/`); `npm run check:links` fails on links that leave the base.
+
 ## Checks
 
 Secrets never belong in this repository: examples use placeholders. The pre-commit hook in `.githooks/` runs gitleaks on staged changes (enable it with `git config core.hooksPath .githooks`; gitleaks must be on `PATH`), and CI scans the whole history on every push.

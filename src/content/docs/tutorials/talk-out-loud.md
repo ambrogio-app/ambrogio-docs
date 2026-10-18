@@ -5,7 +5,7 @@ sidebar:
   label: Talk to Ambrogio out loud
 ---
 
-In this tutorial you will turn on voice in the backend you set up in [Your first conversation](/tutorials/first-conversation/), start a voice satellite on the same computer, and ask Ambrogio a question out loud. Then you will find that spoken conversation in the terminal client.
+In this tutorial you will turn on voice in the backend you set up in [Your first conversation](../first-conversation/), start a voice satellite on the same computer, and ask Ambrogio a question out loud. Then you will find that spoken conversation in the terminal client.
 
 It takes about 20 minutes.
 
@@ -154,6 +154,6 @@ You have:
 
 ## Next steps
 
-- [Install a satellite](/how-to/install-satellite/) on a Raspberry Pi or another device in a different room.
-- [Choose audio devices](/how-to/choose-audio-devices/) if the satellite picked the wrong microphone or speaker.
-- [How voice works](/explanation/voice/) explains the wake word, the beep and the follow-up window.
+- [Install a satellite](../../how-to/install-satellite/) on a Raspberry Pi or another device in a different room.
+- [Choose audio devices](../../how-to/choose-audio-devices/) if the satellite picked the wrong microphone or speaker.
+- [How voice works](../../explanation/voice/) explains the wake word, the beep and the follow-up window.

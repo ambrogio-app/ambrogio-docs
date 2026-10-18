@@ -9,7 +9,7 @@ A satellite is a Linux device with a microphone and a speaker. It listens for th
 
 ## Before you start
 
-- The backend has voice enabled. If it does not, follow [Enable voice](/how-to/enable-voice/) first. A satellite connected to a backend without voice answers every request with *"La voce non è disponibile."*
+- The backend has voice enabled. If it does not, follow [Enable voice](../enable-voice/) first. A satellite connected to a backend without voice answers every request with *"La voce non è disponibile."*
 - The device runs Linux on x86_64 or arm64, for example a Raspberry Pi 4 or 5 with a 64-bit OS, or a mini PC.
 - A microphone and a speaker that work with ALSA.
 - The backend's address as seen from the device, for example `http://192.168.1.20:3000`.
@@ -46,7 +46,7 @@ cd ambrogio-satellite
 docker build -t ambrogio-satellite .
 ```
 
-Releases are also published as images for amd64 and arm64, for example `ghcr.io/ambrogio-app/ambrogio-satellite:v0.1.0`. To use one, pull it and put its name in place of `ambrogio-satellite` in the commands below. [Versions and compatibility](/reference/versions/) lists the releases.
+Releases are also published as images for amd64 and arm64, for example `ghcr.io/ambrogio-app/ambrogio-satellite:v0.1.0`. To use one, pull it and put its name in place of `ambrogio-satellite` in the commands below. [Versions and compatibility](../../reference/versions/) lists the releases.
 
 ## 2. Write the configuration
 
@@ -65,7 +65,7 @@ Set the backend address and a name for the room:
 }
 ```
 
-Give each satellite its own `client.id`; the backend uses it to tell satellites apart. Every section other than `backend` is optional. Without `audio`, the satellite uses the default microphone and speaker, and [Choose audio devices](/how-to/choose-audio-devices/) explains how to pick others. [Satellite configuration](/reference/satellite-configuration/) lists every field.
+Give each satellite its own `client.id`; the backend uses it to tell satellites apart. Every section other than `backend` is optional. Without `audio`, the satellite uses the default microphone and speaker, and [Choose audio devices](../choose-audio-devices/) explains how to pick others. [Satellite configuration](../../reference/satellite-configuration/) lists every field.
 
 ## 3. Start it
 
@@ -99,4 +99,4 @@ Watch the log. On the host it is printed to the terminal; with Docker, run `dock
 Say "Hey Jarvis", wait for the beep and ask something.
 
 - If you hear *"Non riesco a contattare Ambrogio. Riprova tra poco."*, the satellite cannot reach the backend. From the device, run `curl http://192.168.1.20:3000/api/conversations` with your address.
-- If the satellite exits at once with `"event":"invalid_configuration"`, the `field` in the same line names the setting it refused. See [Troubleshooting](/how-to/troubleshoot/#the-satellite-exits-with-invalid_configuration).
+- If the satellite exits at once with `"event":"invalid_configuration"`, the `field` in the same line names the setting it refused. See [Troubleshooting](../troubleshoot/#the-satellite-exits-with-invalid_configuration).

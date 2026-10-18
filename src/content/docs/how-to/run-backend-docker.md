@@ -5,7 +5,7 @@ sidebar:
   label: Run the backend with Docker
 ---
 
-This guide sets up the backend as a permanent service on a home server. If you have never run Ambrogio, follow [Your first conversation](/tutorials/first-conversation/) first.
+This guide sets up the backend as a permanent service on a home server. If you have never run Ambrogio, follow [Your first conversation](../../tutorials/first-conversation/) first.
 
 ## Before you start
 
@@ -17,7 +17,7 @@ This guide sets up the backend as a permanent service on a home server. If you h
 
 Pick one of these:
 
-- **Published image.** Images are published to `ghcr.io/ambrogio-app/ambrogio-backend` with a tag for every release, such as `v0.1.0`. There is no `latest` tag, so you always name a version. See [Versions and compatibility](/reference/versions/).
+- **Published image.** Images are published to `ghcr.io/ambrogio-app/ambrogio-backend` with a tag for every release, such as `v0.1.0`. There is no `latest` tag, so you always name a version. See [Versions and compatibility](../../reference/versions/).
 - **Build it yourself** from a commit you choose:
 
   ```bash
@@ -44,7 +44,7 @@ The backend always looks for agents in `/etc/ambrogio/agents`, so the configurat
 
 ## 3. Write the configuration
 
-Create at least these files. [Backend configuration](/reference/backend-configuration/) and [Agent configuration](/reference/agent-configuration/) list every field.
+Create at least these files. [Backend configuration](../../reference/backend-configuration/) and [Agent configuration](../../reference/agent-configuration/) list every field.
 
 ```json title="/srv/ambrogio/config/http.json"
 { "host": "0.0.0.0", "port": 3000 }
@@ -97,10 +97,10 @@ docker run -d --name ambrogio --restart unless-stopped \
 curl -s http://localhost:3000/api/conversations
 ```
 
-A JSON object with `items` and `nextCursor` means the backend is up. If not, see [Troubleshooting](/how-to/troubleshoot/).
+A JSON object with `items` and `nextCursor` means the backend is up. If not, see [Troubleshooting](../troubleshoot/).
 
 ## Next
 
-- To add voice, follow [Enable voice](/how-to/enable-voice/).
-- To reach Ambrogio over HTTPS, follow [Put the backend behind HTTPS](/how-to/reverse-proxy-https/).
-- Read [Security and privacy](/explanation/security/) before you open the port to anything beyond your home network.
+- To add voice, follow [Enable voice](../enable-voice/).
+- To reach Ambrogio over HTTPS, follow [Put the backend behind HTTPS](../reverse-proxy-https/).
+- Read [Security and privacy](../../explanation/security/) before you open the port to anything beyond your home network.

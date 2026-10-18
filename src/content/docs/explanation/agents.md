@@ -51,4 +51,4 @@ Agents produce two things together: the text of the answer and a yes/no flag say
 - When you add a capability, add an agent, rather than stretching an existing one.
 - Remember the 30-second limit per turn: a slow model plus several tool calls can run out of time.
 
-[Agent configuration](/reference/agent-configuration/) has the exact fields; [Add an agent](/how-to/add-agent/) walks through an example.
+[Agent configuration](../../reference/agent-configuration/) has the exact fields; [Add an agent](../../how-to/add-agent/) walks through an example.

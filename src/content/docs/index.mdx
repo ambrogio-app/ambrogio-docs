@@ -6,17 +6,17 @@ hero:
   tagline: A home assistant you run on your own hardware. Your family types to it in a terminal or talks to it out loud, and every conversation stays on your server.
   actions:
     - text: Start the tutorial
-      link: /tutorials/first-conversation/
+      link: tutorials/first-conversation/
       icon: right-arrow
     - text: How Ambrogio is built
-      link: /explanation/architecture/
+      link: explanation/architecture/
       variant: minimal
 ---
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 :::caution[Early development]
-Ambrogio is young software. It speaks Italian, the configuration format can still change between versions, and voice has not yet been tested on every kind of audio hardware. Read [Versions and compatibility](/reference/versions/) before you install.
+Ambrogio is young software. It speaks Italian, the configuration format can still change between versions, and voice has not yet been tested on every kind of audio hardware. Read [Versions and compatibility](reference/versions/) before you install.
 :::
 
 ## What you install
@@ -42,8 +42,8 @@ You always need the backend. The terminal client and the satellites are optional
 The documentation has four parts. Each one answers a different kind of question.
 
 <CardGrid>
-	<LinkCard title="Tutorials" description="Never used Ambrogio? Set it up on one machine and have your first conversation, then add voice." href="/tutorials/first-conversation/" />
-	<LinkCard title="How-to guides" description="Steps for a specific job: install a satellite, connect Home Assistant, put the backend behind HTTPS." href="/how-to/run-backend-docker/" />
-	<LinkCard title="Reference" description="Every configuration field, default value, limit, message and endpoint." href="/reference/backend-configuration/" />
-	<LinkCard title="Explanation" description="How the pieces fit together, and why Ambrogio works the way it does." href="/explanation/architecture/" />
+	<LinkCard title="Tutorials" description="Never used Ambrogio? Set it up on one machine and have your first conversation, then add voice." href="tutorials/first-conversation/" />
+	<LinkCard title="How-to guides" description="Steps for a specific job: install a satellite, connect Home Assistant, put the backend behind HTTPS." href="how-to/run-backend-docker/" />
+	<LinkCard title="Reference" description="Every configuration field, default value, limit, message and endpoint." href="reference/backend-configuration/" />
+	<LinkCard title="Explanation" description="How the pieces fit together, and why Ambrogio works the way it does." href="explanation/architecture/" />
 </CardGrid>

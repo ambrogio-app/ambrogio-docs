@@ -28,7 +28,7 @@ The proxy must forward two kinds of traffic to the same port:
 
 Caddy forwards WebSocket upgrades on its own:
 
-```caddy title="Caddyfile"
+```txt title="Caddyfile"
 ambrogio.example.com {
 	@outside not remote_ip 192.168.1.0/24
 	respond @outside 403
@@ -93,4 +93,4 @@ Both accept a path prefix, such as `https://example.com/ambrogio/`. The backend 
 
 ## About `allowedOrigins`
 
-The terminal client and the satellite are not web pages and send no `Origin` header, so they need nothing here. Only add `allowedOrigins` to `http.json` if you build a browser application that calls Ambrogio from another origin. See [Backend configuration](/reference/backend-configuration/#httpjson).
+The terminal client and the satellite are not web pages and send no `Origin` header, so they need nothing here. Only add `allowedOrigins` to `http.json` if you build a browser application that calls Ambrogio from another origin. See [Backend configuration](../../reference/backend-configuration/#httpjson).

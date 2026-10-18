@@ -7,7 +7,7 @@ sidebar:
 
 In this tutorial you will start an Ambrogio backend on your own computer and talk to it from the terminal client. At the end you will have a working installation with one AI agent, and a conversation saved on your server that you can reopen later.
 
-It takes about 20 minutes. Everything runs on one Linux machine. Voice comes later, in [Talk to Ambrogio out loud](/tutorials/talk-out-loud/).
+It takes about 20 minutes. Everything runs on one Linux machine. Voice comes later, in [Talk to Ambrogio out loud](../talk-out-loud/).
 
 ## What you need
 
@@ -38,7 +38,7 @@ docker build -t ambrogio-backend:local .
 The build downloads dependencies and two Italian voices, so the first run takes a few minutes. When it finishes, the last line mentions `ambrogio-backend:local`.
 
 :::note
-Building the image yourself works with any commit. To skip the build, use the published image `ghcr.io/ambrogio-app/ambrogio-backend:v0.1.0` in place of `ambrogio-backend:local` in the commands below. [Versions and compatibility](/reference/versions/) lists the releases.
+Building the image yourself works with any commit. To skip the build, use the published image `ghcr.io/ambrogio-app/ambrogio-backend:v0.1.0` in place of `ambrogio-backend:local` in the commands below. [Versions and compatibility](../../reference/versions/) lists the releases.
 :::
 
 ## Write the configuration
@@ -183,6 +183,6 @@ The backend keeps running in the background. Stop it with `docker stop ambrogio`
 
 ## Next steps
 
-- [Talk to Ambrogio out loud](/tutorials/talk-out-loud/) adds speech recognition, a voice and a satellite.
-- [Add an agent](/how-to/add-agent/) shows how to give Ambrogio more specialised helpers.
-- [Architecture](/explanation/architecture/) explains what happened behind the scenes.
+- [Talk to Ambrogio out loud](../talk-out-loud/) adds speech recognition, a voice and a satellite.
+- [Add an agent](../../how-to/add-agent/) shows how to give Ambrogio more specialised helpers.
+- [Architecture](../../explanation/architecture/) explains what happened behind the scenes.

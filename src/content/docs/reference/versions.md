@@ -39,7 +39,7 @@ Backend releases published between 16 and 18 October 2026 under the tags `v0.1.0
 - Backend and satellite images are published only for Git tags of the form `vMAJOR.MINOR.PATCH`. The image tag equals the Git tag. There is no `latest` tag.
 - An image is published only if the repository's checks (model validation and lint, type check, tests, build) and the secret scan pass on the tagged commit.
 - Backend images are built for `linux/amd64`. Satellite images are built for `linux/amd64` and `linux/arm64`.
-- The configuration format may still change between versions while Ambrogio is in early development. Check the [configuration reference](/reference/backend-configuration/) after every upgrade.
+- The configuration format may still change between versions while Ambrogio is in early development. Check the [configuration reference](../backend-configuration/) after every upgrade.
 
 ## Language
 

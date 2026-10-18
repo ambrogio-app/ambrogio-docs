@@ -78,4 +78,4 @@ Then ask: *"Che luci sono accese in casa?"*, followed by *"Spegni quella in cuci
 
 ## If the orchestrator picks the wrong agent
 
-The orchestrator only sees each agent's `description`. If home requests end up with the general agent, make the Home Assistant description more specific (name the rooms or kinds of devices) and the general one clearly about other things. See [Agents and the orchestrator](/explanation/agents/).
+The orchestrator only sees each agent's `description`. If home requests end up with the general agent, make the Home Assistant description more specific (name the rooms or kinds of devices) and the general one clearly about other things. See [Agents and the orchestrator](../../explanation/agents/).

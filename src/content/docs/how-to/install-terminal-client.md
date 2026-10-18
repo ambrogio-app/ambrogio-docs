@@ -58,6 +58,6 @@ npm ci
 npm run build
 ```
 
-Check that the new version matches your backend; see [Versions and compatibility](/reference/versions/).
+Check that the new version matches your backend; see [Versions and compatibility](../../reference/versions/).
 
-All options and keys are listed in [Terminal client](/reference/terminal-client/).
+All options and keys are listed in [Terminal client](../../reference/terminal-client/).

@@ -15,7 +15,7 @@ This is a deliberate choice for the first versions: the family shares one identi
 
 - run the backend on your home network only;
 - do not forward its port on your router;
-- if you need access from outside, use a VPN, or a reverse proxy that only lets your own devices in ([Put the backend behind HTTPS](/how-to/reverse-proxy-https/) shows an IP allow-list);
+- if you need access from outside, use a VPN, or a reverse proxy that only lets your own devices in ([Put the backend behind HTTPS](../../how-to/reverse-proxy-https/) shows an IP allow-list);
 - remember that every device on the network, including guests' phones and smart TVs, can reach it unless you separate them.
 
 ## What the backend does protect
@@ -47,7 +47,7 @@ If you configure an MCP server outside your network, the agent's requests to it 
 
 The backend stores conversations as text, indefinitely, in one SQLite file. It does not store audio. There is no built-in way to delete a conversation yet; the archive is yours to manage.
 
-Logs record that something happened, never what was said: no conversation text, no audio, no credentials. See [Logs](/reference/logs/).
+Logs record that something happened, never what was said: no conversation text, no audio, no credentials. See [Logs](../../reference/logs/).
 
 ## Tools that act on your home
 
@@ -56,4 +56,4 @@ An agent connected to Home Assistant can switch things on and off. Two settings 
 - in Home Assistant, expose only the entities you are comfortable with an AI controlling;
 - in Ambrogio, `maxToolCalls` caps the number of actions per request.
 
-The orchestrator itself cannot act or claim to have acted; only the chosen agent can call tools. See [Agents and the orchestrator](/explanation/agents/#why-the-orchestrator-never-answers).
+The orchestrator itself cannot act or claim to have acted; only the chosen agent can call tools. See [Agents and the orchestrator](../agents/#why-the-orchestrator-never-answers).

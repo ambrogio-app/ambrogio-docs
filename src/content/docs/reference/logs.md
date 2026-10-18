@@ -34,7 +34,7 @@ The backend logs warnings and errors only. It does not log ordinary requests.
 
 Each event carries a `correlationId`. For HTTP requests it equals the `X-Request-Id` response header. For a WebSocket session it is the same for every event of that session, so you can follow one client's activity.
 
-If the backend cannot start, it writes one `server_startup_failed` event (level `error`) whose `err.message` names the problem, prints `Unable to start HTTP server.` to standard error and exits with code `1`. Messages of failures that come from outside Ambrogio are replaced by the name of the startup step. [Troubleshooting](/how-to/troubleshoot/#the-backend-does-not-start) lists the messages.
+If the backend cannot start, it writes one `server_startup_failed` event (level `error`) whose `err.message` names the problem, prints `Unable to start HTTP server.` to standard error and exits with code `1`. Messages of failures that come from outside Ambrogio are replaced by the name of the startup step. [Troubleshooting](../../how-to/troubleshoot/#the-backend-does-not-start) lists the messages.
 
 ## Satellite
 

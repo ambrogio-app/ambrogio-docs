@@ -5,7 +5,7 @@ sidebar:
   label: Backend configuration
 ---
 
-The backend reads its configuration once, at startup. Changes take effect on the next restart. If a required file is missing or a value is invalid, the backend does not start: it logs a `server_startup_failed` event that names the problem and prints `Unable to start HTTP server.` to standard error. See [Troubleshooting](/how-to/troubleshoot/#the-backend-does-not-start).
+The backend reads its configuration once, at startup. Changes take effect on the next restart. If a required file is missing or a value is invalid, the backend does not start: it logs a `server_startup_failed` event that names the problem and prints `Unable to start HTTP server.` to standard error. See [Troubleshooting](../../how-to/troubleshoot/#the-backend-does-not-start).
 
 Environment variables only say *where* the files are. They never replace a value inside a file.
 
@@ -23,7 +23,7 @@ File names are up to you; the names on this page are conventions.
 
 | Path | Meaning |
 |---|---|
-| `/etc/ambrogio/agents/` | Folder of agent files. Cannot be changed. See [Agent configuration](/reference/agent-configuration/). |
+| `/etc/ambrogio/agents/` | Folder of agent files. Cannot be changed. See [Agent configuration](../agent-configuration/). |
 | `/opt/ambrogio/voices/` | Bundled voices, in the Docker image only. A mount at this path replaces them. |
 
 ## `http.json`
@@ -105,5 +105,5 @@ Example for the Docker image:
 
 ## See also
 
-- [Agent configuration](/reference/agent-configuration/)
-- [Limits and timeouts](/reference/limits-and-timeouts/)
+- [Agent configuration](../agent-configuration/)
+- [Limits and timeouts](../limits-and-timeouts/)

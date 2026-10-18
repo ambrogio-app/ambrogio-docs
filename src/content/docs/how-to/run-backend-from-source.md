@@ -24,7 +24,7 @@ pnpm build
 
 ## Configure
 
-Create the configuration folder and an archive folder, then write the files described in [Run the backend with Docker](/how-to/run-backend-docker/#3-write-the-configuration). Use host paths instead of container paths:
+Create the configuration folder and an archive folder, then write the files described in [Run the backend with Docker](../run-backend-docker/#3-write-the-configuration). Use host paths instead of container paths:
 
 ```bash
 sudo mkdir -p /etc/ambrogio/agents /var/lib/ambrogio
@@ -45,9 +45,9 @@ AMBROGIO_CONVERSATIONS_CONFIG_PATH=/etc/ambrogio/conversations.json \
 node apps/server/dist/main.js
 ```
 
-Add `AMBROGIO_VOICE_CONFIG_PATH=/etc/ambrogio/voice.json` to enable voice. Without Docker there are no bundled voices: download a sherpa-onnx Piper voice yourself, as described in [Change the voice](/how-to/change-voice/#use-a-different-voice).
+Add `AMBROGIO_VOICE_CONFIG_PATH=/etc/ambrogio/voice.json` to enable voice. Without Docker there are no bundled voices: download a sherpa-onnx Piper voice yourself, as described in [Change the voice](../change-voice/#use-a-different-voice).
 
-Stop the server with `Ctrl+C` or `SIGTERM`. Turns that are still being answered at that moment are saved as *interrupted*; see [Turns and outcomes](/explanation/turns/#when-the-server-stops).
+Stop the server with `Ctrl+C` or `SIGTERM`. Turns that are still being answered at that moment are saved as *interrupted*; see [Turns and outcomes](../../explanation/turns/#when-the-server-stops).
 
 ## Update
 
@@ -57,4 +57,4 @@ pnpm install --frozen-lockfile
 pnpm build
 ```
 
-Then restart the server. Database changes are applied automatically at startup. Back up the archive first; see [Back up and upgrade](/how-to/back-up-and-upgrade/).
+Then restart the server. Database changes are applied automatically at startup. Back up the archive first; see [Back up and upgrade](../back-up-and-upgrade/).

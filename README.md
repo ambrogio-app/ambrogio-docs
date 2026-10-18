@@ -4,6 +4,8 @@ Documentation for people who install and run [Ambrogio](https://github.com/ambro
 
 The site is built with [Astro Starlight](https://starlight.astro.build/). Diagrams use Mermaid through [`astro-mermaid`](https://github.com/joesaby/astro-mermaid).
 
+The site is published at <https://ambrogio-app.github.io/ambrogio-docs/>.
+
 ## Structure
 
 Pages follow [Diátaxis](https://diataxis.fr/). Each page is one of four kinds, and stays that kind:

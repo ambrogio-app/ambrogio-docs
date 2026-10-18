@@ -48,13 +48,13 @@ The only part outside your home is the language model. Agents send the conversat
 
 Both clients talk to the backend in the same way, over a WebSocket session with the `ambrogio.v1` protocol. A turn is sent as text or as audio, and the client says whether it wants the answer as text or as audio. The terminal client sends text and asks for text; the satellite sends audio and asks for audio. The backend applies the same rules to both: the same limits, the same refusals, the same outcomes.
 
-This has a practical consequence: a conversation does not belong to a client. A conversation started out loud in the kitchen is stored as text, and you can open it in the terminal and continue it by typing. The [conversation protocol reference](/reference/conversation-protocol/) has the details.
+This has a practical consequence: a conversation does not belong to a client. A conversation started out loud in the kitchen is stored as text, and you can open it in the terminal and continue it by typing. The [conversation protocol reference](../../reference/conversation-protocol/) has the details.
 
 ## Why three repositories
 
 The programs run on different machines, have different dependencies and change at different speeds. The satellite needs audio libraries and runs on ARM boards; the backend needs speech models and runs on a server; the terminal client needs neither. Keeping them apart means a satellite update does not force you to touch the server, and the other way round.
 
-What holds them together is the protocol. The backend owns it, and each client records which backend revision it has been tested against. [Versions and compatibility](/reference/versions/) explains how to read that.
+What holds them together is the protocol. The backend owns it, and each client records which backend revision it has been tested against. [Versions and compatibility](../../reference/versions/) explains how to read that.
 
 ## How the code is organised
 
@@ -64,7 +64,7 @@ Inside, the code follows a ports-and-adapters design: the rules of conversations
 
 ## Further reading
 
-- [Turns and outcomes](/explanation/turns/): what happens to a request from start to finish.
-- [Agents and the orchestrator](/explanation/agents/): how an answer is produced.
-- [How voice works](/explanation/voice/): the path from your voice to Ambrogio's.
-- [Security and privacy](/explanation/security/): what the design protects and what it leaves to you.
+- [Turns and outcomes](../turns/): what happens to a request from start to finish.
+- [Agents and the orchestrator](../agents/): how an answer is produced.
+- [How voice works](../voice/): the path from your voice to Ambrogio's.
+- [Security and privacy](../security/): what the design protects and what it leaves to you.

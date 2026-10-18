@@ -56,7 +56,7 @@ Optional. Without a selector, the system's default device is used.
 | `microphone` | non-empty string | Microphone to use. |
 | `speaker` | non-empty string | Speaker to use. |
 
-A selector that starts with `alsa:` is a stable device ID. Any other string matches part of a device name, ignoring case. Leading or trailing spaces are not allowed. A selector that matches no device causes an error; it never falls back to the default. [Choose audio devices](/how-to/choose-audio-devices/) shows how to list devices.
+A selector that starts with `alsa:` is a stable device ID. Any other string matches part of a device name, ignoring case. Leading or trailing spaces are not allowed. A selector that matches no device causes an error; it never falls back to the default. [Choose audio devices](../../how-to/choose-audio-devices/) shows how to list devices.
 
 ### `wakeWord`
 
@@ -87,4 +87,4 @@ Optional.
 
 The container needs access to the sound devices (`--device /dev/snd`) and to the network of the backend (`--network host` is the simplest).
 
-Built-in timings that cannot be configured are listed in [Limits and timeouts](/reference/limits-and-timeouts/#satellite).
+Built-in timings that cannot be configured are listed in [Limits and timeouts](../limits-and-timeouts/#satellite).

@@ -66,4 +66,4 @@ Credentials are used only for that agent's server. They are never sent to the la
 
 Restart the backend. It connects to every MCP server at startup and refuses to start if one of them fails. If it does not start, the log contains `Agent MCP connection failed: <name>`: test the URL and credentials from the backend host.
 
-[Agent configuration](/reference/agent-configuration/) lists every field.
+[Agent configuration](../../reference/agent-configuration/) lists every field.

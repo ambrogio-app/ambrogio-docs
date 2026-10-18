@@ -17,7 +17,7 @@ sudo curl -LO https://alphacephei.com/vosk/models/vosk-model-small-it-0.22.zip
 sudo unzip vosk-model-small-it-0.22.zip
 ```
 
-The voices bundled with the backend are Italian, so pick an Italian model unless you also [change the voice](/how-to/change-voice/).
+The voices bundled with the backend are Italian, so pick an Italian model unless you also [change the voice](../change-voice/).
 
 ## 2. Write `voice.json`
 
@@ -53,7 +53,7 @@ The backend loads both models before it starts listening. If either cannot be lo
 
 ## 4. Check it
 
-Connect a satellite ([Install a voice satellite](/how-to/install-satellite/)) and ask a question. If the satellite replies *"La voce non è disponibile."*, the backend is running without voice: check that the variable is set in the container with `docker inspect ambrogio`.
+Connect a satellite ([Install a voice satellite](../install-satellite/)) and ask a question. If the satellite replies *"La voce non è disponibile."*, the backend is running without voice: check that the variable is set in the container with `docker inspect ambrogio`.
 
 ## Turn voice off again
 
