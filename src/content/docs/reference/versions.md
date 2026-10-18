@@ -26,15 +26,19 @@ Checked on 18 October 2026.
 | Program | Latest release | Images | Works with the current clients |
 |---|---|---|---|
 | Backend | `v0.4.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.4.0` (amd64) | yes |
-| Terminal client | none, version 0.1.0 on `main` | none, run from a checkout | yes |
+| Terminal client | `v0.1.0` | none, run from a checkout of the tag | yes |
 | Web chat | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-web:v0.1.0` (amd64, arm64) | yes |
-| Satellite | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.1.0` (amd64, arm64) | yes |
+| Satellite | `v0.2.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.2.0` (amd64, arm64) | yes |
 
 All four programs start their numbering at 0.1.0 with the `ambrogio.v1` protocol. The terminal client and the satellite are tested against backend commit `58b0df4`, where the protocol was introduced; it has not changed since, and backend 0.1.0 includes it. The web chat is tested against backend `v0.1.0` (commit `a4578db`).
 
 Backend `v0.1.2` changes only agents with MCP tools: it reads the prompts of the MCP server at every turn and shows tools to the model under their own names. The protocol is the same as in `v0.1.0`, so the clients work with both. The number `v0.1.1` is skipped because it belonged to a withdrawn release.
 
 Backend `v0.3.0` adds the Kokoro voice model. It changes `voice.json`: the field `voiceEngine` is now required, so a file written for `v0.1.2` stops the backend from starting with `Invalid voice configuration file`. Before upgrading, add `"voiceEngine": "piper"` to keep the current voice; see the [configuration reference](../backend-configuration/#voicejson). The protocol is the same as in `v0.1.0`, so the clients work with it. The number `v0.2.0` is skipped because it belonged to a withdrawn release.
+
+Terminal client `v0.1.0` is its first release. Its interface is in Italian or English, chosen with `--language` or the system locale.
+
+Satellite `v0.2.0` replaces the recorded Italian warnings with a generated error tone, two descending notes; the log tells the cause apart. Its configuration does not change.
 
 Backend `v0.4.0` accepts any Kokoro model, voice and language. With `"voiceEngine": "kokoro"`, `voiceSpeaker` is now the number of the voice in the model instead of its name, and `voiceLanguage` is required: write `"voiceSpeaker": 36, "voiceLanguage": "it"` instead of `"voiceSpeaker": "im_nicola"`, and `35` for `if_sara`. See [Voices of `kokoro-multi-lang-v1_0`](../backend-configuration/#voices-of-kokoro-multi-lang-v1_0). Configurations with `piper` do not change. The protocol is the same as in `v0.1.0`, so the clients work with it.
 
