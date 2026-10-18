@@ -24,11 +24,12 @@ The voices bundled with the backend are Italian, so pick an Italian model unless
 ```json title="/srv/ambrogio/config/voice.json"
 {
   "voskModelPath": "/models/vosk-model-small-it-0.22",
+  "voiceEngine": "piper",
   "voiceModelDir": "/opt/ambrogio/voices/vits-piper-it_IT-paola-medium"
 }
 ```
 
-Both paths are as the backend sees them. In Docker, `/models` is the mount you add in the next step, and `/opt/ambrogio/voices` is inside the image. The file may contain only these two fields.
+Both paths are as the backend sees them. In Docker, `/models` is the mount you add in the next step, and `/opt/ambrogio/voices` is inside the image. `voiceEngine` is required: `piper` is the engine of the bundled voices. To use Kokoro instead, see [Change the voice](../change-voice/#use-kokoro).
 
 ## 3. Restart the backend with voice
 

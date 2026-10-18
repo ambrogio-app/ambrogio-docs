@@ -24,14 +24,14 @@ Look at `err.message` and find it in this table.
 | `err.message` | What to check |
 |---|---|
 | `Missing HTTP configuration path`, `Missing conversation configuration path` | `AMBROGIO_HTTP_CONFIG_PATH` or `AMBROGIO_CONVERSATIONS_CONFIG_PATH` is not set. In Docker, `docker inspect ambrogio` shows the variables. |
-| `Invalid HTTP configuration file`, `Invalid conversation configuration file`, `Invalid voice configuration file` | The file does not exist at that path (in Docker: inside the container), cannot be read, or is not a JSON object. `voice.json` may contain only its two fields. |
+| `Invalid HTTP configuration file`, `Invalid conversation configuration file`, `Invalid voice configuration file` | The file does not exist at that path (in Docker: inside the container), cannot be read, or is not a JSON object. `voice.json` may contain only its own fields: `voiceEngine` is required, `voiceSpeaker` is required with `kokoro` (`if_sara` or `im_nicola`) and not allowed with `piper`. |
 | `Invalid HTTP listener configuration` | `host` or `port` in `http.json`. |
 | `Invalid HTTP CORS origins` | An entry in `allowedOrigins` has a path, a trailing slash or `*`. |
 | `Invalid public HTTPS configuration`, `Invalid HSTS duration` | `publicHttps` must be a boolean; with `true`, set `hstsMaxAgeSeconds` to a positive whole number. |
 | `Invalid conversation list limits`, `Invalid conversation language`, `Invalid conversation archive path`, `Missing conversation archive path` | The named field in `conversations.json`. |
 | `Conversation archive could not be prepared` | The folder of `archivePath` does not exist or is not writable, or the database could not be updated. |
 | `Invalid voice configuration path` | `AMBROGIO_VOICE_CONFIG_PATH` is set but empty. Remove it to run without voice. |
-| `Voice resources are unavailable` | `voskModelPath` is not a readable folder, or `voiceModelDir` does not contain exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`. |
+| `Voice resources are unavailable` | `voskModelPath` is not a readable folder, or `voiceModelDir` lacks the files of its engine: with `piper` exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`; with `kokoro` `model.onnx`, `voices.bin`, `tokens.txt` and `espeak-ng-data/`. |
 | `Voice components could not be loaded` | The files are there but a model failed to load. Download it again. |
 | `Agent configuration directory unavailable` | `/etc/ambrogio/agents` does not exist. In Docker, check that the configuration folder is mounted at `/etc/ambrogio`. |
 | `Missing orchestrator configuration` | There is no `orchestrator.json`. |

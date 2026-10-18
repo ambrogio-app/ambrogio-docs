@@ -17,7 +17,7 @@ flowchart LR
     subgraph back[Backend]
         STT[Vosk<br/>speech to text]
         AG[Agents]
-        TTS[Piper voice<br/>text to speech]
+        TTS[Piper or Kokoro voice<br/>text to speech]
     end
     VAD -- "audio of your request" --> STT
     STT --> AG --> TTS
@@ -41,6 +41,8 @@ flowchart LR
 **Speaking while it thinks.** The answer is spoken a sentence at a time, as soon as each sentence is complete, instead of waiting for the whole text. Before speaking, the backend strips Markdown symbols such as asterisks, link addresses and table bars, so the voice does not read them out. The stored text keeps its formatting.
 
 **One voice for the house.** The backend loads one voice at startup. All satellites speak with it. When several satellites are answering at once, their sentences are synthesised one after another, because the voice engine handles one sentence at a time.
+
+**Two kinds of voice.** The backend speaks with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx), which runs either a Piper voice or the Kokoro model inside the backend process. The Piper voices are small and fast enough for a low-power mini PC, so two of them ship in the image. Kokoro sounds more natural but needs several times more computing power: on a 4-core Celeron N5095 it is slower than speech itself, so answers would start late and stop between sentences. That is why it is an option you download and enable, not the default. Both use espeak-ng to turn Italian text into sounds, so they pronounce names and numbers in a similar way; they differ in voice and intonation.
 
 ## Follow-up replies
 

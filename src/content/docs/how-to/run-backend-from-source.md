@@ -45,7 +45,7 @@ AMBROGIO_CONVERSATIONS_CONFIG_PATH=/etc/ambrogio/conversations.json \
 node apps/server/dist/main.js
 ```
 
-Add `AMBROGIO_VOICE_CONFIG_PATH=/etc/ambrogio/voice.json` to enable voice. Without Docker there are no bundled voices: download a sherpa-onnx Piper voice yourself, as described in [Change the voice](../change-voice/#use-a-different-voice).
+Add `AMBROGIO_VOICE_CONFIG_PATH=/etc/ambrogio/voice.json` to enable voice. Without Docker there are no bundled voices: download a sherpa-onnx Piper voice yourself, as described in [Change the voice](../change-voice/#use-a-different-voice), or the [Kokoro model](../change-voice/#use-kokoro).
 
 Stop the server with `Ctrl+C` or `SIGTERM`. Turns that are still being answered at that moment are saved as *interrupted*; see [Turns and outcomes](../../explanation/turns/#when-the-server-stops).
 

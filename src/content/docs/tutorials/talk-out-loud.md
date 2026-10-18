@@ -42,11 +42,12 @@ Voice has its own configuration file. Create `voice.json` next to the others:
 ```json title="~/ambrogio/config/voice.json"
 {
   "voskModelPath": "/models/vosk-model-small-it-0.22",
+  "voiceEngine": "piper",
   "voiceModelDir": "/opt/ambrogio/voices/vits-piper-it_IT-paola-medium"
 }
 ```
 
-`voskModelPath` is where the container will see the model you just downloaded. `voiceModelDir` picks Paola, one of the two Italian voices already inside the image.
+`voskModelPath` is where the container will see the model you just downloaded. `voiceEngine` says the voice is a Piper voice, and `voiceModelDir` picks Paola, one of the two Italian voices already inside the image.
 
 Replace the running container with one that has the model folder and the new file:
 

@@ -34,6 +34,8 @@ All four programs start their numbering at 0.1.0 with the `ambrogio.v1` protocol
 
 Backend `v0.1.2` changes only agents with MCP tools: it reads the prompts of the MCP server at every turn and shows tools to the model under their own names. The protocol is the same as in `v0.1.0`, so the clients work with both. The number `v0.1.1` is skipped because it belonged to a withdrawn release.
 
+The backend's `main` branch, not yet released, adds the Kokoro voice model. It changes `voice.json`: the field `voiceEngine` is now required, so a file written for `v0.1.2` stops the backend from starting with `Invalid voice configuration file`. Add `"voiceEngine": "piper"` to keep the current voice; see the [configuration reference](../backend-configuration/#voicejson). The protocol does not change.
+
 :::note[Withdrawn releases]
 Backend releases published between 16 and 18 October 2026 under the tags `v0.1.0`, `v0.1.1` and `v0.2.0` were withdrawn, and the current `v0.1.0` replaced them. If you pulled one of those images or fetched those tags, pull the image again and refresh the tags with `git fetch --tags --force`.
 :::
@@ -47,4 +49,4 @@ Backend releases published between 16 and 18 October 2026 under the tags `v0.1.0
 
 ## Language
 
-Ambrogio currently speaks Italian: the bundled voices, the satellite's recorded messages and the terminal client's interface are Italian. The web chat's interface is Italian or English, and the backend's own messages can be English or Italian.
+Ambrogio currently speaks Italian: the bundled voices and the Kokoro voices it supports, the satellite's recorded messages and the terminal client's interface are Italian. The web chat's interface is Italian or English, and the backend's own messages can be English or Italian.

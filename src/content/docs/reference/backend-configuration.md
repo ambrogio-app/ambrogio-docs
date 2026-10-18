@@ -79,21 +79,35 @@ Example:
 
 ## `voice.json`
 
-Speech recognition and synthesis. Read only when `AMBROGIO_VOICE_CONFIG_PATH` is set. The file must contain exactly these two fields.
+Speech recognition and synthesis. Read only when `AMBROGIO_VOICE_CONFIG_PATH` is set. Any other field makes the file invalid.
 
 | Field | Type | Meaning |
 |---|---|---|
 | `voskModelPath` | string | Folder of an unpacked [Vosk](https://alphacephei.com/vosk/models) model. Must be readable. |
-| `voiceModelDir` | string | Folder of a sherpa-onnx Piper voice. Must contain exactly one `.onnx` file, a `tokens.txt` file and an `espeak-ng-data/` folder, all readable. |
+| `voiceEngine` | string | Required. `"piper"` for a sherpa-onnx Piper voice, `"kokoro"` for the Kokoro model `kokoro-multi-lang-v1_0`. |
+| `voiceModelDir` | string | Folder of the voice. With `piper`: exactly one `.onnx` file, a `tokens.txt` file and an `espeak-ng-data/` folder. With `kokoro`: `model.onnx`, `voices.bin`, `tokens.txt` and an `espeak-ng-data/` folder. All readable. |
+| `voiceSpeaker` | string | Required with `kokoro`, not allowed with `piper`. The Kokoro voice: `"if_sara"` (female) or `"im_nicola"` (male). |
 
-Both models are loaded before the server starts listening. Speech synthesis uses up to four CPU threads.
+Both models are loaded before the server starts listening. Speech synthesis uses up to four CPU threads. Kokoro speaks Italian at 24 kHz; the int8 variant of the model is not supported.
 
 Example for the Docker image:
 
 ```json
 {
   "voskModelPath": "/models/vosk-model-small-it-0.22",
+  "voiceEngine": "piper",
   "voiceModelDir": "/opt/ambrogio/voices/vits-piper-it_IT-paola-medium"
+}
+```
+
+Example with Kokoro, mounted at `/opt/ambrogio/kokoro`:
+
+```json
+{
+  "voskModelPath": "/models/vosk-model-small-it-0.22",
+  "voiceEngine": "kokoro",
+  "voiceModelDir": "/opt/ambrogio/kokoro",
+  "voiceSpeaker": "im_nicola"
 }
 ```
 
