@@ -16,7 +16,7 @@ Use this when you want to run the backend directly on a Linux host, for example 
 ## Build
 
 ```bash
-git clone https://github.com/adrianofoschi/ambrogio-backend.git
+git clone https://github.com/ambrogio-app/ambrogio-backend.git
 cd ambrogio-backend
 pnpm install --frozen-lockfile
 pnpm build

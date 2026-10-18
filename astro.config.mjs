@@ -12,7 +12,7 @@ export default defineConfig({
 			title: 'Ambrogio',
 			description: 'Documentation for people who run Ambrogio, a self-hosted home assistant, in their own home.',
 			social: [
-				{ icon: 'github', label: 'GitHub', href: 'https://github.com/adrianofoschi/ambrogio-backend' },
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/ambrogio-app/ambrogio-backend' },
 			],
 			sidebar: [
 				{

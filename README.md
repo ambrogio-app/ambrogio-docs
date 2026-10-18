@@ -1,6 +1,6 @@
 # Ambrogio — user documentation
 
-Documentation for people who install and run [Ambrogio](https://github.com/adrianofoschi/ambrogio-backend), a self-hosted home assistant, in their own home. It covers the three programs: `ambrogio-backend`, `ambrogio-cli` and `ambrogio-satellite`.
+Documentation for people who install and run [Ambrogio](https://github.com/ambrogio-app/ambrogio-backend), a self-hosted home assistant, in their own home. It covers the three programs: `ambrogio-backend`, `ambrogio-cli` and `ambrogio-satellite`.
 
 The site is built with [Astro Starlight](https://starlight.astro.build/). Diagrams use Mermaid through [`astro-mermaid`](https://github.com/joesaby/astro-mermaid).
 

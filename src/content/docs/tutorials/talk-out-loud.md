@@ -76,7 +76,7 @@ You get the list of conversations, now with the one from the first tutorial in i
 
 ```bash
 cd ~/ambrogio/src
-git clone https://github.com/adrianofoschi/ambrogio-satellite.git
+git clone https://github.com/ambrogio-app/ambrogio-satellite.git
 cd ambrogio-satellite
 npm install --global pnpm
 pnpm install --frozen-lockfile

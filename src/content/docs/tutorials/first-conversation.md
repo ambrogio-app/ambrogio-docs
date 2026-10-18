@@ -30,7 +30,7 @@ Clone the backend and build its Docker image:
 
 ```bash
 mkdir -p ~/ambrogio/src && cd ~/ambrogio/src
-git clone https://github.com/adrianofoschi/ambrogio-backend.git
+git clone https://github.com/ambrogio-app/ambrogio-backend.git
 cd ambrogio-backend
 docker build -t ambrogio-backend:local .
 ```
@@ -38,7 +38,7 @@ docker build -t ambrogio-backend:local .
 The build downloads dependencies and two Italian voices, so the first run takes a few minutes. When it finishes, the last line mentions `ambrogio-backend:local`.
 
 :::note
-Building the image yourself works with any commit. To skip the build, use the published image `ghcr.io/adrianofoschi/ambrogio-backend:v0.1.0` in place of `ambrogio-backend:local` in the commands below. [Versions and compatibility](/reference/versions/) lists the releases.
+Building the image yourself works with any commit. To skip the build, use the published image `ghcr.io/ambrogio-app/ambrogio-backend:v0.1.0` in place of `ambrogio-backend:local` in the commands below. [Versions and compatibility](/reference/versions/) lists the releases.
 :::
 
 ## Write the configuration
@@ -135,7 +135,7 @@ Open a second terminal and build the client:
 
 ```bash
 cd ~/ambrogio/src
-git clone https://github.com/adrianofoschi/ambrogio-cli.git
+git clone https://github.com/ambrogio-app/ambrogio-cli.git
 cd ambrogio-cli
 npm ci
 npm run build

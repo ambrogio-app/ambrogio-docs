@@ -16,7 +16,7 @@ The backend owns the conversation protocol and the HTTP API. Each client records
 | Terminal client | `system-model/Contracts/TerminalConversation.md`, section *Contratti pubblici del backend Ambrogio* |
 | Satellite | `system-model/Contracts/VoiceSatellite.md`, section *Contratto vocale backend di riferimento* |
 
-Before upgrading, check that the backend you plan to run is that revision or a later one with the same protocol. A change to [`protocol/ambrogio-v1.schema.json`](https://github.com/adrianofoschi/ambrogio-backend/blob/main/protocol/ambrogio-v1.schema.json) in the backend is the thing to look for. An incompatible change gets a new subprotocol name, such as `ambrogio.v2`.
+Before upgrading, check that the backend you plan to run is that revision or a later one with the same protocol. A change to [`protocol/ambrogio-v1.schema.json`](https://github.com/ambrogio-app/ambrogio-backend/blob/main/protocol/ambrogio-v1.schema.json) in the backend is the thing to look for. An incompatible change gets a new subprotocol name, such as `ambrogio.v2`.
 
 ## Current state
 
@@ -24,9 +24,9 @@ Checked on 18 October 2026.
 
 | Program | Latest release | Images | Works with the current clients |
 |---|---|---|---|
-| Backend | `v0.1.0` | `ghcr.io/adrianofoschi/ambrogio-backend:v0.1.0` (amd64) | yes |
+| Backend | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.1.0` (amd64) | yes |
 | Terminal client | none, version 0.1.0 on `main` | none, run from a checkout | yes |
-| Satellite | `v0.1.0` | `ghcr.io/adrianofoschi/ambrogio-satellite:v0.1.0` (amd64, arm64) | yes |
+| Satellite | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.1.0` (amd64, arm64) | yes |
 
 All three programs start their numbering at 0.1.0 with the `ambrogio.v1` protocol. Both clients are tested against backend commit `58b0df4`, where the protocol was introduced; it has not changed since, and backend 0.1.0 includes it.
 

@@ -5,7 +5,7 @@ sidebar:
   label: Conversation protocol
 ---
 
-Text and voice clients use the same protocol, `ambrogio.v1`, over a WebSocket. This page summarises it for people who write their own client or debug a connection. The machine-readable definition is [`protocol/ambrogio-v1.schema.json`](https://github.com/adrianofoschi/ambrogio-backend/blob/main/protocol/ambrogio-v1.schema.json) (JSON Schema 2020-12) in the backend repository. Messages are closed objects: unknown fields are rejected.
+Text and voice clients use the same protocol, `ambrogio.v1`, over a WebSocket. This page summarises it for people who write their own client or debug a connection. The machine-readable definition is [`protocol/ambrogio-v1.schema.json`](https://github.com/ambrogio-app/ambrogio-backend/blob/main/protocol/ambrogio-v1.schema.json) (JSON Schema 2020-12) in the backend repository. Messages are closed objects: unknown fields are rejected.
 
 ## Connection
 

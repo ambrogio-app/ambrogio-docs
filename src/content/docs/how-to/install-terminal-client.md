@@ -16,7 +16,7 @@ The terminal client runs from a checkout of its repository. There is no installa
 ## Install
 
 ```bash
-git clone https://github.com/adrianofoschi/ambrogio-cli.git
+git clone https://github.com/ambrogio-app/ambrogio-cli.git
 cd ambrogio-cli
 npm ci
 npm run build

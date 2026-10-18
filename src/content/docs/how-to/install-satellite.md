@@ -29,7 +29,7 @@ sudo apt install libasound2 libgomp1    # libasound2t64 on recent Ubuntu
 Then build the satellite:
 
 ```bash
-git clone https://github.com/adrianofoschi/ambrogio-satellite.git
+git clone https://github.com/ambrogio-app/ambrogio-satellite.git
 cd ambrogio-satellite
 npm install --global pnpm
 pnpm install --frozen-lockfile
@@ -41,12 +41,12 @@ pnpm build
 Build the image on the device, or on another machine with the same architecture:
 
 ```bash
-git clone https://github.com/adrianofoschi/ambrogio-satellite.git
+git clone https://github.com/ambrogio-app/ambrogio-satellite.git
 cd ambrogio-satellite
 docker build -t ambrogio-satellite .
 ```
 
-Releases are also published as images for amd64 and arm64, for example `ghcr.io/adrianofoschi/ambrogio-satellite:v0.1.0`. To use one, pull it and put its name in place of `ambrogio-satellite` in the commands below. [Versions and compatibility](/reference/versions/) lists the releases.
+Releases are also published as images for amd64 and arm64, for example `ghcr.io/ambrogio-app/ambrogio-satellite:v0.1.0`. To use one, pull it and put its name in place of `ambrogio-satellite` in the commands below. [Versions and compatibility](/reference/versions/) lists the releases.
 
 ## 2. Write the configuration
 

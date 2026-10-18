@@ -46,7 +46,7 @@ Audio is never stored, so there are no recordings to back up.
 
    ```bash
    docker rm -f ambrogio
-   docker run -d --name ambrogio ... ghcr.io/adrianofoschi/ambrogio-backend:<new-version>
+   docker run -d --name ambrogio ... ghcr.io/ambrogio-app/ambrogio-backend:<new-version>
    ```
 
 5. Check the configuration reference for the new version. The format can still change between versions, and a file that the new version does not accept stops it from starting.
