@@ -51,7 +51,7 @@ For errors that come from outside Ambrogio (a library, the network, the operatin
 - Check the address from the same computer: `curl http://ambrogio.home.lan:3000/api/conversations`.
 - The client refuses addresses with a user name, password, query string or `#fragment`.
 - If the list loads but sending a message fails, the WebSocket on `/api/session` is being blocked. Behind a proxy, check that it forwards upgrades; see [Put the backend behind HTTPS](/how-to/reverse-proxy-https/).
-- A backend built from a commit older than the `ambrogio.v1` protocol cannot hold a session with the current client. Use a release, or a commit from `f214a2d` onwards; see [Versions and compatibility](/reference/versions/).
+- A backend built from a commit older than the `ambrogio.v1` protocol cannot hold a session with the current client. Use a release, or a commit from `58b0df4` onwards; see [Versions and compatibility](/reference/versions/).
 
 ## The terminal says to enlarge the window
 
