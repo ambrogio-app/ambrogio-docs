@@ -69,7 +69,14 @@ Requests to the model are not retried. For the orchestrator, `mistral-medium-lat
 
 A `transport` field is not allowed. Local (stdio) servers and the older HTTP+SSE transport are not supported.
 
-The backend connects to the server and lists its tools at startup. If the connection fails, the backend does not start.
+The backend connects to the server and lists its tools at startup. If the server declares prompts, it also lists the prompts that have no required arguments. If the connection or either list fails, the backend does not start.
+
+| Behaviour | Value |
+|---|---|
+| Tool names shown to the model | The server's tool name when it matches `^[A-Za-z0-9_-]{1,64}$`; otherwise `mcp_<index>`, the tool's position in the list, from 0. Names of the form `mcp_<digits>` always get the positional name. |
+| Server prompts | Read again at every turn handled by the agent, before the model is called. Their text is added after the agent's `instructions`, under the heading `Instructions and context from the connected MCP server:`. |
+| Prompt read fails during a turn | The turn fails with the standard error message; the log cause is `MCP prompt retrieval failed`. |
+| Prompt reads and `maxToolCalls` | Not counted. |
 
 ### `auth` with a static token
 

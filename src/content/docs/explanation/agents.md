@@ -38,6 +38,8 @@ An agent without an `mcp` section answers from its model's own knowledge. It is 
 
 An agent with an `mcp` section is connected to one MCP server and can call that server's tools: read a sensor, switch a light, look up a calendar. The backend counts the tool calls in each turn and stops at `maxToolCalls`, so a confused model cannot loop forever. The agent can still write a final answer after its last allowed call.
 
+The model sees each tool under the name the server gives it, such as `GetLiveContext`, which helps it pick the right one. Some servers also offer prompts: instructions on how to use their tools and context about what they manage. Home Assistant's prompt lists the areas and devices exposed to Assist. The backend reads these prompts at every turn and adds them after the agent's own `instructions`, so your instructions can stay about tone and behaviour while the server describes its own devices.
+
 Each agent has its own model, so you can spend money where it matters: a capable model for the orchestrator and for agents that act on your home, a cheaper one for chit-chat.
 
 ## Answers and replies
