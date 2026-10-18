@@ -16,7 +16,7 @@ Ambrogio's source code is released under the MIT license. The models it ships wi
 
 The voices are downloaded from the [sherpa-onnx `tts-models` release](https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models) when the image is built, and their SHA-256 checksums are verified. Each folder includes the voice's model card. The backend repository's `voices/README.md` lists the checksums.
 
-The Kokoro voice model is **not** bundled either. If you choose it, you download `kokoro-multi-lang-v1_0.tar.bz2` from the same release; it is the Kokoro-82M model converted by k2-fsa, released under the Apache-2.0 license, and the backend repository's `voices/README.md` lists its checksum. See [Change the voice](../../how-to/change-voice/#use-kokoro).
+Kokoro models are **not** bundled either. If you choose one, you download it from the same release; `kokoro-multi-lang-v1_0.tar.bz2`, for example, is the Kokoro-82M model converted by k2-fsa, released under the Apache-2.0 license, and the backend repository's `voices/README.md` lists its checksum. Check the license of any other model on its release. See [Change the voice](../../how-to/change-voice/#use-kokoro).
 
 The Vosk speech recognition model is **not** bundled. You download it yourself from [alphacephei.com/vosk/models](https://alphacephei.com/vosk/models); its license is stated there.
 

@@ -31,7 +31,8 @@ Look at `err.message` and find it in this table.
 | `Invalid conversation list limits`, `Invalid conversation language`, `Invalid conversation archive path`, `Missing conversation archive path` | The named field in `conversations.json`. |
 | `Conversation archive could not be prepared` | The folder of `archivePath` does not exist or is not writable, or the database could not be updated. |
 | `Invalid voice configuration path` | `AMBROGIO_VOICE_CONFIG_PATH` is set but empty. Remove it to run without voice. |
-| `Voice resources are unavailable` | `voskModelPath` is not a readable folder, or `voiceModelDir` lacks the files of its engine: with `piper` exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`; with `kokoro` `model.onnx`, `voices.bin`, `tokens.txt` and `espeak-ng-data/`. |
+| `Voice resources are unavailable` | `voskModelPath` is not a readable folder, or `voiceModelDir` lacks the files of its engine: with `piper` exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`; with `kokoro` exactly one `.onnx` file, `voices.bin`, `tokens.txt` and `espeak-ng-data/`. |
+| `Voice speaker is not in the model` | `voiceSpeaker` is not lower than the number of voices of the Kokoro model. See [Voices of `kokoro-multi-lang-v1_0`](../../reference/backend-configuration/#voices-of-kokoro-multi-lang-v1_0). |
 | `Voice components could not be loaded` | The files are there but a model failed to load. Download it again. |
 | `Agent configuration directory unavailable` | `/etc/ambrogio/agents` does not exist. In Docker, check that the configuration folder is mounted at `/etc/ambrogio`. |
 | `Missing orchestrator configuration` | There is no `orchestrator.json`. |

@@ -25,7 +25,7 @@ Checked on 18 October 2026.
 
 | Program | Latest release | Images | Works with the current clients |
 |---|---|---|---|
-| Backend | `v0.3.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.3.0` (amd64) | yes |
+| Backend | `v0.4.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.4.0` (amd64) | yes |
 | Terminal client | none, version 0.1.0 on `main` | none, run from a checkout | yes |
 | Web chat | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-web:v0.1.0` (amd64, arm64) | yes |
 | Satellite | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.1.0` (amd64, arm64) | yes |
@@ -35,6 +35,8 @@ All four programs start their numbering at 0.1.0 with the `ambrogio.v1` protocol
 Backend `v0.1.2` changes only agents with MCP tools: it reads the prompts of the MCP server at every turn and shows tools to the model under their own names. The protocol is the same as in `v0.1.0`, so the clients work with both. The number `v0.1.1` is skipped because it belonged to a withdrawn release.
 
 Backend `v0.3.0` adds the Kokoro voice model. It changes `voice.json`: the field `voiceEngine` is now required, so a file written for `v0.1.2` stops the backend from starting with `Invalid voice configuration file`. Before upgrading, add `"voiceEngine": "piper"` to keep the current voice; see the [configuration reference](../backend-configuration/#voicejson). The protocol is the same as in `v0.1.0`, so the clients work with it. The number `v0.2.0` is skipped because it belonged to a withdrawn release.
+
+Backend `v0.4.0` accepts any Kokoro model, voice and language. With `"voiceEngine": "kokoro"`, `voiceSpeaker` is now the number of the voice in the model instead of its name, and `voiceLanguage` is required: write `"voiceSpeaker": 36, "voiceLanguage": "it"` instead of `"voiceSpeaker": "im_nicola"`, and `35` for `if_sara`. See [Voices of `kokoro-multi-lang-v1_0`](../backend-configuration/#voices-of-kokoro-multi-lang-v1_0). Configurations with `piper` do not change. The protocol is the same as in `v0.1.0`, so the clients work with it.
 
 :::note[Withdrawn releases]
 Backend releases published between 16 and 18 October 2026 under the tags `v0.1.0`, `v0.1.1` and `v0.2.0` were withdrawn, and the current `v0.1.0` replaced them. If you pulled one of those images or fetched those tags, pull the image again and refresh the tags with `git fetch --tags --force`.
@@ -49,6 +51,6 @@ Backend releases published between 16 and 18 October 2026 under the tags `v0.1.0
 
 ## Language
 
-The language of the answers comes from the agents' instructions. To talk out loud in a language, you need a [Vosk](https://alphacephei.com/vosk/models) model and a Piper voice for it; see [Change the voice](../../how-to/change-voice/). The voices bundled with the backend are Italian, and Ambrogio supports only the two Italian Kokoro voices.
+The language of the answers comes from the agents' instructions. To talk out loud in a language, you need a [Vosk](https://alphacephei.com/vosk/models) model and a Piper voice for it; see [Change the voice](../../how-to/change-voice/). The voices bundled with the backend are Italian; a Kokoro model gives you voices in several languages, chosen with `voiceSpeaker` and `voiceLanguage`.
 
 The texts written by Ambrogio itself are in English or Italian: the backend's messages follow `language` in [`conversations.json`](../backend-configuration/#conversationsjson), the web chat's interface follows its `language` or the browser, and the terminal client's interface follows `--language` or the system locale. The satellite has no spoken messages: it signals problems with a tone.

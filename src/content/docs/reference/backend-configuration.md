@@ -84,11 +84,30 @@ Speech recognition and synthesis. Read only when `AMBROGIO_VOICE_CONFIG_PATH` is
 | Field | Type | Meaning |
 |---|---|---|
 | `voskModelPath` | string | Folder of an unpacked [Vosk](https://alphacephei.com/vosk/models) model. Must be readable. |
-| `voiceEngine` | string | Required. `"piper"` for a sherpa-onnx Piper voice, `"kokoro"` for the Kokoro model `kokoro-multi-lang-v1_0`. |
-| `voiceModelDir` | string | Folder of the voice. With `piper`: exactly one `.onnx` file, a `tokens.txt` file and an `espeak-ng-data/` folder. With `kokoro`: `model.onnx`, `voices.bin`, `tokens.txt` and an `espeak-ng-data/` folder. All readable. |
-| `voiceSpeaker` | string | Required with `kokoro`, not allowed with `piper`. The Kokoro voice: `"if_sara"` (female) or `"im_nicola"` (male). |
+| `voiceEngine` | string | Required. `"piper"` for a sherpa-onnx Piper voice, `"kokoro"` for a sherpa-onnx Kokoro model. |
+| `voiceModelDir` | string | Folder of the voice or model. With `piper`: exactly one `.onnx` file, a `tokens.txt` file and an `espeak-ng-data/` folder. With `kokoro`: exactly one `.onnx` file (such as `model.onnx` or `model.int8.onnx`), `voices.bin`, `tokens.txt` and an `espeak-ng-data/` folder. All readable. |
+| `voiceSpeaker` | integer ≥ 0 | Required with `kokoro`, not allowed with `piper`. The number of the voice in the model. It must be lower than the number of voices the model declares, or the backend does not start. Voice names such as `"if_sara"` are not accepted. |
+| `voiceLanguage` | string | Required with `kokoro`, not allowed with `piper`. The espeak-ng language used to turn text into sounds, such as `"it"`, `"en"`, `"es"`, `"fr"`, `"hi"` or `"pt-br"`. The backend does not check the code. |
 
-Both models are loaded before the server starts listening. Speech synthesis uses up to four CPU threads. Kokoro speaks Italian at 24 kHz; the int8 variant of the model is not supported.
+Both models are loaded before the server starts listening. Speech synthesis uses up to four CPU threads. Audio has the sample rate of the loaded model; the multilingual Kokoro models produce 24 kHz. Ambrogio passes no lexicon files to Kokoro, so languages that sherpa-onnx pronounces only through a lexicon, such as Chinese, are not supported.
+
+### Voices of `kokoro-multi-lang-v1_0`
+
+Pick the voice and a matching `voiceLanguage`. Numbers from the [sherpa-onnx Kokoro models page](https://k2-fsa.github.io/sherpa/onnx/tts/pretrained_models/kokoro.html) and k2-fsa's `generate_voices_bin.py`; other Kokoro models have their own lists.
+
+| `voiceSpeaker` | Voices | `voiceLanguage` |
+|---|---|---|
+| 0–10 | American English, female: `af_alloy`, `af_aoede`, `af_bella`, `af_heart`, `af_jessica`, `af_kore`, `af_nicole`, `af_nova`, `af_river`, `af_sarah`, `af_sky` | `en` |
+| 11–19 | American English, male: `am_adam`, `am_echo`, `am_eric`, `am_fenrir`, `am_liam`, `am_michael`, `am_onyx`, `am_puck`, `am_santa` | `en` |
+| 20–23 | British English, female: `bf_alice`, `bf_emma`, `bf_isabella`, `bf_lily` | `en` |
+| 24–27 | British English, male: `bm_daniel`, `bm_fable`, `bm_george`, `bm_lewis` | `en` |
+| 28, 29 | Spanish: `ef_dora` (female), `em_alex` (male) | `es` |
+| 30 | French: `ff_siwis` (female) | `fr` |
+| 31–34 | Hindi: `hf_alpha`, `hf_beta` (female), `hm_omega`, `hm_psi` (male) | `hi` |
+| 35, 36 | Italian: `if_sara` (female), `im_nicola` (male) | `it` |
+| 37–41 | Japanese: `jf_alpha`, `jf_gongitsune`, `jf_nezumi`, `jf_tebukuro` (female), `jm_kumo` (male) | not verified |
+| 42–44 | Brazilian Portuguese: `pf_dora` (female), `pm_alex`, `pm_santa` (male) | `pt-br` |
+| 45–52 | Chinese: `zf_…`, `zm_…` | not supported |
 
 Example for the Docker image:
 
@@ -107,7 +126,8 @@ Example with Kokoro, mounted at `/opt/ambrogio/kokoro`:
   "voskModelPath": "/models/vosk-model-small-it-0.22",
   "voiceEngine": "kokoro",
   "voiceModelDir": "/opt/ambrogio/kokoro",
-  "voiceSpeaker": "im_nicola"
+  "voiceSpeaker": 36,
+  "voiceLanguage": "it"
 }
 ```
 

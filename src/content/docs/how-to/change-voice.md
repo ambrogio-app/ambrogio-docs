@@ -1,6 +1,6 @@
 ---
 title: Change the voice
-description: Switch between the bundled Italian voices, use a different Piper voice or use Kokoro.
+description: Switch between the bundled Italian voices, use a different Piper voice or use a Kokoro model.
 sidebar:
   label: Change the voice
 ---
@@ -56,7 +56,7 @@ When running from source, put the voice anywhere and use its host path in `voice
 
 ## Use Kokoro
 
-[Kokoro](https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models) is a larger voice model with two Italian voices, `if_sara` (female) and `im_nicola` (male). It is not in the image; you download it yourself.
+[Kokoro](https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models) models are larger voice models with many voices in several languages. None is in the image; you download the one you want. The steps below use `kokoro-multi-lang-v1_0`; any other Kokoro model from the same release works the same way.
 
 Before you start, check the CPU of the backend host. Kokoro needs much more computing power than the Piper voices. On a 4-core Intel Celeron N5095 it takes about 1.7 seconds to produce each second of speech, so answers start late and pause between sentences; keep a Piper voice on hardware of that class. A recent desktop CPU is fast enough.
 
@@ -69,9 +69,9 @@ Before you start, check the CPU of the backend host. Kokoro needs much more comp
    sudo tar xjf kokoro-multi-lang-v1_0.tar.bz2
    ```
 
-   `sha256sum` must print `OK`. Use this archive: the `int8` variant and the `v1_1` models are not supported.
+   `sha256sum` must print `OK`. The checksum is the one listed in the backend repository's `voices/README.md`; for other archives, check them against their release.
 
-2. Check the folder. It must contain `model.onnx`, `voices.bin`, `tokens.txt` and an `espeak-ng-data` folder:
+2. Check the folder. It must contain exactly one `.onnx` file, `voices.bin`, `tokens.txt` and an `espeak-ng-data` folder:
 
    ```bash
    ls /srv/ambrogio/kokoro/kokoro-multi-lang-v1_0
@@ -92,16 +92,17 @@ Before you start, check the CPU of the backend host. Kokoro needs much more comp
      "voskModelPath": "/models/vosk-model-small-it-0.22",
      "voiceEngine": "kokoro",
      "voiceModelDir": "/opt/ambrogio/kokoro",
-     "voiceSpeaker": "im_nicola"
+     "voiceSpeaker": 36,
+     "voiceLanguage": "it"
    }
    ```
 
-   Use `if_sara` for the female voice.
+   `voiceSpeaker` is the number of the voice in the model and `voiceLanguage` the language it reads: here 36 is `im_nicola`, an Italian male voice. For an American English female voice, use `"voiceSpeaker": 3` (`af_heart`) and `"voiceLanguage": "en"`. [Voices of `kokoro-multi-lang-v1_0`](../../reference/backend-configuration/#voices-of-kokoro-multi-lang-v1_0) lists the numbers.
 
 5. Recreate the container, as in [Enable voice](../enable-voice/#3-restart-the-backend-with-voice), with the extra mount.
 
-To go back to Paola, set `voiceEngine` to `piper`, remove `voiceSpeaker`, point `voiceModelDir` at a bundled voice and restart.
+To go back to Paola, set `voiceEngine` to `piper`, remove `voiceSpeaker` and `voiceLanguage`, point `voiceModelDir` at a bundled voice and restart.
 
 ## Mind the language
 
-The voice only reads text aloud. The language of the answers comes from the agents' instructions, and the language of speech recognition comes from the Vosk model. Change all three together.
+The voice only reads text aloud. The language of the answers comes from the agents' instructions, and the language of speech recognition comes from the Vosk model. Change all three together; with Kokoro, also set `voiceLanguage`.
