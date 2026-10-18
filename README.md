@@ -22,7 +22,9 @@ The sidebar is defined in `astro.config.mjs`.
 ```bash
 npm ci
 npm run dev       # local preview at http://localhost:4321
+npm run typecheck # astro check
 npm run build     # static site in dist/
+npm run check:links  # after build: broken internal links and anchors
 ```
 
 ## Secret scanning
