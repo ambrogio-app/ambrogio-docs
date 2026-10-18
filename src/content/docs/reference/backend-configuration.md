@@ -41,7 +41,7 @@ Network listener and HTTP security settings.
 `allowedOrigins` affects two things:
 
 - **CORS** for the `GET` endpoints. With an empty list, no CORS headers are sent.
-- **The WebSocket session.** A connection request with an `Origin` header is accepted only if the origin is in the list; otherwise it is refused with `403`. Requests without `Origin`, which is the case for the terminal client and the satellite, are always accepted.
+- **The WebSocket session.** A connection request with an `Origin` header is accepted only if the origin is in the list; otherwise it is refused with `403`. Requests without `Origin`, which is the case for the terminal client and the satellite, are always accepted. The web chat runs in a browser and always sends the `Origin` of its page, so that origin must be in the list.
 
 Example:
 

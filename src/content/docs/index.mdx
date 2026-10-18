@@ -1,9 +1,9 @@
 ---
 title: Ambrogio
-description: A home assistant you run yourself. Your family talks to it by typing in a terminal or by voice.
+description: A home assistant you run yourself. Your family talks to it by typing in a terminal or a browser, or by voice.
 template: splash
 hero:
-  tagline: A home assistant you run on your own hardware. Your family types to it in a terminal or talks to it out loud, and every conversation stays on your server.
+  tagline: A home assistant you run on your own hardware. Your family types to it in a terminal or a browser, or talks to it out loud, and every conversation stays on your server.
   actions:
     - text: Start the tutorial
       link: tutorials/first-conversation/
@@ -21,7 +21,7 @@ Ambrogio is young software. It speaks Italian, the configuration format can stil
 
 ## What you install
 
-Ambrogio is split into three programs, each in its own Git repository.
+Ambrogio is split into four programs, each in its own Git repository.
 
 <CardGrid>
 	<Card title="Backend" icon="laptop">
@@ -30,12 +30,15 @@ Ambrogio is split into three programs, each in its own Git repository.
 	<Card title="Terminal client" icon="seti:shell">
 		A chat window in your terminal. Use it from any computer that can reach the backend. Repository: `ambrogio-cli`.
 	</Card>
+	<Card title="Web chat" icon="seti:html">
+		The same chat in a browser, served by an optional container next to the backend. Repository: `ambrogio-web`.
+	</Card>
 	<Card title="Voice satellite" icon="comment-alt">
 		A small program for a device with a microphone and a speaker, such as a Raspberry Pi. It waits for "Hey Jarvis" and lets you speak to Ambrogio. Repository: `ambrogio-satellite`.
 	</Card>
 </CardGrid>
 
-You always need the backend. The terminal client and the satellites are optional, and you can run as many of them as you like.
+You always need the backend. The terminal client, the web chat and the satellites are optional, and you can run as many of them as you like.
 
 ## Where to go next
 

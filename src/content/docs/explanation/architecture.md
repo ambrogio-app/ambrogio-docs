@@ -1,6 +1,6 @@
 ---
 title: Architecture
-description: How the backend, the terminal client and the voice satellites fit together, and why Ambrogio is split into three repositories.
+description: How the backend, the terminal client, the web chat and the voice satellites fit together, and why Ambrogio is split into separate repositories.
 sidebar:
   label: Architecture
 ---
@@ -11,10 +11,12 @@ Ambrogio has one server and any number of clients. The server, called the backen
 flowchart LR
     subgraph home[Your home network]
         CLI["Terminal client<br/>(any computer)"]
+        WEB["Web chat<br/>(any browser)"]
         S1["Satellite<br/>kitchen"]
         S2["Satellite<br/>living room"]
         subgraph server[Home server]
             B["Backend"]
+            W["Web chat<br/>container"]
             DB[("Conversation<br/>archive")]
         end
         HA["Home Assistant<br/>and other MCP servers"]
@@ -22,6 +24,8 @@ flowchart LR
     LLM["Mistral<br/>(cloud)"]
 
     CLI -- text --> B
+    WEB -- page --> W
+    WEB -- text --> B
     S1 -- audio --> B
     S2 -- audio --> B
     B --- DB
@@ -29,7 +33,7 @@ flowchart LR
     B -- prompts --> LLM
 ```
 
-## The three programs
+## The programs
 
 **The backend** (`ambrogio-backend`) runs on a machine that is always on, such as a home server or a NAS with Docker. Inside it:
 
@@ -40,19 +44,21 @@ flowchart LR
 
 **The terminal client** (`ambrogio-cli`) is a chat window for a terminal. It sends and receives text.
 
+**The web chat** (`ambrogio-web`) is the same kind of chat in a browser. An optional container serves the page; the page then talks to the backend directly, so the backend must list the page's address in `allowedOrigins`. Answers are shown as Markdown, and the interface is in Italian or English.
+
 **The voice satellite** (`ambrogio-satellite`) is a program for a small device with a microphone and a speaker. It listens for a wake word on the device, records your request, sends the audio to the backend and plays the answer. It does not recognise speech or generate voices itself.
 
 The only part outside your home is the language model. Agents send the conversation to Mistral's API to get answers. Everything else, including the audio, stays on your network.
 
 ## One protocol for everything
 
-Both clients talk to the backend in the same way, over a WebSocket session with the `ambrogio.v1` protocol. A turn is sent as text or as audio, and the client says whether it wants the answer as text or as audio. The terminal client sends text and asks for text; the satellite sends audio and asks for audio. The backend applies the same rules to both: the same limits, the same refusals, the same outcomes.
+All clients talk to the backend in the same way, over a WebSocket session with the `ambrogio.v1` protocol. A turn is sent as text or as audio, and the client says whether it wants the answer as text or as audio. The terminal client and the web chat send text and ask for text; the satellite sends audio and asks for audio. The backend applies the same rules to both: the same limits, the same refusals, the same outcomes.
 
-This has a practical consequence: a conversation does not belong to a client. A conversation started out loud in the kitchen is stored as text, and you can open it in the terminal and continue it by typing. The [conversation protocol reference](../../reference/conversation-protocol/) has the details.
+This has a practical consequence: a conversation does not belong to a client. A conversation started out loud in the kitchen is stored as text, and you can open it in the terminal or in the browser and continue it by typing. The [conversation protocol reference](../../reference/conversation-protocol/) has the details.
 
-## Why three repositories
+## Why separate repositories
 
-The programs run on different machines, have different dependencies and change at different speeds. The satellite needs audio libraries and runs on ARM boards; the backend needs speech models and runs on a server; the terminal client needs neither. Keeping them apart means a satellite update does not force you to touch the server, and the other way round.
+The programs run on different machines, have different dependencies and change at different speeds. The satellite needs audio libraries and runs on ARM boards; the backend needs speech models and runs on a server; the terminal client and the web chat need neither. The web chat is optional too: if you do not want it, you do not install its container. Keeping them apart means a satellite update does not force you to touch the server, and the other way round.
 
 What holds them together is the protocol. The backend owns it, and each client records which backend revision it has been tested against. [Versions and compatibility](../../reference/versions/) explains how to read that.
 
@@ -60,7 +66,7 @@ What holds them together is the protocol. The backend owns it, and each client r
 
 Each repository is built model-first with [Reqvire](https://reqvire.org/): capabilities, requirements, contracts and verifications are written in `system-model/` before the code changes. When this documentation states a limit or a default, it comes from those contracts. If you want to know *why* something behaves as it does, the decisions are recorded there, with dates and the alternatives that were considered.
 
-Inside, the code follows a ports-and-adapters design: the rules of conversations and turns do not depend on Node.js, SQLite, Mistral or the audio libraries, which are plugged in at the edges.
+Inside, the code follows a ports-and-adapters design: the rules of conversations and turns do not depend on Node.js, SQLite, Mistral or the audio libraries, which are plugged in at the edges. The web chat is organised by feature instead, and each feature keeps its logic apart from its React components, so the protocol handling is tested without a browser.
 
 ## Further reading
 

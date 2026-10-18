@@ -88,9 +88,10 @@ Use the `https://` address everywhere. The clients switch to `wss://` for the se
 
 - Terminal client: `npm start -- --server https://ambrogio.example.com`
 - Satellite: `"backend": { "baseUrl": "https://ambrogio.example.com" }`
+- Web chat: `"backendUrl": "https://ambrogio.example.com"` in `config.json`
 
-Both accept a path prefix, such as `https://example.com/ambrogio/`. The backend itself always serves `/api/...`, so a proxy that uses a prefix must strip it before forwarding.
+All three accept a path prefix, such as `https://example.com/ambrogio/`. The backend itself always serves `/api/...`, so a proxy that uses a prefix must strip it before forwarding.
 
 ## About `allowedOrigins`
 
-The terminal client and the satellite are not web pages and send no `Origin` header, so they need nothing here. Only add `allowedOrigins` to `http.json` if you build a browser application that calls Ambrogio from another origin. See [Backend configuration](../../reference/backend-configuration/#httpjson).
+The terminal client and the satellite are not web pages and send no `Origin` header, so they need nothing here. The [web chat](../install-web-chat/) is a web page: list the HTTPS address where people open it, for example `"https://chat.example.com"`, and set its `config.json` to the HTTPS address of the backend. Add other entries only for browser applications of your own. See [Backend configuration](../../reference/backend-configuration/#httpjson).

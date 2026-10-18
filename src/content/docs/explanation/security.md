@@ -20,7 +20,7 @@ This is a deliberate choice for the first versions: the family shares one identi
 
 ## What the backend does protect
 
-- **Browsers.** Web pages cannot call the API or open a session from another site unless you list that site in `allowedOrigins`. This stops a malicious web page from talking to Ambrogio through a family member's browser. It does nothing against programs that are not browsers.
+- **Browsers.** Web pages cannot call the API or open a session from another site unless you list that site in `allowedOrigins`. This stops a malicious web page from talking to Ambrogio through a family member's browser. It does nothing against programs that are not browsers. List only the address of the [web chat](../../reference/web-chat/) and of browser applications you trust.
 - **HTTP headers.** Responses carry standard security headers, and HSTS when you declare the public address HTTPS-only.
 - **Caching.** Responses that contain conversations are marked not to be cached by browsers or proxies.
 
