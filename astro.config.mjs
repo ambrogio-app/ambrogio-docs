@@ -14,6 +14,11 @@ export default defineConfig({
 		mermaid({ autoTheme: true }),
 		starlight({
 			title: 'Ambrogio',
+			logo: {
+				light: './src/assets/logo-light.svg',
+				dark: './src/assets/logo-dark.svg',
+				replacesTitle: true,
+			},
 			description: 'Documentation for people who run Ambrogio, a self-hosted home assistant, in their own home.',
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/ambrogio-app/ambrogio-backend' },

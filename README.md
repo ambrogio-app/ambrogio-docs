@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/logo-dark.svg">
+    <img src=".github/logo-light.svg" alt="Ambrogio" width="320">
+  </picture>
+</p>
+
 # Ambrogio — user documentation
 
 Documentation for people who install and run [Ambrogio](https://github.com/ambrogio-app/ambrogio-backend), a self-hosted home assistant, in their own home. It covers the three programs: `ambrogio-backend`, `ambrogio-cli` and `ambrogio-satellite`.
