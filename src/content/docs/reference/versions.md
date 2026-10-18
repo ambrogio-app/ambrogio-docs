@@ -25,14 +25,14 @@ Checked on 18 October 2026.
 
 | Program | Latest release | Images | Works with the current clients |
 |---|---|---|---|
-| Backend | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.1.0` (amd64) | yes |
+| Backend | `v0.1.2` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.1.2` (amd64) | yes |
 | Terminal client | none, version 0.1.0 on `main` | none, run from a checkout | yes |
 | Web chat | none, version 0.1.0 on `main` | none yet, build it from the repository | yes |
 | Satellite | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.1.0` (amd64, arm64) | yes |
 
 All four programs start their numbering at 0.1.0 with the `ambrogio.v1` protocol. The terminal client and the satellite are tested against backend commit `58b0df4`, where the protocol was introduced; it has not changed since, and backend 0.1.0 includes it. The web chat is tested against backend `v0.1.0` (commit `a4578db`).
 
-The backend's `main` branch is ahead of `v0.1.0` for agents with MCP tools: it reads the prompts of the MCP server at every turn and shows tools to the model under their own names. Neither change touches the protocol, so the clients are unaffected.
+Backend `v0.1.2` changes only agents with MCP tools: it reads the prompts of the MCP server at every turn and shows tools to the model under their own names. The protocol is the same as in `v0.1.0`, so the clients work with both. The number `v0.1.1` is skipped because it belonged to a withdrawn release.
 
 :::note[Withdrawn releases]
 Backend releases published between 16 and 18 October 2026 under the tags `v0.1.0`, `v0.1.1` and `v0.2.0` were withdrawn, and the current `v0.1.0` replaced them. If you pulled one of those images or fetched those tags, pull the image again and refresh the tags with `git fetch --tags --force`.
