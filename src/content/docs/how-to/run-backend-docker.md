@@ -17,7 +17,7 @@ This guide sets up the backend as a permanent service on a home server. If you h
 
 Pick one of these:
 
-- **Published image.** Images are published to `ghcr.io/adrianofoschi/ambrogio-backend` with a tag for every release, such as `v0.2.0`. There is no `latest` tag, so you always name a version. Use 0.2.0 or later: older releases do not work with the current terminal client and satellite. See [Versions and compatibility](/reference/versions/).
+- **Published image.** Images are published to `ghcr.io/adrianofoschi/ambrogio-backend` with a tag for every release, such as `v0.1.0`. There is no `latest` tag, so you always name a version. See [Versions and compatibility](/reference/versions/).
 - **Build it yourself** from a commit you choose:
 
   ```bash

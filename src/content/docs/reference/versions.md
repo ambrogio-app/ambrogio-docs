@@ -24,14 +24,14 @@ Checked on 18 October 2026.
 
 | Program | Latest release | Images | Works with the current clients |
 |---|---|---|---|
-| Backend | `v0.2.0` | `ghcr.io/adrianofoschi/ambrogio-backend:v0.2.0` (amd64) | yes |
+| Backend | `v0.1.0` | `ghcr.io/adrianofoschi/ambrogio-backend:v0.1.0` (amd64) | yes |
 | Terminal client | none, version 0.1.0 on `main` | none, run from a checkout | yes |
 | Satellite | `v0.1.0` | `ghcr.io/adrianofoschi/ambrogio-satellite:v0.1.0` (amd64, arm64) | yes |
 
-Backend 0.2.0 is the first release with the `ambrogio.v1` protocol. Both clients are tested against backend commit `f262e92`, where the protocol was introduced; it has not changed since, and 0.2.0 includes it.
+All three programs start their numbering at 0.1.0 with the `ambrogio.v1` protocol. Both clients are tested against backend commit `f262e92`, where the protocol was introduced; it has not changed since, and backend 0.1.0 includes it.
 
-:::caution[Backend 0.1.x does not work with the clients]
-Backend `v0.1.0` and `v0.1.1` predate `ambrogio.v1`. They use an earlier protocol and do not work with the current terminal client and satellite. Use 0.2.0 or later.
+:::note[Withdrawn releases]
+Backend releases published between 16 and 18 October 2026 under the tags `v0.1.0`, `v0.1.1` and `v0.2.0` were withdrawn, and the current `v0.1.0` replaced them. If you pulled one of those images or fetched those tags, pull the image again and refresh the tags with `git fetch --tags --force`.
 :::
 
 ## Release rules

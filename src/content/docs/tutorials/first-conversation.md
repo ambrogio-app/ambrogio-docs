@@ -38,7 +38,7 @@ docker build -t ambrogio-backend:local .
 The build downloads dependencies and two Italian voices, so the first run takes a few minutes. When it finishes, the last line mentions `ambrogio-backend:local`.
 
 :::note
-Building the image yourself works with any commit. To skip the build, use the published image `ghcr.io/adrianofoschi/ambrogio-backend:v0.2.0` in place of `ambrogio-backend:local` in the commands below. [Versions and compatibility](/reference/versions/) lists the releases.
+Building the image yourself works with any commit. To skip the build, use the published image `ghcr.io/adrianofoschi/ambrogio-backend:v0.1.0` in place of `ambrogio-backend:local` in the commands below. [Versions and compatibility](/reference/versions/) lists the releases.
 :::
 
 ## Write the configuration
