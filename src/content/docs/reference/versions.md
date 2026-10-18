@@ -28,7 +28,7 @@ Checked on 18 October 2026.
 | Terminal client | none, version 0.1.0 on `main` | none, run from a checkout | yes |
 | Satellite | `v0.1.0` | `ghcr.io/adrianofoschi/ambrogio-satellite:v0.1.0` (amd64, arm64) | yes |
 
-All three programs start their numbering at 0.1.0 with the `ambrogio.v1` protocol. Both clients are tested against backend commit `f262e92`, where the protocol was introduced; it has not changed since, and backend 0.1.0 includes it.
+All three programs start their numbering at 0.1.0 with the `ambrogio.v1` protocol. Both clients are tested against backend commit `f214a2d`, where the protocol was introduced; it has not changed since, and backend 0.1.0 includes it.
 
 :::note[Withdrawn releases]
 Backend releases published between 16 and 18 October 2026 under the tags `v0.1.0`, `v0.1.1` and `v0.2.0` were withdrawn, and the current `v0.1.0` replaced them. If you pulled one of those images or fetched those tags, pull the image again and refresh the tags with `git fetch --tags --force`.
