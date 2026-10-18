@@ -36,7 +36,7 @@ A number is treated as text, not as the row index.
 ```json title="config.json"
 {
   "backend": { "baseUrl": "http://192.168.1.20:3000" },
-  "client": { "id": "kitchen", "name": "Cucina" },
+  "client": { "id": "kitchen", "name": "Kitchen" },
   "audio": {
     "microphone": "alsa:plughw:CARD=Device,DEV=0",
     "speaker": "Headphones"

@@ -25,7 +25,7 @@ One JSON object with up to five sections. Unknown sections and unknown fields ar
 ```json
 {
   "backend": { "baseUrl": "http://192.168.1.20:3000" },
-  "client": { "id": "kitchen", "name": "Cucina" },
+  "client": { "id": "kitchen", "name": "Kitchen" },
   "audio": { "microphone": "USB", "speaker": "alsa:plughw:CARD=Headphones,DEV=0" },
   "wakeWord": { "model": "hey_jarvis", "threshold": 0.5 },
   "interaction": { "replyTimeoutMs": 15000 }

@@ -9,7 +9,7 @@ A satellite is a Linux device with a microphone and a speaker. It listens for th
 
 ## Before you start
 
-- The backend has voice enabled. If it does not, follow [Enable voice](../enable-voice/) first. A satellite connected to a backend without voice answers every request with *"La voce non è disponibile."*
+- The backend has voice enabled. If it does not, follow [Enable voice](../enable-voice/) first. A satellite connected to a backend without voice answers every request with an error tone.
 - The device runs Linux on x86_64 or arm64, for example a Raspberry Pi 4 or 5 with a 64-bit OS, or a mini PC.
 - A microphone and a speaker that work with ALSA.
 - The backend's address as seen from the device, for example `http://192.168.1.20:3000`.
@@ -61,7 +61,7 @@ Set the backend address and a name for the room:
 ```json title="config.json"
 {
   "backend": { "baseUrl": "http://192.168.1.20:3000" },
-  "client": { "id": "kitchen", "name": "Cucina" }
+  "client": { "id": "kitchen", "name": "Kitchen" }
 }
 ```
 
@@ -98,5 +98,5 @@ Watch the log. On the host it is printed to the terminal; with Docker, run `dock
 
 Say "Hey Jarvis", wait for the beep and ask something.
 
-- If you hear *"Non riesco a contattare Ambrogio. Riprova tra poco."*, the satellite cannot reach the backend. From the device, run `curl http://192.168.1.20:3000/api/conversations` with your address.
+- If you hear two descending tones and the log shows `satellite_failure`, the satellite cannot reach the backend. From the device, run `curl http://192.168.1.20:3000/api/conversations` with your address.
 - If the satellite exits at once with `"event":"invalid_configuration"`, the `field` in the same line names the setting it refused. See [Troubleshooting](../troubleshoot/#the-satellite-exits-with-invalid_configuration).

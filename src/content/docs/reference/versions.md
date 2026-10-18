@@ -49,4 +49,6 @@ Backend releases published between 16 and 18 October 2026 under the tags `v0.1.0
 
 ## Language
 
-Ambrogio currently speaks Italian: the bundled voices and the Kokoro voices it supports, the satellite's recorded messages and the terminal client's interface are Italian. The web chat's interface is Italian or English, and the backend's own messages can be English or Italian.
+The language of the answers comes from the agents' instructions. To talk out loud in a language, you need a [Vosk](https://alphacephei.com/vosk/models) model and a Piper voice for it; see [Change the voice](../../how-to/change-voice/). The voices bundled with the backend are Italian, and Ambrogio supports only the two Italian Kokoro voices.
+
+The texts written by Ambrogio itself are in English or Italian: the backend's messages follow `language` in [`conversations.json`](../backend-configuration/#conversationsjson), the web chat's interface follows its `language` or the browser, and the terminal client's interface follows `--language` or the system locale. The satellite has no spoken messages: it signals problems with a tone.

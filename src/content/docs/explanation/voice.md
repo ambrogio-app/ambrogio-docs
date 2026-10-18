@@ -54,9 +54,9 @@ While the satellite is speaking, it does not listen. You cannot interrupt an ans
 
 ## When something goes wrong
 
-The satellite always ends an interaction by going back to the wake word. If the backend cannot be reached, the session drops, or no outcome arrives within 60 seconds, it plays a recorded *"Non riesco a contattare Ambrogio. Riprova tra poco."* and waits for the next wake word. It never resends a request by itself.
+The satellite always ends an interaction by going back to the wake word. If the backend cannot be reached, the session drops, or no outcome arrives within 60 seconds, it plays a short error tone, two descending notes, and waits for the next wake word. It never resends a request by itself.
 
-If the backend has no voice configured, it answers in text, and the satellite plays *"La voce non è disponibile."* instead.
+If the backend has no voice configured, it answers in text, and the satellite plays the same error tone instead. A tone works whatever language and voice you choose; the log, or the same conversation in the web chat or the terminal client, tells you what went wrong.
 
 ## Privacy
 

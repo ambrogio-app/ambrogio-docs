@@ -44,7 +44,8 @@ If the backend cannot start, it writes one `server_startup_failed` event (level 
 | `satellite_session_unavailable` | info | The session to the backend could not be opened at startup. The satellite tries again at the next wake word. |
 | `invalid_arguments` | info | The command line is not `--config <file>`. The satellite exits. |
 | `invalid_configuration` | info | The configuration was refused and the satellite exits. `reason` is `configuration_unavailable` when the file is missing or unreadable, or `invalid_configuration` when its content is wrong; in that case `field` names the rejected field, or `config` for a file that is not a JSON object or has an unknown section. Values from the file are never logged. |
-| `satellite_failure` | error | An interaction failed. The satellite plays its warning and goes back to the wake word. |
-| `satellite_notice_failed` | error | The warning recording could not be played. |
+| `satellite_voice_unavailable` | info | The backend answered a voice turn in text, because voice is disabled. The satellite plays the error tone instead and goes back to the wake word. |
+| `satellite_failure` | error | An interaction failed. The satellite plays the error tone and goes back to the wake word. |
+| `satellite_error_tone_failed` | error | The error tone could not be played. The satellite goes back to the wake word anyway. |
 | `satellite_ready_cue_failed` | error | The beep could not be played. The satellite listens anyway. |
 | `satellite_process_failed` | error | The satellite failed to start or stopped because of an error. It exits with code `1`. |

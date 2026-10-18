@@ -5,7 +5,7 @@ sidebar:
   label: Messages
 ---
 
-These are the messages written by Ambrogio, not by the AI. The backend's messages follow `language` in [`conversations.json`](../backend-configuration/#conversationsjson). The satellite's are recordings in Italian.
+These are the messages written by Ambrogio, not by the AI. The backend's messages follow `language` in [`conversations.json`](../backend-configuration/#conversationsjson). The satellite has no spoken messages of its own.
 
 ## Refusal reasons
 
@@ -38,17 +38,21 @@ This text is also stored as the turn's `error`.
 | 404 | Conversazione non trovata. | Conversation not found. |
 | 500 | Non riesco a completare la risposta. | I can't complete the response. |
 
-## Satellite recordings
+## Satellite sounds
 
-Played by the satellite itself, in Italian, whatever the backend's language.
+The satellite plays two sounds of its own, the same in every language. It does not speak any message itself.
 
-| Says | When |
+| Sound | When |
 |---|---|
-| "Non riesco a contattare Ambrogio. Riprova tra poco." | The interaction failed on the satellite's side: backend unreachable, session lost during the turn, protocol error for the request, or no outcome within 60 seconds. |
-| "La voce non è disponibile." | The backend answered in text, which happens when voice is disabled. |
-
-A short beep means the satellite is ready to hear you.
+| A short beep (880 Hz, 100 ms) | The satellite is ready to hear you. |
+| Two descending tones (660 Hz then 440 Hz, 350 ms in all) | The interaction failed on the satellite's side (backend unreachable, session lost during the turn, protocol error for the request, or no outcome within 60 seconds), or the backend answered in text because voice is disabled. The [log](../logs/#satellite) tells the two cases apart. |
 
 ## Terminal client
 
-The terminal client shows the backend's messages as they are. Its own interface texts are in Italian, for example *"In elaborazione. Aggiorna manualmente più tardi."* for a turn that is still being answered and *"Risposta interrotta."* for an interrupted one.
+The terminal client shows the backend's messages as they are. Its own interface texts are in Italian or English, depending on its [language](../terminal-client/#command-line):
+
+| Italian | English | When |
+|---|---|---|
+| In elaborazione. Aggiorna manualmente più tardi. | In progress. Refresh manually later. | A reopened turn is still being answered. |
+| Risposta interrotta. | Response interrupted. | A turn in the history was interrupted. |
+| Risposta interrotta. Aggiorna manualmente più tardi. | Response interrupted. Refresh manually later. | The session closed before the turn's outcome. |

@@ -86,13 +86,12 @@ The satellite checks its whole file before it starts and stops at the first prob
 
 `invalid_arguments` means the command line was wrong: it must be exactly `--config <file>`.
 
-## The satellite says "Non riesco a contattare Ambrogio. Riprova tra poco."
+## The satellite plays two descending tones
 
-The satellite plays this whenever an interaction fails on its side: the backend cannot be reached, the session drops during the turn, or no outcome arrives within 60 seconds. Check the address and the network from the device, then the backend logs. The satellite keeps running and tries again at the next wake word.
+The satellite plays this error tone in two cases. Its log tells you which:
 
-## The satellite says "La voce non è disponibile."
-
-The backend is running without voice and answered in text. [Enable voice](../enable-voice/) on the backend.
+- `satellite_failure`: the interaction failed on the satellite's side. The backend cannot be reached, the session dropped during the turn, or no outcome arrived within 60 seconds. Check the address and the network from the device, then the backend logs. The satellite keeps running and tries again at the next wake word.
+- `satellite_voice_unavailable`: the backend is running without voice and answered in text. [Enable voice](../enable-voice/) on the backend.
 
 ## The satellite never reacts to the wake word
 

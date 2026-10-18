@@ -104,4 +104,4 @@ To go back to Paola, set `voiceEngine` to `piper`, remove `voiceSpeaker`, point 
 
 ## Mind the language
 
-The voice only reads text aloud. The language of the answers comes from the agents' instructions, and the language of speech recognition comes from the Vosk model. Change all three together. The satellite's own warning messages are recorded in Italian and do not change.
+The voice only reads text aloud. The language of the answers comes from the agents' instructions, and the language of speech recognition comes from the Vosk model. Change all three together.

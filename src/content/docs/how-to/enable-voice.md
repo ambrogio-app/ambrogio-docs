@@ -54,7 +54,7 @@ The backend loads both models before it starts listening. If either cannot be lo
 
 ## 4. Check it
 
-Connect a satellite ([Install a voice satellite](../install-satellite/)) and ask a question. If the satellite replies *"La voce non è disponibile."*, the backend is running without voice: check that the variable is set in the container with `docker inspect ambrogio`.
+Connect a satellite ([Install a voice satellite](../install-satellite/)) and ask a question. If the satellite answers with two descending tones and its log shows `satellite_voice_unavailable`, the backend is running without voice: check that the variable is set in the container with `docker inspect ambrogio`.
 
 ## Turn voice off again
 

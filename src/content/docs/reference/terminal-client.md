@@ -8,23 +8,26 @@ sidebar:
 ## Command line
 
 ```bash
-npm start -- --server <url> [--client-id <id>]
+npm start -- --server <url> [--client-id <id>] [--language <it|en>]
 ```
 
 | Option | Variable | Default | Meaning |
 |---|---|---|---|
 | `--server <url>` | `AMBROGIO_URL` | none, required | Backend address. Absolute `http://` or `https://` URL with no user name, password, query or fragment. A path prefix is allowed. |
 | `--client-id <id>` | `AMBROGIO_CLIENT_ID` | `cli-<hostname>` | Identifier sent to the backend when the session opens. Must not be empty. |
+| `--language <it\|en>` | `AMBROGIO_LANGUAGE` | from the system locale | Language of the interface: `it` (Italian) or `en` (English). Any other value is an invalid option. An empty variable counts as unset. |
 | `--help`, `-h` | | | Prints usage and exits. |
 
-An option wins over its variable. The name sent to the backend is always `Terminale <hostname>`.
+An option wins over its variable. The name sent to the backend is `Terminale <hostname>` in Italian and `Terminal <hostname>` in English; the identifier does not change with the language.
 
-The client must run in an interactive terminal of at least 70 × 14 characters. Its interface is in Italian.
+Without `--language` or `AMBROGIO_LANGUAGE`, the client reads the first non-empty value among `LC_ALL`, `LC_MESSAGES` and `LANG`. A value that starts with `it` selects Italian; anything else, including `C`, `POSIX` or no value at all, selects English. `LANGUAGE` is not read. The language applies to every text the client writes, including usage and startup errors; texts that come from the backend are shown as they arrive.
+
+The client must run in an interactive terminal of at least 70 × 14 characters.
 
 | Exit code | Meaning |
 |---|---|
 | `0` | Normal exit. |
-| `2` | Invalid options, missing or invalid server address, or not an interactive terminal. |
+| `2` | Invalid options, including an unsupported language, missing or invalid server address, or not an interactive terminal. |
 
 ## Keys
 
