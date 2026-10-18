@@ -16,7 +16,7 @@ Read by the page every time it opens, from the same folder as `index.html`, bypa
 
 Any other field, an unsupported `language` or an invalid `backendUrl` makes the file invalid. From `backendUrl` the page derives `api/conversations` for the list and history, and `api/session` for the conversation session, with `ws://` for `http://` and `wss://` for `https://`.
 
-When the file is missing or invalid, the page shows «Configurazione del client web non valida» (or «Invalid web client configuration») in the browser's language, followed by a technical reason, and contacts nothing else:
+When the file is missing or invalid, the page shows "Invalid web client configuration" in the browser's language (see [Interface texts](#interface-texts)), followed by a technical reason, and contacts nothing else:
 
 | Reason | Meaning |
 |---|---|
@@ -67,21 +67,21 @@ The `Server` header does not show the nginx version. HTTPS and HSTS are up to yo
 
 | Situation | What the page does |
 |---|---|
-| Opening | Selects a local «Nuova chat» as the first entry. Nothing is created on the backend until you send the first message. |
+| Opening | Selects a local **New chat** as the first entry. Nothing is created on the backend until you send the first message. |
 | First message sent | Opens the WebSocket session. One session serves every chat. The entry takes the first message as its name. |
-| Message empty, only spaces, or larger than 64 KiB | Not sent; the page shows «Scrivi un messaggio non vuoto.» or «Messaggio troppo grande (massimo 64 KiB).». |
-| No `session.ready` within 10 seconds, or the session cannot open | The message ends with «Impossibile collegarsi al backend.». |
+| Message empty, only spaces, or larger than 64 KiB | Not sent; the page shows "Write a non-empty message." or "Message too large (64 KiB at most)." |
+| No `session.ready` within 10 seconds, or the session cannot open | The message ends with "Cannot connect to the backend." |
 | Answer arriving | Shows the text as it streams in. When the turn ends, the page reloads the conversation from the backend. |
 | `turn.completed` | The turn is done and saved. |
 | `turn.failed` or `turn.rejected` | Replaces the partial text with the backend's message. |
-| `turn.interrupted`, or the session drops before an outcome | Shows «Risposta interrotta.». |
-| `session.error` for the message | Shows «Errore del protocollo.». |
-| A turn still being answered when you open a chat | Shows «In elaborazione. Aggiorna più tardi per vedere l'esito.». Press «Aggiorna» later. |
+| `turn.interrupted`, or the session drops before an outcome | Shows "Response interrupted." |
+| `session.error` for the message | Shows "Protocol error." |
+| A turn still being answered when you open a chat | Shows "In progress. Refresh later to see the outcome." Press **Refresh** later. |
 | While a turn is being answered | You can open other chats, start a new one, refresh and send in other chats. Only the chat that is answering cannot send until the turn ends. Coming back to it shows the answer received so far. |
-| «Aggiorna» | Reloads the first page of the list and the open chat. |
-| «Altre conversazioni» | Loads the next page. Shown only when there is one. |
-| Chat list | Each chat is named after its first message, up to 60 characters with «…». If its history cannot be read, it shows the first 8 characters of its ID. |
-| Screen narrower than 720 pixels | The list becomes a panel opened by the «Conversazioni» button; choosing a chat closes it. |
+| **Refresh** | Reloads the first page of the list and the open chat. |
+| **More conversations** | Loads the next page. Shown only when there is one. |
+| Chat list | Each chat is named after its first message, up to 60 characters with "…". If its history cannot be read, it shows the first 8 characters of its ID. |
+| Screen narrower than 720 pixels | The list becomes a panel opened by the **Conversations** button; choosing a chat closes it. |
 | Colours | Follow the light or dark setting of the device. |
 
 The page ignores `expectsReply`: the message field is always available.
@@ -92,7 +92,7 @@ Ambrogio's answers are shown as Markdown, including tables and task lists. HTML 
 
 ### Address of the open chat
 
-The open conversation appears in the address as `#/c/<conversationId>`; «Nuova chat» has no fragment. You can reload the page, bookmark a conversation or use the browser's back button. A fragment of another form is ignored. If the conversation does not exist, the page shows the backend's message, such as «Conversazione non trovata.», and «Nuova chat» stays available.
+The open conversation appears in the address as `#/c/<conversationId>`; **New chat** has no fragment. You can reload the page, bookmark a conversation or use the browser's back button. A fragment of another form is ignored. If the conversation does not exist, the page shows the backend's message, such as "Conversation not found.", and **New chat** stays available.
 
 ### Identity
 
@@ -100,7 +100,7 @@ At first use the browser creates the identifier `web-<random UUID>` and keeps it
 
 ### Accessibility
 
-The chat list is a navigation region and the open chat the main region. Every command has an accessible name and works from the keyboard, the focused element is outlined, and each message is labelled «Tu» or «Ambrogio». The current chat is marked as current. When a turn ends, screen readers announce the answer, the error or «Risposta interrotta.», but not each fragment.
+The chat list is a navigation region and the open chat the main region. Every command has an accessible name and works from the keyboard, the focused element is outlined, and each message is labelled "You" or "Ambrogio". The current chat is marked as current. When a turn ends, screen readers announce the answer, the error or "Response interrupted.", but not each fragment.
 
 ## Interface texts
 

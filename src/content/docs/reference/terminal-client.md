@@ -46,14 +46,14 @@ The client must run in an interactive terminal of at least 70 × 14 characters.
 
 | Situation | What the client does |
 |---|---|
-| Start | Selects a local **Nuova chat**. Nothing is created on the backend until you send the first message. |
+| Start | Selects a local **New chat**. Nothing is created on the backend until you send the first message. |
 | First message sent | Opens the WebSocket session. One session serves every chat. |
 | Message empty or larger than 64 KiB | Not sent. |
 | Answer arriving | Shows the text as it streams in. |
 | `turn.completed` | The turn is done and saved. |
 | `turn.failed` or `turn.rejected` | Replaces the partial text with the backend's message. |
 | `turn.interrupted`, or the session drops before an outcome | Marks the turn as interrupted locally. |
-| A turn still being answered when you open a chat | Shows *"In elaborazione. Aggiorna manualmente più tardi."* Press `Ctrl+R` later. |
+| A turn still being answered when you open a chat | Shows "Ambrogio: In progress. Refresh manually later." Press `Ctrl+R` later. |
 | Chat list | Each chat is named after its first message. If a chat's history cannot be loaded, it is shown with a short ID. |
 
 The client ignores `expectsReply`: the input field is always available.

@@ -30,16 +30,16 @@ Ambrogio uses [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) to speak, so 
 
    ```bash
    sudo mkdir -p /srv/ambrogio/voices && cd /srv/ambrogio/voices
-   sudo curl -LO https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-it_IT-paola-medium.tar.bz2
-   sudo tar xjf vits-piper-it_IT-paola-medium.tar.bz2
+   sudo curl -LO https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-kristin-medium.tar.bz2
+   sudo tar xjf vits-piper-en_US-kristin-medium.tar.bz2
    ```
 
-   Replace the file name with the voice you want.
+   Replace the file name with the voice you want. Its license is in the `MODEL_CARD` file inside the folder.
 
 2. Check the folder. It must contain exactly one `.onnx` file, a `tokens.txt` file and an `espeak-ng-data` folder:
 
    ```bash
-   ls /srv/ambrogio/voices/vits-piper-it_IT-paola-medium
+   ls /srv/ambrogio/voices/vits-piper-en_US-kristin-medium
    ```
 
 3. Mount the folder of voices over the bundled one by adding this to your `docker run` command:
@@ -89,19 +89,19 @@ Before you start, check the CPU of the backend host. Kokoro needs much more comp
 
    ```json title="/srv/ambrogio/config/voice.json"
    {
-     "voskModelPath": "/models/vosk-model-small-it-0.22",
+     "voskModelPath": "/models/vosk-model-small-en-us-0.15",
      "voiceEngine": "kokoro",
      "voiceModelDir": "/opt/ambrogio/kokoro",
-     "voiceSpeaker": 36,
-     "voiceLanguage": "it"
+     "voiceSpeaker": 3,
+     "voiceLanguage": "en"
    }
    ```
 
-   `voiceSpeaker` is the number of the voice in the model and `voiceLanguage` the language it reads: here 36 is `im_nicola`, an Italian male voice. For an American English female voice, use `"voiceSpeaker": 3` (`af_heart`) and `"voiceLanguage": "en"`. [Voices of `kokoro-multi-lang-v1_0`](../../reference/backend-configuration/#voices-of-kokoro-multi-lang-v1_0) lists the numbers.
+   `voiceSpeaker` is the number of the voice in the model and `voiceLanguage` the language it reads: here 3 is `af_heart`, an American English female voice. For an Italian male voice, use `"voiceSpeaker": 36` (`im_nicola`) and `"voiceLanguage": "it"`. [Voices of `kokoro-multi-lang-v1_0`](../../reference/backend-configuration/#voices-of-kokoro-multi-lang-v1_0) lists the numbers.
 
-5. Recreate the container, as in [Enable voice](../enable-voice/#3-restart-the-backend-with-voice), with the extra mount.
+5. Recreate the container, as in [Enable voice](../enable-voice/#4-restart-the-backend-with-voice), with the extra mount.
 
-To go back to Paola, set `voiceEngine` to `piper`, remove `voiceSpeaker` and `voiceLanguage`, point `voiceModelDir` at a bundled voice and restart.
+To go back to a Piper voice, set `voiceEngine` to `piper`, remove `voiceSpeaker` and `voiceLanguage`, point `voiceModelDir` at the voice and restart.
 
 ## Mind the language
 

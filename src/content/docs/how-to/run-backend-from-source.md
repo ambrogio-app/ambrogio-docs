@@ -32,7 +32,7 @@ sudo chown -R "$USER" /etc/ambrogio /var/lib/ambrogio
 ```
 
 ```json title="/etc/ambrogio/conversations.json"
-{ "archivePath": "/var/lib/ambrogio/conversations.sqlite", "language": "it" }
+{ "archivePath": "/var/lib/ambrogio/conversations.sqlite", "language": "en" }
 ```
 
 The other files (`http.json`, `agents/orchestrator.json` and at least one more agent) are the same as with Docker. With `"host": "127.0.0.1"` only programs on the same machine can connect; use `0.0.0.0` or the host's LAN address to let other devices in.

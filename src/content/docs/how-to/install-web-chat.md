@@ -31,7 +31,7 @@ The page reads this file when it opens. Keep it outside the image, for example i
 ```json title="/srv/ambrogio-web/config.json"
 {
   "backendUrl": "http://ambrogio.home.lan:3000",
-  "language": "it"
+  "language": "en"
 }
 ```
 
@@ -49,7 +49,7 @@ Add the chat address to `allowedOrigins` in the backend's `http.json`. Write it 
 }
 ```
 
-Restart the backend. Without this entry the backend refuses the page: the sidebar shows «Impossibile collegarsi al backend.» instead of the conversations, and every message ends with the same text.
+Restart the backend. Without this entry the backend refuses the page: the sidebar shows "Cannot connect to the backend." instead of the conversations, and every message ends with the same text.
 
 The entry is needed even when the chat and the backend share the same address behind a reverse proxy, because browsers always declare the page's address when they open the conversation session.
 
@@ -77,12 +77,12 @@ services:
 
 ## 5. Check it
 
-Open the chat address in a browser. The sidebar shows «Nuova chat» and your stored conversations. Send a message and watch the answer appear.
+Open the chat address in a browser. The sidebar shows **New chat** and your stored conversations. Send a message and watch the answer appear.
 
 | What you see | Cause |
 |---|---|
-| «Configurazione del client web non valida» with a reason | `config.json` is missing, not mounted at the right path, or has a wrong field. The reason names the problem. |
-| «Impossibile collegarsi al backend.» in the sidebar or after sending | The chat address is not in `allowedOrigins`, the backend is not reachable from the browser, or an HTTPS page points at an `http://` backend. |
+| "Invalid web client configuration" with a reason | `config.json` is missing, not mounted at the right path, or has a wrong field. The reason names the problem. |
+| "Cannot connect to the backend." in the sidebar or after sending | The chat address is not in `allowedOrigins`, the backend is not reachable from the browser, or an HTTPS page points at an `http://` backend. |
 
 ## Next
 

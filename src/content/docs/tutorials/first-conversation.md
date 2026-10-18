@@ -12,7 +12,7 @@ It takes about 20 minutes. Everything runs on one Linux machine. Voice comes lat
 ## What you need
 
 - A Linux computer with [Docker](https://docs.docker.com/engine/install/), `git` and Node.js 22 or later.
-- A [Mistral](https://console.mistral.ai/) account and an API key. Ambrogio's agents currently use Mistral models, and each answer costs a little API credit.
+- A [Mistral](https://console.mistral.ai/) account and an API key. This tutorial uses Mistral models, and each answer costs a little API credit.
 
 Check the tools before you start:
 
@@ -35,10 +35,10 @@ cd ambrogio-backend
 docker build -t ambrogio-backend:local .
 ```
 
-The build downloads dependencies and two Italian voices, so the first run takes a few minutes. When it finishes, the last line mentions `ambrogio-backend:local`.
+The build downloads dependencies and two bundled voices, so the first run takes a few minutes. When it finishes, the last line mentions `ambrogio-backend:local`.
 
 :::note
-Building the image yourself works with any commit. To skip the build, use the published image `ghcr.io/ambrogio-app/ambrogio-backend:v0.1.2` in place of `ambrogio-backend:local` in the commands below. [Versions and compatibility](../../reference/versions/) lists the releases.
+Building the image yourself works with any commit. To skip the build, use the published image `ghcr.io/ambrogio-app/ambrogio-backend:v0.5.0` in place of `ambrogio-backend:local` in the commands below. [Versions and compatibility](../../reference/versions/) lists the releases.
 :::
 
 ## Write the configuration
@@ -59,7 +59,7 @@ First, tell the server where to listen. Create `http.json`:
 Next, tell it where to store conversations and which language to use for its own messages. Create `conversations.json`:
 
 ```json title="~/ambrogio/config/conversations.json"
-{ "archivePath": "/data/conversations.sqlite", "language": "it" }
+{ "archivePath": "/data/conversations.sqlite", "language": "en" }
 ```
 
 `/data` is a path inside the container. In a moment you will connect it to `~/ambrogio/data`.
@@ -68,7 +68,7 @@ Now the agents. Every request goes first to the *orchestrator*, which picks the 
 
 ```json title="~/ambrogio/config/agents/orchestrator.json"
 {
-  "instructions": "You are Ambrogio, the assistant of an Italian family.",
+  "instructions": "You are Ambrogio, the assistant of a family.",
   "llm": {
     "provider": "mistral",
     "model": "mistral-medium-latest",
@@ -82,7 +82,7 @@ The orchestrator never answers by itself, so you need at least one agent that do
 ```json title="~/ambrogio/config/agents/general.json"
 {
   "description": "Answers general questions and makes conversation.",
-  "instructions": "You are Ambrogio, the assistant of an Italian family. Always answer in Italian, briefly and plainly.",
+  "instructions": "You are Ambrogio, the assistant of a family. Answer briefly and plainly.",
   "llm": {
     "provider": "mistral",
     "model": "mistral-medium-latest",
@@ -160,10 +160,10 @@ Ciao! Mi consigli un libro da leggere questo weekend?
 The answer appears a few words at a time. When it stops, the turn is complete and saved on the server. Ask a follow-up question that only makes sense with the previous one:
 
 ```
-Qualcosa di più breve?
+Can you make it shorter?
 ```
 
-Ambrogio knows what "more" refers to, because the backend sends the whole conversation to the agent with every new turn.
+Ambrogio knows what "it" refers to, because the backend sends the whole conversation to the agent with every new turn.
 
 ## Come back to the conversation
 

@@ -48,7 +48,7 @@ Open the copy and replace the two placeholders, `<MISTRAL_API_KEY>` and `<HOME_A
 ```json title="agents/home-assistant.json"
 {
   "description": "Reads the state of the home's lights, switches and sensors through Home Assistant and turns devices on or off.",
-  "instructions": "You control the family's home through Home Assistant. Always answer in Italian, briefly. Choose freely among the available tools and use the ones the request needs. To answer a question about the state of a device or a sensor, read its current state and do not turn on, turn off or change anything. Change a device only when the user asks for a change. When the user refers to several devices, for example all the lights or the lights of a room, act on all of them, using the area or the device type when a tool allows it. Say that an action happened only after a tool has confirmed it; if a tool fails or a device is not available, say so.",
+  "instructions": "You control the family's home through Home Assistant. Answer briefly. Choose freely among the available tools and use the ones the request needs. To answer a question about the state of a device or a sensor, read its current state and do not turn on, turn off or change anything. Change a device only when the user asks for a change. When the user refers to several devices, for example all the lights or the lights of a room, act on all of them, using the area or the device type when a tool allows it. Say that an action happened only after a tool has confirmed it; if a tool fails or a device is not available, say so.",
   "llm": {
     "provider": "mistral",
     "model": "mistral-medium-latest",
@@ -62,7 +62,7 @@ Open the copy and replace the two placeholders, `<MISTRAL_API_KEY>` and `<HOME_A
 }
 ```
 
-The file name, `home-assistant`, is the agent's name. `maxToolCalls` is the most tool calls the agent may make for one request. Five is enough to check a state and change a couple of devices. If the agent needs more, the turn fails with the standard error message instead of running on.
+The example does not name a language. To make sure the agent answers in your family's language, add it to `instructions`, for example `Always answer in Italian.` The file name, `home-assistant`, is the agent's name. `maxToolCalls` is the most tool calls the agent may make for one request. Five is enough to check a state and change a couple of devices. If the agent needs more, the turn fails with the standard error message instead of running on.
 
 Protect the file, since it holds two secrets:
 
@@ -78,7 +78,7 @@ docker restart ambrogio
 
 The backend connects to Home Assistant at startup and asks which tools and prompts it offers. At every request it reads Home Assistant's prompt again: it tells the model how to use the tools and lists the areas and devices exposed to Assist. A device you expose or rename in Home Assistant works from the next request, without restarting the backend. If Home Assistant cannot be reached, or the token is wrong, the backend does not start, and its log shows `"event":"server_startup_failed"` with the message `Agent MCP connection failed: home-assistant`.
 
-Then ask: *"Che luci sono accese in casa?"*, followed by *"Spegni quella in cucina."* and *"Spegni tutte le luci."*. A question such as *"La luce in camera è accesa?"* only reads the state; it does not change any device.
+Then ask: *"Which lights are on?"*, followed by *"Turn off the kitchen one."* and *"Turn off all the lights."*. A question such as *"Is the bedroom light on?"* only reads the state; it does not change any device.
 
 ## If the orchestrator picks the wrong agent
 

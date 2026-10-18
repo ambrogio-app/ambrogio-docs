@@ -74,7 +74,7 @@ For a spoken turn, `text` is the transcription. All times are ISO 8601 in UTC.
 
 ## Language
 
-Error messages follow `language` in `conversations.json`. The Italian texts are listed in [Messages](../messages/).
+Error messages follow `language` in `conversations.json`. Both languages are listed in [Messages](../messages/).
 
 ## Browsers
 

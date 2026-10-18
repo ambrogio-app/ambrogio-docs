@@ -32,11 +32,11 @@ flowchart LR
 
 **Speech detection.** A second model, Silero VAD, listens for the start and end of your speech. The satellite starts sending only once it is confident you are speaking, and stops when you have been silent for about two-thirds of a second. That pause is what ends your request; there is no button.
 
-**Saying it in one breath.** The satellite keeps the last second and a half of audio in memory. When you say *"Hey Jarvis, che tempo fa?"* without stopping, the start of the question was spoken before the beep; that buffer means it is not lost.
+**Saying it in one breath.** The satellite keeps the last second and a half of audio in memory. When you say *"Hey Jarvis, what's the weather like?"* without stopping, the start of the question was spoken before the beep; that buffer means it is not lost.
 
 ## On the backend
 
-**Recognition while you speak.** The backend passes your audio to Vosk as it arrives, so that when you stop, only the last bit is left to transcribe. The transcription becomes the text of the turn, exactly as if you had typed it. If it comes out empty, the turn is refused with *"Non ho capito la richiesta."*
+**Recognition while you speak.** The backend passes your audio to Vosk as it arrives, so that when you stop, only the last bit is left to transcribe. The transcription becomes the text of the turn, exactly as if you had typed it. If it comes out empty, the turn is refused with "I didn't understand the request."
 
 **Speaking while it thinks.** The answer is spoken a sentence at a time, as soon as each sentence is complete, instead of waiting for the whole text. Before speaking, the backend strips Markdown symbols such as asterisks, link addresses and table bars, so the voice does not read them out. The stored text keeps its formatting.
 

@@ -25,7 +25,9 @@ When a page starts mixing kinds, split it and link the parts.
 - English, second person, short sentences, plain words. Say what happens, then why, only where the reader needs it.
 - Use exact names: fields, file paths, log events and messages as they appear in the product.
 - No marketing tone, no filler introductions or summaries, no emoji.
-- Italian product texts (voice messages, terminal interface) are quoted in Italian.
+- Product texts are quoted in English. Italian texts appear only in the `it` or Italian columns of the reference tables that list both languages (`reference/messages.md`, the interface texts of `reference/web-chat.md`), so that a reader who chose Italian can find what they see.
+- Quote messages in double quotes, name buttons and list entries in **bold**, and write what the reader says or types in italics with quotes (*"Tell me a fun fact about cats."*).
+- Examples and tutorials use English: `"language": "en"`, English models and voices, English questions and agent instructions.
 
 ## Links and publishing
 

@@ -71,7 +71,7 @@ Example:
 ```json
 {
   "archivePath": "/data/conversations.sqlite",
-  "language": "it",
+  "language": "en",
   "listPageSize": 20,
   "maxListPageSize": 100
 }
@@ -109,13 +109,13 @@ Pick the voice and a matching `voiceLanguage`. Numbers from the [sherpa-onnx Kok
 | 42–44 | Brazilian Portuguese: `pf_dora` (female), `pm_alex`, `pm_santa` (male) | `pt-br` |
 | 45–52 | Chinese: `zf_…`, `zm_…` | not supported |
 
-Example for the Docker image:
+Example with a Piper voice mounted in the Docker image at `/opt/ambrogio/voices`:
 
 ```json
 {
-  "voskModelPath": "/models/vosk-model-small-it-0.22",
+  "voskModelPath": "/models/vosk-model-small-en-us-0.15",
   "voiceEngine": "piper",
-  "voiceModelDir": "/opt/ambrogio/voices/vits-piper-it_IT-paola-medium"
+  "voiceModelDir": "/opt/ambrogio/voices/vits-piper-en_US-kristin-medium"
 }
 ```
 
@@ -123,11 +123,11 @@ Example with Kokoro, mounted at `/opt/ambrogio/kokoro`:
 
 ```json
 {
-  "voskModelPath": "/models/vosk-model-small-it-0.22",
+  "voskModelPath": "/models/vosk-model-small-en-us-0.15",
   "voiceEngine": "kokoro",
   "voiceModelDir": "/opt/ambrogio/kokoro",
-  "voiceSpeaker": 36,
-  "voiceLanguage": "it"
+  "voiceSpeaker": 3,
+  "voiceLanguage": "en"
 }
 ```
 

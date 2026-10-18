@@ -24,16 +24,29 @@ It takes about 20 minutes.
 
 ## Download a speech recognition model
 
-The backend uses [Vosk](https://alphacephei.com/vosk/models) to turn speech into text. The model is not inside the Docker image, so download the small Italian one:
+The backend uses [Vosk](https://alphacephei.com/vosk/models) to turn speech into text. The model is not inside the Docker image, so download the small English one:
 
 ```bash
 mkdir -p ~/ambrogio/models && cd ~/ambrogio/models
-curl -LO https://alphacephei.com/vosk/models/vosk-model-small-it-0.22.zip
-unzip vosk-model-small-it-0.22.zip
-ls vosk-model-small-it-0.22
+curl -LO https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip
+unzip vosk-model-small-en-us-0.15.zip
+ls vosk-model-small-en-us-0.15
 ```
 
 You should see folders such as `am`, `conf` and `graph`.
+
+## Download a voice
+
+The voices inside the Docker image speak Italian. Download an English one, Kristin, recorded from public domain audiobooks:
+
+```bash
+mkdir -p ~/ambrogio/voices && cd ~/ambrogio/voices
+curl -LO https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-kristin-medium.tar.bz2
+tar xjf vits-piper-en_US-kristin-medium.tar.bz2
+ls vits-piper-en_US-kristin-medium
+```
+
+You should see `en_US-kristin-medium.onnx`, `tokens.txt` and an `espeak-ng-data` folder.
 
 ## Turn on voice in the backend
 
@@ -41,15 +54,15 @@ Voice has its own configuration file. Create `voice.json` next to the others:
 
 ```json title="~/ambrogio/config/voice.json"
 {
-  "voskModelPath": "/models/vosk-model-small-it-0.22",
+  "voskModelPath": "/models/vosk-model-small-en-us-0.15",
   "voiceEngine": "piper",
-  "voiceModelDir": "/opt/ambrogio/voices/vits-piper-it_IT-paola-medium"
+  "voiceModelDir": "/voices/vits-piper-en_US-kristin-medium"
 }
 ```
 
-`voskModelPath` is where the container will see the model you just downloaded. `voiceEngine` says the voice is a Piper voice, and `voiceModelDir` picks Paola, one of the two Italian voices already inside the image.
+`voskModelPath` and `voiceModelDir` are where the container will see the model and the voice you just downloaded. `voiceEngine` says the voice is a Piper voice.
 
-Replace the running container with one that has the model folder and the new file:
+Replace the running container with one that has the two folders and the new file:
 
 ```bash
 docker rm -f ambrogio
@@ -57,6 +70,7 @@ docker run -d --name ambrogio -p 3000:3000 \
   -v ~/ambrogio/config:/etc/ambrogio:ro \
   -v ~/ambrogio/data:/data \
   -v ~/ambrogio/models:/models:ro \
+  -v ~/ambrogio/voices:/voices:ro \
   -e AMBROGIO_HTTP_CONFIG_PATH=/etc/ambrogio/http.json \
   -e AMBROGIO_CONVERSATIONS_CONFIG_PATH=/etc/ambrogio/conversations.json \
   -e AMBROGIO_VOICE_CONFIG_PATH=/etc/ambrogio/voice.json \
@@ -97,7 +111,7 @@ Open `config.json` and change the `client` section. The satellite introduces its
 ```json title="config.json"
 {
   "backend": { "baseUrl": "http://localhost:3000" },
-  "client": { "id": "desk", "name": "Scrivania" },
+  "client": { "id": "desk", "name": "Desk" },
   "audio": {},
   "wakeWord": { "model": "hey_jarvis" },
   "interaction": { "replyTimeoutMs": 15000 }
@@ -124,12 +138,12 @@ It is now listening for the wake word, and nothing you say leaves the computer u
 
 1. Say **"Hey Jarvis"**.
 2. Wait for the short beep. It means the backend is ready to listen.
-3. Ask: *"Raccontami una curiosità sui gatti."*
+3. Ask: *"Tell me a fun fact about cats."*
 4. Stop talking. After a short pause, well under a second, the satellite treats your question as finished.
 
 A moment later Ambrogio answers out loud. When it has finished, the satellite goes back to waiting for "Hey Jarvis".
 
-Now ask something that invites a question back, such as *"Aiutami a scegliere un film per stasera."* If the answer ends with a question for you, the beep sounds again. Answer straight away, without the wake word. If you stay silent for 15 seconds, the satellite stops waiting and goes back to the wake word.
+Now ask something that invites a question back, such as *"Help me choose a film for tonight."* If the answer ends with a question for you, the beep sounds again. Answer straight away, without the wake word. If you stay silent for 15 seconds, the satellite stops waiting and goes back to the wake word.
 
 ## Find the conversation in the terminal
 
@@ -148,7 +162,7 @@ Stop the satellite with `Ctrl+C` when you are done.
 
 You have:
 
-- given the backend a speech recognition model and chosen a voice;
+- given the backend a speech recognition model and a voice;
 - started a voice satellite and talked to Ambrogio with a wake word;
 - answered a follow-up question without repeating the wake word;
 - read a spoken conversation in the terminal client.

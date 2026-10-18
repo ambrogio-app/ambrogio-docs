@@ -19,7 +19,7 @@ Create `agents/<name>.json`. The `mcp` section and `maxToolCalls` are what turn 
 ```json title="agents/calendar.json"
 {
   "description": "Reads and adds events in the family calendar.",
-  "instructions": "Answer in Italian. Use the calendar tools; never invent events.",
+  "instructions": "Use the calendar tools; never invent events.",
   "llm": { "provider": "mistral", "model": "mistral-medium-latest", "apiKey": "..." },
   "maxToolCalls": 4,
   "mcp": { "url": "http://192.168.1.30:8080/mcp" }

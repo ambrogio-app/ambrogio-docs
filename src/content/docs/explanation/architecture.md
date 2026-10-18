@@ -21,7 +21,7 @@ flowchart LR
         end
         HA["Home Assistant<br/>and other MCP servers"]
     end
-    LLM["Mistral<br/>(cloud)"]
+    LLM["Model provider<br/>(cloud)"]
 
     CLI -- text --> B
     WEB -- page --> W
@@ -48,7 +48,7 @@ flowchart LR
 
 **The voice satellite** (`ambrogio-satellite`) is a program for a small device with a microphone and a speaker. It listens for a wake word on the device, records your request, sends the audio to the backend and plays the answer. It does not recognise speech or generate voices itself.
 
-The only part outside your home is the language model. Agents send the conversation to Mistral's API to get answers. Everything else, including the audio, stays on your network.
+The only part outside your home is the language model. Agents send the conversation to their provider's API, such as Mistral, OpenAI, Anthropic or Google, to get answers. With an OpenAI-compatible model server on your own network, nothing leaves it. Everything else, including the audio, stays on your network.
 
 ## One protocol for everything
 
@@ -66,7 +66,7 @@ What holds them together is the protocol. The backend owns it, and each client r
 
 Each repository is built model-first with [Reqvire](https://reqvire.org/): capabilities, requirements, contracts and verifications are written in `system-model/` before the code changes. When this documentation states a limit or a default, it comes from those contracts. If you want to know *why* something behaves as it does, the decisions are recorded there, with dates and the alternatives that were considered.
 
-Inside, the code follows a ports-and-adapters design: the rules of conversations and turns do not depend on Node.js, SQLite, Mistral or the audio libraries, which are plugged in at the edges. The web chat is organised by feature instead, and each feature keeps its logic apart from its React components, so the protocol handling is tested without a browser.
+Inside, the code follows a ports-and-adapters design: the rules of conversations and turns do not depend on Node.js, SQLite, the model providers or the audio libraries, which are plugged in at the edges. The web chat is organised by feature instead, and each feature keeps its logic apart from its React components, so the protocol handling is tested without a browser.
 
 ## Further reading
 

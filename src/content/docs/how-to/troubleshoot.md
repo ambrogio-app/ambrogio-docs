@@ -24,7 +24,7 @@ Look at `err.message` and find it in this table.
 | `err.message` | What to check |
 |---|---|
 | `Missing HTTP configuration path`, `Missing conversation configuration path` | `AMBROGIO_HTTP_CONFIG_PATH` or `AMBROGIO_CONVERSATIONS_CONFIG_PATH` is not set. In Docker, `docker inspect ambrogio` shows the variables. |
-| `Invalid HTTP configuration file`, `Invalid conversation configuration file`, `Invalid voice configuration file` | The file does not exist at that path (in Docker: inside the container), cannot be read, or is not a JSON object. `voice.json` may contain only its own fields: `voiceEngine` is required, `voiceSpeaker` is required with `kokoro` (`if_sara` or `im_nicola`) and not allowed with `piper`. |
+| `Invalid HTTP configuration file`, `Invalid conversation configuration file`, `Invalid voice configuration file` | The file does not exist at that path (in Docker: inside the container), cannot be read, or is not a JSON object. `voice.json` may contain only its own fields: `voiceEngine` is required, `voiceSpeaker` (a whole number) and `voiceLanguage` are required with `kokoro` and not allowed with `piper`. |
 | `Invalid HTTP listener configuration` | `host` or `port` in `http.json`. |
 | `Invalid HTTP CORS origins` | An entry in `allowedOrigins` has a path, a trailing slash or `*`. |
 | `Invalid public HTTPS configuration`, `Invalid HSTS duration` | `publicHttps` must be a boolean; with `true`, set `hstsMaxAgeSeconds` to a positive whole number. |
@@ -38,7 +38,7 @@ Look at `err.message` and find it in this table.
 | `Missing orchestrator configuration` | There is no `orchestrator.json`. |
 | `No specialist agent configured` | There is no agent file besides `orchestrator.json`. |
 | `Invalid agent configuration filename: <file>` | The name must be lowercase letters, digits and hyphens, starting with a letter. |
-| `Invalid agent configuration: <id>` | That agent's file. Common mistakes: broken JSON, `description` missing (or present in `orchestrator.json`), `maxToolCalls` missing with `mcp` or present without it, `provider` other than `"mistral"`, an `mcp.url` that is not `http(s)://`. |
+| `Invalid agent configuration: <id>` | That agent's file. Common mistakes: broken JSON, `description` missing (or present in `orchestrator.json`), `maxToolCalls` missing with `mcp` or present without it, `provider` not among `mistral`, `openai`, `anthropic`, `google` and `openai-compatible`, `baseURL` missing or not an `http(s)://` address with `openai-compatible` or present with another provider, an `mcp.url` that is not `http(s)://`. |
 | `Invalid agent options: <id>` | `llm.options` may contain only `temperature` (0 or more) and `max_tokens` (1 or more). |
 | `Agent MCP connection failed: <id>` | The backend could not connect to that agent's MCP server or list its tools. Test `mcp.url` from the backend host (in Docker, `localhost` is the container), and check the token or OAuth settings. |
 | `HTTP listener could not start` | The port is already in use, or `host` is not an address of this machine. |
@@ -58,15 +58,16 @@ For errors that come from outside Ambrogio (a library, the network, the operatin
 
 The client needs at least 70 columns and 14 rows. Make the window bigger; your conversation is kept.
 
-## A turn shows "In elaborazione"
+## A turn shows "In progress"
 
 The backend accepted the turn and has not saved an outcome yet. Press `Ctrl+R` later to refresh. If it never changes, the backend probably stopped while answering; after the next restart the turn shows as interrupted.
 
-## Every answer is "Non riesco a completare la risposta."
+## Every answer is "I can't complete the response."
 
 This is the standard message for a turn that failed after it was accepted. Common causes:
 
-- the Mistral API key is wrong, out of credit, or rate-limited;
+- the provider's API key is wrong, out of credit, or rate-limited;
+- the model does not support tool calling or structured JSON output, or not both in the same request for an agent with `mcp`; see [Providers](../../reference/agent-configuration/#providers);
 - the answer took longer than 30 seconds;
 - an agent with tools needed more than its `maxToolCalls`;
 - the orchestrator chose no valid agent.

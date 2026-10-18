@@ -25,7 +25,7 @@ Checked on 18 October 2026.
 
 | Program | Latest release | Images | Works with the current clients |
 |---|---|---|---|
-| Backend | `v0.4.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.4.0` (amd64) | yes |
+| Backend | `v0.5.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.5.0` (amd64) | yes |
 | Terminal client | `v0.1.0` | none, run from a checkout of the tag | yes |
 | Web chat | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-web:v0.1.0` (amd64, arm64) | yes |
 | Satellite | `v0.2.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.2.0` (amd64, arm64) | yes |
@@ -41,6 +41,8 @@ Terminal client `v0.1.0` is its first release. Its interface is in Italian or En
 Satellite `v0.2.0` replaces the recorded Italian warnings with a generated error tone, two descending notes; the log tells the cause apart. Its configuration does not change.
 
 Backend `v0.4.0` accepts any Kokoro model, voice and language. With `"voiceEngine": "kokoro"`, `voiceSpeaker` is now the number of the voice in the model instead of its name, and `voiceLanguage` is required: write `"voiceSpeaker": 36, "voiceLanguage": "it"` instead of `"voiceSpeaker": "im_nicola"`, and `35` for `if_sara`. See [Voices of `kokoro-multi-lang-v1_0`](../backend-configuration/#voices-of-kokoro-multi-lang-v1_0). Configurations with `piper` do not change. The protocol is the same as in `v0.1.0`, so the clients work with it.
+
+Backend `v0.5.0` lets each agent choose its model provider: `mistral`, `openai`, `anthropic`, `google` or `openai-compatible`, the last with a `baseURL`. See [Providers](../agent-configuration/#providers). Agent files written for `v0.4.0` keep working unchanged. MCP tools whose name starts with a digit or a hyphen are now shown to the model under their positional name, `mcp_<index>`. The protocol is the same as in `v0.1.0`, so the clients work with it.
 
 :::note[Withdrawn releases]
 Backend releases published between 16 and 18 October 2026 under the tags `v0.1.0`, `v0.1.1` and `v0.2.0` were withdrawn, and the current `v0.1.0` replaced them. If you pulled one of those images or fetched those tags, pull the image again and refresh the tags with `git fetch --tags --force`.

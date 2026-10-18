@@ -18,7 +18,7 @@ The file name without `.json` is the agent's identifier. It must start with a lo
 ```json title="agents/cooking.json"
 {
   "description": "Recipes, cooking times, ingredient substitutions and weekly meal plans.",
-  "instructions": "You help an Italian family in the kitchen. Answer in Italian. Give quantities in grams and times in minutes. Keep recipes short enough to read aloud.",
+  "instructions": "You help a family in the kitchen. Give quantities in grams and times in minutes. Keep recipes short enough to read aloud.",
   "llm": {
     "provider": "mistral",
     "model": "mistral-small-latest",
@@ -29,7 +29,7 @@ The file name without `.json` is the agent's identifier. It must start with a lo
 
 - `description` is what the orchestrator reads when it decides who answers. Describe what the agent is for, not how it behaves. If two descriptions overlap, the orchestrator has to guess.
 - `instructions` is the agent's system prompt. The family never sees it.
-- `llm` can name a different model from the other agents.
+- `llm` can name a different provider and model from the other agents. [Providers](../../reference/agent-configuration/#providers) lists the choices.
 
 To make answers more or less varied, or to cap their length, add `options`:
 
@@ -52,7 +52,7 @@ If the file has a mistake, the backend does not start, and its log has a `server
 
 ## 4. Try it
 
-Ask something that clearly belongs to the new agent, for example *"Come faccio il ragù senza carne?"*. Then ask a general question in the same conversation. The orchestrator chooses again for each turn, so the second answer should come from the general agent.
+Ask something that clearly belongs to the new agent, for example *"How do I make a meatless lasagne?"*. Then ask a general question in the same conversation. The orchestrator chooses again for each turn, so the second answer should come from the general agent.
 
 If the wrong agent keeps answering, make the descriptions more distinct, or say in the orchestrator's `instructions` how to choose.
 

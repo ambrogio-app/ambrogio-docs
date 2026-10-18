@@ -37,7 +37,7 @@ Protecting the files themselves is up to you: restrict their permissions, mount 
 
 | Data | Goes to |
 |---|---|
-| The text of each conversation, sent with every turn | Mistral, to produce the answer |
+| The text of each conversation, sent with every turn | The model provider of the orchestrator and of the agent that answers, to produce the answer |
 | Tool calls and their results | The MCP servers you configured, and the model |
 | Audio | Nowhere outside your network |
 

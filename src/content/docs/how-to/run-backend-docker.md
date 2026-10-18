@@ -10,7 +10,7 @@ This guide sets up the backend as a permanent service on a home server. If you h
 ## Before you start
 
 - A Linux host with Docker. The image is built for `linux/amd64`.
-- A Mistral API key for the agents.
+- An API key for the model provider of your agents. The examples use Mistral; [Providers](../../reference/agent-configuration/#providers) lists the others.
 - A decision on where to keep files on the host. This guide uses `/srv/ambrogio`.
 
 ## 1. Get an image
@@ -51,12 +51,12 @@ Create at least these files. [Backend configuration](../../reference/backend-con
 ```
 
 ```json title="/srv/ambrogio/config/conversations.json"
-{ "archivePath": "/data/conversations.sqlite", "language": "it" }
+{ "archivePath": "/data/conversations.sqlite", "language": "en" }
 ```
 
 ```json title="/srv/ambrogio/config/agents/orchestrator.json"
 {
-  "instructions": "You are Ambrogio, the assistant of an Italian family.",
+  "instructions": "You are Ambrogio, the assistant of a family.",
   "llm": { "provider": "mistral", "model": "mistral-medium-latest", "apiKey": "..." }
 }
 ```
@@ -64,7 +64,7 @@ Create at least these files. [Backend configuration](../../reference/backend-con
 ```json title="/srv/ambrogio/config/agents/general.json"
 {
   "description": "Answers general questions and makes conversation.",
-  "instructions": "Always answer in Italian, briefly and plainly.",
+  "instructions": "Answer briefly and plainly.",
   "llm": { "provider": "mistral", "model": "mistral-medium-latest", "apiKey": "..." }
 }
 ```

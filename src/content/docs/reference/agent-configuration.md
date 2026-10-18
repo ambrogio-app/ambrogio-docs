@@ -46,10 +46,27 @@ When the limit is reached, the next tool call is not made and the turn fails wit
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
-| `provider` | string | yes | Must be `"mistral"`. |
-| `model` | string | yes | Mistral model identifier, for example `"mistral-medium-latest"`. |
-| `apiKey` | string | yes | Mistral API key. |
+| `provider` | string | yes | Who runs the model. See [Providers](#providers). |
+| `model` | string | yes | Model identifier as the provider names it, for example `"mistral-medium-latest"`. |
+| `apiKey` | string | yes | API key for the provider. Required with every provider, even when the server does not check it. |
+| `baseURL` | string | with `openai-compatible` only | Absolute `http://` or `https://` address of the API, for example `"http://localhost:11434/v1"`. Required with `openai-compatible`; not allowed with the other providers. |
 | `options` | object | no | Model options. See below. |
+
+Each agent, the orchestrator included, has its own `llm`, so agents can use different providers.
+
+### Providers
+
+| `provider` | Service | Endpoint |
+|---|---|---|
+| `mistral` | Mistral | The provider's own |
+| `openai` | OpenAI | The provider's own |
+| `anthropic` | Anthropic | The provider's own |
+| `google` | Google Gemini API (Google AI Studio) | The provider's own |
+| `openai-compatible` | Any API compatible with OpenAI's, such as a local model server or a model aggregator | `baseURL` |
+
+Ambrogio talks to each one through its official [Vercel AI SDK](https://ai-sdk.dev/) package. Providers that need credentials other than an API key, such as Amazon Bedrock, Google Vertex AI or Azure OpenAI, are not supported.
+
+The model must support tool calling and structured output with a JSON schema; an agent with `mcp` needs both in the same request. Gemini models, for example, combine them only from the 3 series. With `openai-compatible`, the request carries the JSON schema of the answer as a `response_format` of type `json_schema`, so the server must accept it. If the provider refuses a request because the model lacks a feature, the turn fails with the standard error message.
 
 `options` may contain only:
 
@@ -57,6 +74,8 @@ When the limit is reached, the next tool call is not made and the turn fails wit
 |---|---|---|
 | `temperature` | number ≥ 0 | Sampling temperature. |
 | `max_tokens` | integer ≥ 1 | Maximum length of the generated output, in tokens. |
+
+The two keys mean the same with every provider.
 
 Requests to the model are not retried. For the orchestrator, `mistral-medium-latest` is the model the project recommends.
 
@@ -73,7 +92,7 @@ The backend connects to the server and lists its tools at startup. If the server
 
 | Behaviour | Value |
 |---|---|
-| Tool names shown to the model | The server's tool name when it matches `^[A-Za-z0-9_-]{1,64}$`; otherwise `mcp_<index>`, the tool's position in the list, from 0. Names of the form `mcp_<digits>` always get the positional name. |
+| Tool names shown to the model | The server's tool name when it matches `^[A-Za-z_][A-Za-z0-9_-]{0,63}$`, a rule that every supported provider accepts; otherwise `mcp_<index>`, the tool's position in the list, from 0. Names of the form `mcp_<digits>` always get the positional name. |
 | Server prompts | Read again at every turn handled by the agent, before the model is called. Their text is added after the agent's `instructions`, under the heading `Instructions and context from the connected MCP server:`. |
 | Prompt read fails during a turn | The turn fails with the standard error message; the log cause is `MCP prompt retrieval failed`. |
 | Prompt reads and `maxToolCalls` | Not counted. |
@@ -103,7 +122,7 @@ Orchestrator:
 
 ```json
 {
-  "instructions": "You are Ambrogio, the assistant of an Italian family.",
+  "instructions": "You are Ambrogio, the assistant of a family.",
   "llm": { "provider": "mistral", "model": "mistral-medium-latest", "apiKey": "..." }
 }
 ```
@@ -113,7 +132,7 @@ Agent without tools:
 ```json
 {
   "description": "Answers general questions and makes conversation.",
-  "instructions": "Always answer in Italian, briefly and plainly.",
+  "instructions": "Answer briefly and plainly.",
   "llm": {
     "provider": "mistral",
     "model": "mistral-small-latest",
@@ -128,7 +147,7 @@ Agent with an MCP server:
 ```json
 {
   "description": "Reads the state of the home's devices and turns them on or off.",
-  "instructions": "Answer in Italian. Only report actions that a tool has confirmed.",
+  "instructions": "Only report actions that a tool has confirmed.",
   "llm": { "provider": "mistral", "model": "mistral-medium-latest", "apiKey": "..." },
   "maxToolCalls": 5,
   "mcp": {
