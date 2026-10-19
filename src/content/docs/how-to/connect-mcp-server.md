@@ -62,8 +62,22 @@ If the server is protected by OAuth and you have registered a client for Ambrogi
 
 Credentials are used only for that agent's server. They are never sent to the language model and never written to the logs.
 
+## Offer only the tools the agent needs
+
+Some servers offer many tools, and the description of every tool is sent to the model at every step. Long lists make answers slower and give the model more ways to go wrong. List the tools the agent may use in `mcp.tools`, with the names the server gives them:
+
+```json
+"mcp": {
+  "url": "http://weather-mcp:3000/mcp",
+  "auth": { "type": "bearer", "token": "..." },
+  "tools": ["geocoding", "weather_forecast"]
+}
+```
+
+Take the names from the server's documentation. If one is wrong, the backend does not start and says which agent to check. `mcp.tools` needs a backend release after `v0.5.0`; `v0.5.0` ignores it.
+
 ## Restart and check
 
-Restart the backend. It connects to every MCP server at startup and refuses to start if one of them fails. If it does not start, the log contains `Agent MCP connection failed: <name>`: test the URL and credentials from the backend host.
+Restart the backend. It connects to every MCP server at startup and refuses to start if one of them fails. If it does not start, the log contains `Agent MCP connection failed: <name>`: test the URL and credentials from the backend host. `Agent MCP tool unavailable: <name>` means that a name in `mcp.tools` is not one of the server's tools: check its spelling.
 
 [Agent configuration](../../reference/agent-configuration/) lists every field.

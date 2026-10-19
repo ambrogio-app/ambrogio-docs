@@ -40,6 +40,10 @@ An agent with an `mcp` section is connected to one MCP server and can call that 
 
 The model sees each tool under the name the server gives it, such as `GetLiveContext`, which helps it pick the right one. Some servers also offer prompts: instructions on how to use their tools and context about what they manage. Home Assistant's prompt lists the areas and devices exposed to Assist. The backend reads these prompts at every turn and adds them after the agent's own `instructions`, so your instructions can stay about tone and behaviour while the server describes its own devices.
 
+The model reads the description of every tool it is offered at every step of a turn. A server with dozens of tools, such as a weather server that also covers air quality, marine and climate data, can make each answer several times slower than one with only the tools needed. `mcp.tools` restricts an agent to the tools you list, which also limits what it can do: an agent for the lights does not need to start the vacuum cleaner.
+
+Models do not know today's date, and they are poor at working out a weekday from a date. So Ambrogio tells each specialised agent the current date, weekday and time at every turn, in the family's time zone. Without it, a question about "the weekend" or "Thursday" can get the forecast of the wrong days.
+
 Each agent has its own provider and model, so you can spend money where it matters: a capable model for the orchestrator and for agents that act on your home, a cheaper one, or a local one, for chit-chat. Whatever you choose must support tool calling and structured output, because the orchestrator's choice and the reply flag come back as structured data.
 
 ## Answers and replies

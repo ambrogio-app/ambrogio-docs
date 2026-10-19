@@ -29,6 +29,7 @@ Look at `err.message` and find it in this table.
 | `Invalid HTTP CORS origins` | An entry in `allowedOrigins` has a path, a trailing slash or `*`. |
 | `Invalid public HTTPS configuration`, `Invalid HSTS duration` | `publicHttps` must be a boolean; with `true`, set `hstsMaxAgeSeconds` to a positive whole number. |
 | `Invalid conversation list limits`, `Invalid conversation language`, `Invalid conversation archive path`, `Missing conversation archive path` | The named field in `conversations.json`. |
+| `Invalid conversation time zone` | `timeZone` in `conversations.json` is not an IANA time zone name such as `Europe/Rome`. Remove it to use UTC. |
 | `Conversation archive could not be prepared` | The folder of `archivePath` does not exist or is not writable, or the database could not be updated. |
 | `Invalid voice configuration path` | `AMBROGIO_VOICE_CONFIG_PATH` is set but empty. Remove it to run without voice. |
 | `Voice resources are unavailable` | `voskModelPath` is not a readable folder, or `voiceModelDir` lacks the files of its engine: with `piper` exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`; with `kokoro` exactly one `.onnx` file, `voices.bin`, `tokens.txt` and `espeak-ng-data/`. |
@@ -38,9 +39,10 @@ Look at `err.message` and find it in this table.
 | `Missing orchestrator configuration` | There is no `orchestrator.json`. |
 | `No specialist agent configured` | There is no agent file besides `orchestrator.json`. |
 | `Invalid agent configuration filename: <file>` | The name must be lowercase letters, digits and hyphens, starting with a letter. |
-| `Invalid agent configuration: <id>` | That agent's file. Common mistakes: broken JSON, `description` missing (or present in `orchestrator.json`), `maxToolCalls` missing with `mcp` or present without it, `provider` not among `mistral`, `openai`, `anthropic`, `google` and `openai-compatible`, `baseURL` missing or not an `http(s)://` address with `openai-compatible` or present with another provider, an `mcp.url` that is not `http(s)://`. |
+| `Invalid agent configuration: <id>` | That agent's file. Common mistakes: broken JSON, `description` missing (or present in `orchestrator.json`), `maxToolCalls` missing with `mcp` or present without it, `provider` not among `mistral`, `openai`, `anthropic`, `google` and `openai-compatible`, `baseURL` missing or not an `http(s)://` address with `openai-compatible` or present with another provider, an `mcp.url` that is not `http(s)://`, an `mcp.tools` that is empty, not an array or with a repeated name. |
 | `Invalid agent options: <id>` | `llm.options` may contain only `temperature` (0 or more) and `max_tokens` (1 or more). |
 | `Agent MCP connection failed: <id>` | The backend could not connect to that agent's MCP server or list its tools. Test `mcp.url` from the backend host (in Docker, `localhost` is the container), and check the token or OAuth settings. |
+| `Agent MCP tool unavailable: <id>` | A name in that agent's `mcp.tools` is not among the tools of its MCP server. Names are case-sensitive and must be written as the server declares them. |
 | `HTTP listener could not start` | The port is already in use, or `host` is not an address of this machine. |
 
 For errors that come from outside Ambrogio (a library, the network, the operating system), the line shows only the step that failed, not the original message, so no secret can end up in the log.

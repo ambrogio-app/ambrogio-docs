@@ -46,6 +46,8 @@ Backend `v0.4.0` accepts any Kokoro model, voice and language. With `"voiceEngin
 
 Backend `v0.5.0` lets each agent choose its model provider: `mistral`, `openai`, `anthropic`, `google` or `openai-compatible`, the last with a `baseURL`. See [Providers](../agent-configuration/#providers). Agent files written for `v0.4.0` keep working unchanged. MCP tools whose name starts with a digit or a hyphen are now shown to the model under their positional name, `mcp_<index>`. The protocol is the same as in `v0.1.0`, so the clients work with it.
 
+Not yet released: the next backend release adds [`mcp.tools`](../agent-configuration/#mcp), to offer an agent only some of its MCP server's tools, and [`timeZone`](../backend-configuration/#conversationsjson), with the current date and time given to the specialised agents at every turn. Both are optional, so files written for `v0.5.0` keep working. The protocol does not change.
+
 :::note[Withdrawn releases]
 Backend releases published between 16 and 18 October 2026 under the tags `v0.1.0`, `v0.1.1` and `v0.2.0` were withdrawn, and the current `v0.1.0` replaced them. If you pulled one of those images or fetched those tags, pull the image again and refresh the tags with `git fetch --tags --force`.
 :::
