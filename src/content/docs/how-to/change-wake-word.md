@@ -34,7 +34,16 @@ Restart the satellite.
 - If the satellite wakes up when nobody called it, raise the threshold a little, for example to `0.6`.
 - If it often misses you, lower it, for example to `0.4`.
 
-Change it in small steps and try each value for a while.
+`patience` is how many consecutive 80 ms blocks must reach the threshold; the default is `2`.
+
+```json title="config.json"
+"wakeWord": { "model": "alexa", "threshold": 0.6, "patience": 3 }
+```
+
+- If short sounds such as a cough or a clap wake it up, raise `patience` to `3`.
+- If it misses you when you say the wake word quickly, lower `patience` to `1`.
+
+Change one value at a time, in small steps, and try each value for a while.
 
 ## Add your own wake word
 

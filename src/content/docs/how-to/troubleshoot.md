@@ -84,7 +84,7 @@ The satellite checks its whole file before it starts and stops at the first prob
 
 - `"reason":"configuration_unavailable"`: the file does not exist or cannot be read. Check the path after `--config`, or the mount at `/config/satellite.json` in Docker.
 - `"field":"config"`: the file is not a JSON object, or it has a section the satellite does not know. A misspelt section, such as `wakeword` instead of `wakeWord`, ends up here.
-- Any other `field`: that field is wrong. [Satellite configuration](../../reference/satellite-configuration/) lists the rules for each one. The usual suspects are a `baseUrl` with spaces or a query string, a `wakeWord.model` that is not in the models folder, a `threshold` outside 0–1, a `replyTimeoutMs` that is not a whole number, and audio selectors with spaces around them.
+- Any other `field`: that field is wrong. [Satellite configuration](../../reference/satellite-configuration/) lists the rules for each one. The usual suspects are a `baseUrl` with spaces or a query string, a `wakeWord.model` that is not in the models folder, a `threshold` outside 0–1, a `patience` that is not a whole number from 1 to 10, a `replyTimeoutMs` that is not a whole number, and audio selectors with spaces around them.
 
 `invalid_arguments` means the command line was wrong: it must be exactly `--config <file>`.
 
@@ -101,10 +101,13 @@ The satellite plays this error tone in two cases. Its log tells you which:
 - Make sure the satellite uses the right microphone; see [Choose audio devices](../choose-audio-devices/).
 - With the `alexa` model, say only "Alexa".
 - Lower `wakeWord.threshold` a little, for example to `0.4`.
+- Lower `wakeWord.patience` to `1`.
 
 ## The satellite wakes up by itself
 
-Raise `wakeWord.threshold` a little, for example to `0.6`, or move the device away from the TV.
+- If a cough, a clap or another short sound wakes it up, raise `wakeWord.patience`, for example to `3`.
+- Otherwise raise `wakeWord.threshold` a little, for example to `0.6`.
+- Move the device away from the TV.
 
 ## No beep after the wake word
 

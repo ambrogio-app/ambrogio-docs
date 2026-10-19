@@ -27,6 +27,7 @@ Turns are never queued and never retried automatically.
 | Setting | Value | Configurable |
 |---|---|---|
 | Wake word threshold | 0.5 | `wakeWord.threshold` |
+| Consecutive blocks above the threshold | 2 blocks of 80 ms | `wakeWord.patience` |
 | Pause between wake-ups | 2 seconds | no |
 | Audio kept from before you start speaking | 1.5 seconds | no |
 | Speech detection window | 32 ms (512 samples at 16 kHz) | no |

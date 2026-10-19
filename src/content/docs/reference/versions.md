@@ -21,14 +21,14 @@ Before upgrading, check that the backend you plan to run is that revision or a l
 
 ## Current state
 
-Checked on 18 October 2026.
+Checked on 19 October 2026.
 
 | Program | Latest release | Images | Works with the current clients |
 |---|---|---|---|
 | Backend | `v0.5.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.5.0` (amd64) | yes |
 | Terminal client | `v0.1.0` | none, run from a checkout of the tag | yes |
 | Web chat | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-web:v0.1.0` (amd64, arm64) | yes |
-| Satellite | `v0.2.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.2.0` (amd64, arm64) | yes |
+| Satellite | `v0.3.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.3.0` (amd64, arm64) | yes |
 
 All four programs start their numbering at 0.1.0 with the `ambrogio.v1` protocol. The terminal client and the satellite are tested against backend commit `58b0df4`, where the protocol was introduced; it has not changed since, and backend 0.1.0 includes it. The web chat is tested against backend `v0.1.0` (commit `a4578db`).
 
@@ -39,6 +39,8 @@ Backend `v0.3.0` adds the Kokoro voice model. It changes `voice.json`: the field
 Terminal client `v0.1.0` is its first release. Its interface is in Italian or English, chosen with `--language` or the system locale.
 
 Satellite `v0.2.0` replaces the recorded Italian warnings with a generated error tone, two descending notes; the log tells the cause apart. Its configuration does not change.
+
+Satellite `v0.3.0` wakes up only when the wake word score reaches the threshold in two consecutive 80 ms blocks, so a cough or another short sound no longer wakes it. The new optional field [`wakeWord.patience`](../satellite-configuration/#wakeword) sets the number of blocks; `1` restores the behaviour of `v0.2.0`. Existing configuration files keep working.
 
 Backend `v0.4.0` accepts any Kokoro model, voice and language. With `"voiceEngine": "kokoro"`, `voiceSpeaker` is now the number of the voice in the model instead of its name, and `voiceLanguage` is required: write `"voiceSpeaker": 36, "voiceLanguage": "it"` instead of `"voiceSpeaker": "im_nicola"`, and `35` for `if_sara`. See [Voices of `kokoro-multi-lang-v1_0`](../backend-configuration/#voices-of-kokoro-multi-lang-v1_0). Configurations with `piper` do not change. The protocol is the same as in `v0.1.0`, so the clients work with it.
 

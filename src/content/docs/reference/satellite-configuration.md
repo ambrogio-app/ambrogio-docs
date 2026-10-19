@@ -27,7 +27,7 @@ One JSON object with up to five sections. Unknown sections and unknown fields ar
   "backend": { "baseUrl": "http://192.168.1.20:3000" },
   "client": { "id": "kitchen", "name": "Kitchen" },
   "audio": { "microphone": "USB", "speaker": "alsa:plughw:CARD=Headphones,DEV=0" },
-  "wakeWord": { "model": "hey_jarvis", "threshold": 0.5 },
+  "wakeWord": { "model": "hey_jarvis", "threshold": 0.5, "patience": 2 },
   "interaction": { "replyTimeoutMs": 15000 }
 }
 ```
@@ -66,6 +66,7 @@ Optional.
 |---|---|---|---|
 | `model` | string | `"hey_jarvis"` | Wake word model. Bundled: `hey_jarvis`, `hey_mycroft`, `alexa`. A custom model `<id>.onnx` in the models folder is selected with its `<id>`. |
 | `threshold` | number, above 0 and at most 1 | `0.5` | Detection threshold. Higher means fewer false wake-ups and more missed ones. |
+| `patience` | whole number, 1 to 10 | `2` | Consecutive 80 ms audio blocks whose score must reach `threshold` before the satellite wakes up. Higher means fewer false wake-ups from short sounds such as a cough, about 80 ms more delay per block, and possibly more missed ones. `1` wakes up on a single block. |
 
 A custom `<id>` must match `^[a-z0-9][a-z0-9_-]*$` and may not be `melspectrogram` or `embedding_model`. The models folder is `models/wakeword/` in the repository and `/app/models/wakeword/` in the image; it must contain `melspectrogram.onnx` and `embedding_model.onnx`.
 
