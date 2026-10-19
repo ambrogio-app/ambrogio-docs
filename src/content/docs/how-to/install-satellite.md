@@ -46,7 +46,7 @@ cd ambrogio-satellite
 docker build -t ambrogio-satellite .
 ```
 
-Releases are also published as images for amd64 and arm64, for example `ghcr.io/ambrogio-app/ambrogio-satellite:v0.3.0`. To use one, pull it and put its name in place of `ambrogio-satellite` in the commands below. [Versions and compatibility](../../reference/versions/) lists the releases.
+Releases are also published as images for amd64 and arm64, for example `ghcr.io/ambrogio-app/ambrogio-satellite:v0.3.1`. To use one, pull it and put its name in place of `ambrogio-satellite` in the commands below. [Versions and compatibility](../../reference/versions/) lists the current releases.
 
 ## 2. Write the configuration
 

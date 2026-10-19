@@ -9,7 +9,7 @@ The web chat is an optional container that serves a chat page to the browsers of
 
 ## Before you start
 
-- A running backend, version `v0.1.0` or a later one with the same protocol. See [Versions and compatibility](../../reference/versions/).
+- A running backend. See [Versions and compatibility](../../reference/versions/).
 - A Linux host with Docker. It can be the same host as the backend.
 - The address where people will open the chat, for example `http://ambrogio.home.lan:8080`. This guide calls it the *chat address*.
 - The backend address as the browser sees it, for example `http://ambrogio.home.lan:3000`.

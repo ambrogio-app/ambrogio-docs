@@ -11,11 +11,7 @@ Home Assistant can act as an [MCP](https://modelcontextprotocol.io/) server. You
 
 - Home Assistant is reachable from the machine that runs the Ambrogio backend.
 - You can log in to Home Assistant as an administrator.
-- Backend `v0.1.2` or later, and a checkout of `ambrogio-backend` at the same version for the example file.
-
-:::note
-Backend `v0.1.0` does not read Home Assistant's prompt and shows tools to the model as `mcp_0`, `mcp_1` and so on. Without the device list the model can switch on a light when asked about its state, or fail to act on all the lights. Use `v0.1.2` or later.
-:::
+- Backend `v0.6.0`, and a checkout of `ambrogio-backend` at the same tag for the example file.
 
 ## 1. Turn on the MCP server in Home Assistant
 

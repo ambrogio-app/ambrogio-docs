@@ -21,43 +21,24 @@ Before upgrading, check that the backend you plan to run is that revision or a l
 
 ## Current state
 
-Checked on 19 October 2026.
+Checked on 19 October 2026. Ambrogio is in preview: this documentation describes only the latest releases, and the configuration may change from one release to the next.
 
 | Program | Latest release | Images | Works with the current clients |
 |---|---|---|---|
-| Backend | `v0.5.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.5.0` (amd64) | yes |
+| Backend | `v0.6.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.6.0` (amd64) | yes |
 | Terminal client | `v0.1.0` | none, run from a checkout of the tag | yes |
 | Web chat | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-web:v0.1.0` (amd64, arm64) | yes |
-| Satellite | `v0.3.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.3.0` (amd64, arm64) | yes |
+| Satellite | `v0.3.1` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.3.1` (amd64, arm64) | yes |
 
-All four programs start their numbering at 0.1.0 with the `ambrogio.v1` protocol. The terminal client and the satellite are tested against backend commit `58b0df4`, where the protocol was introduced; it has not changed since, and backend 0.1.0 includes it. The web chat is tested against backend `v0.1.0` (commit `a4578db`).
+All four programs speak the `ambrogio.v1` protocol, which has not changed since it was introduced. The terminal client and the satellite are tested against backend commit `58b0df4`, where the protocol was introduced; the web chat against backend `v0.1.0` (commit `a4578db`).
 
-Backend `v0.1.2` changes only agents with MCP tools: it reads the prompts of the MCP server at every turn and shows tools to the model under their own names. The protocol is the same as in `v0.1.0`, so the clients work with both. The number `v0.1.1` is skipped because it belonged to a withdrawn release.
-
-Backend `v0.3.0` adds the Kokoro voice model. It changes `voice.json`: the field `voiceEngine` is now required, so a file written for `v0.1.2` stops the backend from starting with `Invalid voice configuration file`. Before upgrading, add `"voiceEngine": "piper"` to keep the current voice; see the [configuration reference](../backend-configuration/#voicejson). The protocol is the same as in `v0.1.0`, so the clients work with it. The number `v0.2.0` is skipped because it belonged to a withdrawn release.
-
-Terminal client `v0.1.0` is its first release. Its interface is in Italian or English, chosen with `--language` or the system locale.
-
-Satellite `v0.2.0` replaces the recorded Italian warnings with a generated error tone, two descending notes; the log tells the cause apart. Its configuration does not change.
-
-Satellite `v0.3.0` wakes up only when the wake word score reaches the threshold in two consecutive 80 ms blocks, so a cough or another short sound no longer wakes it. The new optional field [`wakeWord.patience`](../satellite-configuration/#wakeword) sets the number of blocks; `1` restores the behaviour of `v0.2.0`. Existing configuration files keep working.
-
-Backend `v0.4.0` accepts any Kokoro model, voice and language. With `"voiceEngine": "kokoro"`, `voiceSpeaker` is now the number of the voice in the model instead of its name, and `voiceLanguage` is required: write `"voiceSpeaker": 36, "voiceLanguage": "it"` instead of `"voiceSpeaker": "im_nicola"`, and `35` for `if_sara`. See [Voices of `kokoro-multi-lang-v1_0`](../backend-configuration/#voices-of-kokoro-multi-lang-v1_0). Configurations with `piper` do not change. The protocol is the same as in `v0.1.0`, so the clients work with it.
-
-Backend `v0.5.0` lets each agent choose its model provider: `mistral`, `openai`, `anthropic`, `google` or `openai-compatible`, the last with a `baseURL`. See [Providers](../agent-configuration/#providers). Agent files written for `v0.4.0` keep working unchanged. MCP tools whose name starts with a digit or a hyphen are now shown to the model under their positional name, `mcp_<index>`. The protocol is the same as in `v0.1.0`, so the clients work with it.
-
-Not yet released: the next backend release adds [`mcp.tools`](../agent-configuration/#mcp), to offer an agent only some of its MCP server's tools, and [`timeZone`](../backend-configuration/#conversationsjson), with the current date and time given to the specialised agents at every turn. Both are optional, so files written for `v0.5.0` keep working. The protocol does not change.
-
-:::note[Withdrawn releases]
-Backend releases published between 16 and 18 October 2026 under the tags `v0.1.0`, `v0.1.1` and `v0.2.0` were withdrawn, and the current `v0.1.0` replaced them. If you pulled one of those images or fetched those tags, pull the image again and refresh the tags with `git fetch --tags --force`.
-:::
+When you upgrade, compare your files with the [backend configuration](../backend-configuration/), [agent configuration](../agent-configuration/) and [satellite configuration](../satellite-configuration/) references: an older file may lack a field that is now required.
 
 ## Release rules
 
 - Backend, satellite and web chat images are published only for Git tags of the form `vMAJOR.MINOR.PATCH`. The image tag equals the Git tag. There is no `latest` tag.
 - An image is published only if the repository's checks (model validation and lint, type check, tests, build) and the secret scan pass on the tagged commit.
 - Backend images are built for `linux/amd64`. Satellite and web chat images are built for `linux/amd64` and `linux/arm64`.
-- The configuration format may still change between versions while Ambrogio is in early development. Check the [configuration reference](../backend-configuration/) after every upgrade.
 
 ## Language
 

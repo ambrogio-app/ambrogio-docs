@@ -41,6 +41,7 @@ If the backend cannot start, it writes one `server_startup_failed` event (level 
 | Event | Level | Meaning |
 |---|---|---|
 | `satellite_ready` | info | Started and listening for the wake word. |
+| `satellite_wake_detected` | info | The wake word was detected. `score` is the classifier score of the block that confirmed it, rounded to three decimals; `chunks` is the number of consecutive 80 ms blocks that reached `threshold`. A detection ignored because it came too soon after the previous one is not logged. |
 | `satellite_session_unavailable` | info | The session to the backend could not be opened at startup. The satellite tries again at the next wake word. |
 | `invalid_arguments` | info | The command line is not `--config <file>`. The satellite exits. |
 | `invalid_configuration` | info | The configuration was refused and the satellite exits. `reason` is `configuration_unavailable` when the file is missing or unreadable, or `invalid_configuration` when its content is wrong; in that case `field` names the rejected field, or `config` for a file that is not a JSON object or has an unknown section. Values from the file are never logged. |

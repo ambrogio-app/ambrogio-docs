@@ -107,6 +107,8 @@ The satellite plays this error tone in two cases. Its log tells you which:
 
 ## The satellite wakes up by itself
 
+Every wake-up writes a `satellite_wake_detected` line with its `score` and `chunks`. Compare the lines of the false wake-ups with those of your real requests to choose the values below.
+
 - If a cough, a clap or another short sound wakes it up, raise `wakeWord.patience`, for example to `3`.
 - Otherwise raise `wakeWord.threshold` a little, for example to `0.6`.
 - Move the device away from the TV.

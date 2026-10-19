@@ -44,7 +44,7 @@ When the limit is reached, the next tool call is not made and the turn fails wit
 
 ### Current date and time
 
-Not in `v0.5.0`: from the next backend release. At every turn handled by a specialised agent, Ambrogio adds this line right after the agent's `instructions`, before the server prompts:
+At every turn handled by a specialised agent, Ambrogio adds this line right after the agent's `instructions`, before the server prompts:
 
 ```text
 Current date and time: Monday, 19 October 2026 at 09:41 (Europe/Rome).
@@ -95,7 +95,7 @@ Requests to the model are not retried. For the orchestrator, `mistral-medium-lat
 |---|---|---|---|
 | `url` | string | yes | Absolute `http://` or `https://` URL of the MCP endpoint. The transport is Streamable HTTP. |
 | `auth` | object | no | Credentials. Without it, no `Authorization` header is sent. |
-| `tools` | array of strings | no | Names of the server's tools the agent may use, as the server declares them. Without it, every tool is offered. The array must not be empty, and names must be non-empty strings without repeats. Not in `v0.5.0`: from the next backend release. |
+| `tools` | array of strings | no | Names of the server's tools the agent may use, as the server declares them. Without it, every tool is offered. The array must not be empty, and names must be non-empty strings without repeats. |
 
 A `transport` field is not allowed. Local (stdio) servers and the older HTTP+SSE transport are not supported.
 

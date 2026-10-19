@@ -74,7 +74,7 @@ Some servers offer many tools, and the description of every tool is sent to the 
 }
 ```
 
-Take the names from the server's documentation. If one is wrong, the backend does not start and says which agent to check. `mcp.tools` needs a backend release after `v0.5.0`; `v0.5.0` ignores it.
+Take the names from the server's documentation. If one is wrong, the backend does not start and says which agent to check.
 
 ## Restart and check
 

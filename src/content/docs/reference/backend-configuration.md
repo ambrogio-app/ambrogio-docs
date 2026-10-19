@@ -63,7 +63,7 @@ Conversation storage, language, time zone and list pages.
 |---|---|---|---|
 | `archivePath` | string | required | Path of the SQLite file that stores conversations. The file is created if it does not exist; its folder must exist and be writable. |
 | `language` | string | `"en"` | Language of the backend's own messages, such as errors and refusals: `"it"` or `"en"`. Any other string falls back to `"en"`. It does not change the language of the agents' answers. |
-| `timeZone` | string | `"UTC"` | Time zone of the family, as an IANA name such as `"Europe/Rome"`. The agents get the current date and time in this zone; see [Current date and time](../agent-configuration/#current-date-and-time). A value that is not a known time zone stops the backend from starting. Not in `v0.5.0`: from the next backend release. |
+| `timeZone` | string | `"UTC"` | Time zone of the family, as an IANA name such as `"Europe/Rome"`. The agents get the current date and time in this zone; see [Current date and time](../agent-configuration/#current-date-and-time). A value that is not a known time zone stops the backend from starting. |
 | `listPageSize` | positive integer | `20` | Conversations per page when a client does not ask for a size. |
 | `maxListPageSize` | positive integer | `100` | Largest page a client may ask for. Must be at least `listPageSize`. |
 
