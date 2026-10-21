@@ -22,55 +22,36 @@ It takes about 20 minutes.
 
   On recent Ubuntu releases the first package is called `libasound2t64`.
 
-## Download a speech recognition model
-
-The backend uses [Vosk](https://alphacephei.com/vosk/models) to turn speech into text. The model is not inside the Docker image, so download the small English one:
-
-```bash
-mkdir -p ~/ambrogio/models && cd ~/ambrogio/models
-curl -LO https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip
-unzip vosk-model-small-en-us-0.15.zip
-ls vosk-model-small-en-us-0.15
-```
-
-You should see folders such as `am`, `conf` and `graph`.
-
-## Download a voice
-
-The voices inside the Docker image speak Italian. Download an English one, Kristin, recorded from public domain audiobooks:
-
-```bash
-mkdir -p ~/ambrogio/voices && cd ~/ambrogio/voices
-curl -LO https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-en_US-kristin-medium.tar.bz2
-tar xjf vits-piper-en_US-kristin-medium.tar.bz2
-ls vits-piper-en_US-kristin-medium
-```
-
-You should see `en_US-kristin-medium.onnx`, `tokens.txt` and an `espeak-ng-data` folder.
-
 ## Turn on voice in the backend
 
-Voice has its own configuration file. Create `voice.json` next to the others:
+The Docker image already includes Vosk recognition models and Piper voices for Italian and English. Voice has its own configuration file. Create `voice.json` next to the others:
 
 ```json title="~/ambrogio/config/voice.json"
 {
-  "voskModelPath": "/models/vosk-model-small-en-us-0.15",
-  "voiceEngine": "piper",
-  "voiceModelDir": "/voices/vits-piper-en_US-kristin-medium"
+  "languages": {
+    "it": {
+      "voskModelPath": "/opt/ambrogio/models/vosk-model-small-it-0.22",
+      "voiceEngine": "piper",
+      "voiceModelDir": "/opt/ambrogio/voices/vits-piper-it_IT-paola-medium"
+    },
+    "en": {
+      "voskModelPath": "/opt/ambrogio/models/vosk-model-small-en-us-0.15",
+      "voiceEngine": "piper",
+      "voiceModelDir": "/opt/ambrogio/voices/vits-piper-en_US-kristin-medium"
+    }
+  }
 }
 ```
 
-`voskModelPath` and `voiceModelDir` are where the container will see the model and the voice you just downloaded. `voiceEngine` says the voice is a Piper voice.
+The `en` profile is selected because the first tutorial set `conversations.json.language` to `en`. The `it` profile is ready if you switch languages later. `voiceEngine` selects Piper; the paths point to models already inside the image.
 
-Replace the running container with one that has the two folders and the new file:
+Replace the running container with one that has the new configuration variable:
 
 ```bash
 docker rm -f ambrogio
 docker run -d --name ambrogio -p 3000:3000 \
   -v ~/ambrogio/config:/etc/ambrogio:ro \
   -v ~/ambrogio/data:/data \
-  -v ~/ambrogio/models:/models:ro \
-  -v ~/ambrogio/voices:/voices:ro \
   -e AMBROGIO_HTTP_CONFIG_PATH=/etc/ambrogio/http.json \
   -e AMBROGIO_CONVERSATIONS_CONFIG_PATH=/etc/ambrogio/conversations.json \
   -e AMBROGIO_VOICE_CONFIG_PATH=/etc/ambrogio/voice.json \
@@ -85,7 +66,7 @@ Check that the backend came up:
 curl http://localhost:3000/api/conversations
 ```
 
-You get the list of conversations, now with the one from the first tutorial in it. If the connection is refused, `docker logs ambrogio` probably shows `Voice resources are unavailable`; check the two paths in `voice.json`.
+You get the list of conversations, now with the one from the first tutorial in it. If the connection is refused, check `docker logs ambrogio` and the paths in the selected `voice.json` profile.
 
 ## Build the satellite
 
@@ -162,7 +143,7 @@ Stop the satellite with `Ctrl+C` when you are done.
 
 You have:
 
-- given the backend a speech recognition model and a voice;
+- enabled the speech recognition model and voice included in the backend image;
 - started a voice satellite and talked to Ambrogio with a wake word;
 - answered a follow-up question without repeating the wake word;
 - read a spoken conversation in the terminal client.

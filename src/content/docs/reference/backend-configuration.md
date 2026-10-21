@@ -24,7 +24,9 @@ File names are up to you; the names on this page are conventions.
 | Path | Meaning |
 |---|---|
 | `/etc/ambrogio/agents/` | Folder of agent files. Cannot be changed. See [Agent configuration](../agent-configuration/). |
-| `/opt/ambrogio/voices/` | Bundled voices, in the Docker image only. A mount at this path replaces them. |
+| `/opt/ambrogio/models/` | Bundled Italian and English Vosk models in the Docker image. |
+| `/opt/ambrogio/voices/` | Bundled Italian and English Piper voices. A mount at this path replaces them. |
+| `/opt/ambrogio/kokoro/` | Bundled multilingual Kokoro model. |
 
 ## `http.json`
 
@@ -62,7 +64,7 @@ Conversation storage, language, time zone and list pages.
 | Field | Type | Default | Meaning |
 |---|---|---|---|
 | `archivePath` | string | required | Path of the SQLite file that stores conversations. The file is created if it does not exist; its folder must exist and be writable. |
-| `language` | string | `"en"` | Language of the backend's own messages, such as errors and refusals: `"it"` or `"en"`. Any other string falls back to `"en"`. It does not change the language of the agents' answers. |
+| `language` | string | `"en"` | Language of the backend's own messages, agent answers and bundled speech models: `"it"` or `"en"`. Any other string falls back to `"en"`. |
 | `timeZone` | string | `"UTC"` | Time zone of the family, as an IANA name such as `"Europe/Rome"`. The agents get the current date and time in this zone; see [Current date and time](../agent-configuration/#current-date-and-time). A value that is not a known time zone stops the backend from starting. |
 | `listPageSize` | positive integer | `20` | Conversations per page when a client does not ask for a size. |
 | `maxListPageSize` | positive integer | `100` | Largest page a client may ask for. Must be at least `listPageSize`. |
@@ -81,7 +83,9 @@ Example:
 
 ## `voice.json`
 
-Speech recognition and synthesis. Read only when `AMBROGIO_VOICE_CONFIG_PATH` is set. Any other field makes the file invalid.
+Speech recognition and synthesis. Read only when `AMBROGIO_VOICE_CONFIG_PATH` is set. The recommended format has a `languages` object with `it` and/or `en` profiles. The backend selects the profile matching `conversations.json.language`. The active profile is required; another profile may be omitted. Paths are inside the container and may refer to bundled models or models supplied by Docker mounts.
+
+Each language profile has these fields. Any other field makes the file invalid.
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -91,7 +95,9 @@ Speech recognition and synthesis. Read only when `AMBROGIO_VOICE_CONFIG_PATH` is
 | `voiceSpeaker` | integer ≥ 0 | Required with `kokoro`, not allowed with `piper`. The number of the voice in the model. It must be lower than the number of voices the model declares, or the backend does not start. Voice names such as `"if_sara"` are not accepted. |
 | `voiceLanguage` | string | Required with `kokoro`, not allowed with `piper`. The espeak-ng language used to turn text into sounds, such as `"it"`, `"en"`, `"es"`, `"fr"`, `"hi"` or `"pt-br"`. The backend does not check the code. |
 
-Both models are loaded before the server starts listening. Speech synthesis uses up to four CPU threads. Audio has the sample rate of the loaded model; the multilingual Kokoro models produce 24 kHz. Ambrogio passes no lexicon files to Kokoro, so languages that sherpa-onnx pronounces only through a lexicon, such as Chinese, are not supported.
+Only the active profile's models are loaded before the server starts listening. Both profiles are checked for valid fields. Speech synthesis uses up to four CPU threads. Audio has the sample rate of the loaded model; the multilingual Kokoro models produce 24 kHz. Ambrogio passes no lexicon files to Kokoro, so languages that sherpa-onnx pronounces only through a lexicon, such as Chinese, are not supported.
+
+The earlier format with one profile at the root of `voice.json` remains valid. It uses the same models regardless of `conversations.json.language`; use `languages` to switch recognition and synthesis together.
 
 ### Voices of `kokoro-multi-lang-v1_0`
 
@@ -111,25 +117,45 @@ Pick the voice and a matching `voiceLanguage`. Numbers from the [sherpa-onnx Kok
 | 42–44 | Brazilian Portuguese: `pf_dora` (female), `pm_alex`, `pm_santa` (male) | `pt-br` |
 | 45–52 | Chinese: `zf_…`, `zm_…` | not supported |
 
-Example with a Piper voice mounted in the Docker image at `/opt/ambrogio/voices`:
+Example with the Piper voices included in the Docker image:
 
 ```json
 {
-  "voskModelPath": "/models/vosk-model-small-en-us-0.15",
-  "voiceEngine": "piper",
-  "voiceModelDir": "/opt/ambrogio/voices/vits-piper-en_US-kristin-medium"
+  "languages": {
+    "it": {
+      "voskModelPath": "/opt/ambrogio/models/vosk-model-small-it-0.22",
+      "voiceEngine": "piper",
+      "voiceModelDir": "/opt/ambrogio/voices/vits-piper-it_IT-paola-medium"
+    },
+    "en": {
+      "voskModelPath": "/opt/ambrogio/models/vosk-model-small-en-us-0.15",
+      "voiceEngine": "piper",
+      "voiceModelDir": "/opt/ambrogio/voices/vits-piper-en_US-kristin-medium"
+    }
+  }
 }
 ```
 
-Example with Kokoro, mounted at `/opt/ambrogio/kokoro`:
+Example with the bundled Kokoro model:
 
 ```json
 {
-  "voskModelPath": "/models/vosk-model-small-en-us-0.15",
-  "voiceEngine": "kokoro",
-  "voiceModelDir": "/opt/ambrogio/kokoro",
-  "voiceSpeaker": 3,
-  "voiceLanguage": "en"
+  "languages": {
+    "it": {
+      "voskModelPath": "/opt/ambrogio/models/vosk-model-small-it-0.22",
+      "voiceEngine": "kokoro",
+      "voiceModelDir": "/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0",
+      "voiceSpeaker": 35,
+      "voiceLanguage": "it"
+    },
+    "en": {
+      "voskModelPath": "/opt/ambrogio/models/vosk-model-small-en-us-0.15",
+      "voiceEngine": "kokoro",
+      "voiceModelDir": "/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0",
+      "voiceSpeaker": 3,
+      "voiceLanguage": "en"
+    }
+  }
 }
 ```
 

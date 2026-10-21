@@ -56,7 +56,7 @@ Create at least these files. [Backend configuration](../../reference/backend-con
 
 ```json title="/srv/ambrogio/config/agents/orchestrator.json"
 {
-  "instructions": "You are Ambrogio, the assistant of a family.",
+  "instructions": "Choose the agent that should answer the family's latest message. Route general questions and unclear requests to general. Return only the selected agent identifier.",
   "llm": { "provider": "mistral", "model": "mistral-medium-latest", "apiKey": "..." }
 }
 ```
@@ -76,6 +76,8 @@ sudo chmod 600 /srv/ambrogio/config/agents/*.json
 ```
 
 `host` must be `0.0.0.0` inside a container, otherwise Docker cannot forward the port.
+
+For speech, create `voice.json` with a profile for each language you use and set `AMBROGIO_VOICE_CONFIG_PATH` when starting the container. The image includes Italian and English models; [Enable voice](../enable-voice/) shows the file. To use your own models, mount them with Compose and put their container paths in the matching profile; see [Change the voice](../change-voice/#use-a-different-voice).
 
 ## 4. Start the container
 

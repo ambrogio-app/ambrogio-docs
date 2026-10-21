@@ -35,7 +35,7 @@ The orchestrator never writes the answer. Its only output is the identifier of t
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `description` | string | yes | What the agent is for. The orchestrator reads it to choose. Its instructions and credentials are never shown to the orchestrator. |
-| `instructions` | string | yes | The agent's own instructions. At every turn Ambrogio adds the current date and time after them; see [Current date and time](#current-date-and-time). |
+| `instructions` | string | yes | The agent's own instructions. At every turn Ambrogio adds the current date and time and the selected response language; see [Current date and time](#current-date-and-time). |
 | `llm` | object | yes | See [`llm`](#llm). |
 | `mcp` | object | no | Connection to an MCP server. See [`mcp`](#mcp). |
 | `maxToolCalls` | positive integer | with `mcp` only | Most MCP tool calls the agent may make for one turn. Required when `mcp` is present; not allowed when it is absent. |
@@ -51,6 +51,8 @@ Current date and time: Monday, 19 October 2026 at 09:41 (Europe/Rome).
 ```
 
 The time zone is `timeZone` in [`conversations.json`](../backend-configuration/#conversationsjson), `UTC` when it is not set. The orchestrator does not get the line. The line is not stored in the conversation.
+
+The backend also tells each specialised agent to answer in the language selected in `conversations.json`, Italian or English. This applies to agents with and without MCP. The orchestrator does not receive that instruction because it returns only an agent identifier. Agent files can be written in English without repeating the response language.
 
 ## `llm`
 
@@ -135,7 +137,7 @@ Orchestrator:
 
 ```json
 {
-  "instructions": "You are Ambrogio, the assistant of a family.",
+  "instructions": "Choose the agent that should answer the family's latest message.",
   "llm": { "provider": "mistral", "model": "mistral-medium-latest", "apiKey": "..." }
 }
 ```

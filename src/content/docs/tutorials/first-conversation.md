@@ -56,7 +56,7 @@ First, tell the server where to listen. Create `http.json`:
 { "host": "0.0.0.0", "port": 3000 }
 ```
 
-Next, tell it where to store conversations and which language to use for its own messages. Create `conversations.json`:
+Next, tell it where to store conversations and which language to use for messages, agent answers and bundled speech models. Create `conversations.json`:
 
 ```json title="~/ambrogio/config/conversations.json"
 { "archivePath": "/data/conversations.sqlite", "language": "en" }
@@ -68,7 +68,7 @@ Now the agents. Every request goes first to the *orchestrator*, which picks the 
 
 ```json title="~/ambrogio/config/agents/orchestrator.json"
 {
-  "instructions": "You are Ambrogio, the assistant of a family.",
+  "instructions": "Choose the agent that should answer the family's latest message. Route general questions and unclear requests to general. Return only the selected agent identifier.",
   "llm": {
     "provider": "mistral",
     "model": "mistral-medium-latest",
@@ -91,7 +91,7 @@ The orchestrator never answers by itself, so you need at least one agent that do
 }
 ```
 
-The file name, `general`, becomes the agent's name. You should now have four files:
+The file name, `general`, becomes the agent's name. The backend asks it to answer in the language from `conversations.json`, so its instructions can stay in English. You should now have four files:
 
 ```bash
 find ~/ambrogio/config -type f

@@ -13,12 +13,12 @@ Ambrogio's source code is released under the MIT license. The models it ships wi
 |---|---|---|---|
 | Piper voice *Paola* (medium), sherpa-onnx conversion | Speech synthesis | `/opt/ambrogio/voices/vits-piper-it_IT-paola-medium` in the image | MIT, from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices); converted by k2-fsa |
 | Piper voice *Riccardo* (x_low), sherpa-onnx conversion | Speech synthesis | `/opt/ambrogio/voices/vits-piper-it_IT-riccardo-x_low` in the image | MIT, as above |
+| Piper voice *Kristin* (medium), sherpa-onnx conversion | English speech synthesis | `/opt/ambrogio/voices/vits-piper-en_US-kristin-medium` in the image | MIT, as above |
+| Kokoro multilingual v1.0, sherpa-onnx conversion | Italian and English speech synthesis | `/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0` in the image | Apache-2.0, included `LICENSE` |
+| Vosk small Italian 0.22 | Italian speech recognition | `/opt/ambrogio/models/vosk-model-small-it-0.22` in the image | Apache-2.0, [Vosk catalogue](https://alphacephei.com/vosk/models) |
+| Vosk small English US 0.15 | English speech recognition | `/opt/ambrogio/models/vosk-model-small-en-us-0.15` in the image | Apache-2.0, as above |
 
-The voices are downloaded from the [sherpa-onnx `tts-models` release](https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models) when the image is built, and their SHA-256 checksums are verified. Each folder includes the voice's model card. The backend repository's `voices/README.md` lists the checksums.
-
-Kokoro models are **not** bundled either. If you choose one, you download it from the same release; `kokoro-multi-lang-v1_0.tar.bz2`, for example, is the Kokoro-82M model converted by k2-fsa, released under the Apache-2.0 license, and the backend repository's `voices/README.md` lists its checksum. Check the license of any other model on its release. See [Change the voice](../../how-to/change-voice/#use-kokoro).
-
-The Vosk speech recognition model is **not** bundled. You download it yourself from [alphacephei.com/vosk/models](https://alphacephei.com/vosk/models); its license is stated there.
+The voices and Kokoro model come from the [sherpa-onnx `tts-models` release](https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models); Vosk models come from the [Vosk catalogue](https://alphacephei.com/vosk/models). The build verifies every archive's SHA-256 checksum before extraction. The backend repository's `voices/README.md` lists all six checksums. You may still mount other models; check their licenses separately. See [Change the voice](../../how-to/change-voice/).
 
 ## Satellite
 

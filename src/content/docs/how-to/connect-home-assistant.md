@@ -58,7 +58,7 @@ Open the copy and replace the two placeholders, `<MISTRAL_API_KEY>` and `<HOME_A
 }
 ```
 
-The example does not name a language. To make sure the agent answers in your family's language, add it to `instructions`, for example `Always answer in Italian.` The file name, `home-assistant`, is the agent's name. `maxToolCalls` is the most tool calls the agent may make for one request. Five is enough to check a state and change a couple of devices. If the agent needs more, the turn fails with the standard error message instead of running on.
+The backend tells this agent to answer in the language selected in `conversations.json`, so the example does not need a language instruction. The file name, `home-assistant`, is the agent's name. `maxToolCalls` is the most tool calls the agent may make for one request. Five is enough to check a state and change a couple of devices. If the agent needs more, the turn fails with the standard error message instead of running on.
 
 Protect the file, since it holds two secrets:
 
