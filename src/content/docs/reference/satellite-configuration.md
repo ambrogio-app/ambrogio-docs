@@ -55,8 +55,23 @@ Optional. Without a selector, the system's default device is used.
 |---|---|---|
 | `microphone` | non-empty string | Microphone to use. |
 | `speaker` | non-empty string | Speaker to use. |
+| `attenuation` | object | Optional. ALSA control that the satellite lowers during an interaction. See below. |
 
 A selector that starts with `alsa:` is a stable device ID. Any other string matches part of a device name, ignoring case. Leading or trailing spaces are not allowed. A selector that matches no device causes an error; it never falls back to the default. [Choose audio devices](../../how-to/choose-audio-devices/) shows how to list devices.
+
+#### `audio.attenuation`
+
+Lowers other local audio, such as a music player sharing the speaker, while you talk to the satellite. All three fields are required.
+
+| Field | Type | Meaning |
+|---|---|---|
+| `device` | non-empty string | ALSA control device passed to `amixer -D`, such as `hw:CARD=<card>`. |
+| `control` | non-empty string | Name of the simple control to set, such as `Music`. |
+| `level` | whole number, 0 to 100 | Percentage the control is set to during an interaction. |
+
+The control belongs to the satellite and is separate from the player's own volume. The satellite runs `amixer -D <device> -q sset <control> <level>%` when the wake word is heard, before the listening beep, and sets the control back to `100%` when it returns to waiting for the wake word. The control stays lowered during follow-up replies. It is also set to `100%` at startup and during shutdown. Without `attenuation`, no control is changed.
+
+The control is usually created by an ALSA `softvol` device placed in front of the player's output; the satellite's own speaker must not go through it. ALSA creates a `softvol` control the first time something plays through that device: until then there is nothing to lower, and no error is logged. `amixer` comes from `alsa-utils`, which the Docker image includes from `v0.4.0`. Each call has a 2 second limit; a failure is logged as `satellite_attenuation_failed` and the interaction continues.
 
 ### `wakeWord`
 

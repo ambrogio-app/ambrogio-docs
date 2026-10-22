@@ -49,4 +49,5 @@ If the backend cannot start, it writes one `server_startup_failed` event (level 
 | `satellite_failure` | error | An interaction failed. The satellite plays the error tone and goes back to the wake word. |
 | `satellite_error_tone_failed` | error | The error tone could not be played. The satellite goes back to the wake word anyway. |
 | `satellite_ready_cue_failed` | error | The beep could not be played. The satellite listens anyway. |
+| `satellite_attenuation_failed` | warn | The [`audio.attenuation`](../satellite-configuration/#audioattenuation) control could not be set. `operation` is `attenuate` or `restore`; `reason` is `exit_code` (`amixer` failed), `timeout` (no answer within 2 seconds) or `spawn_failed` (`amixer` could not be started). The interaction or the wait for the wake word continues. |
 | `satellite_process_failed` | error | The satellite failed to start or stopped because of an error. It exits with code `1`. |

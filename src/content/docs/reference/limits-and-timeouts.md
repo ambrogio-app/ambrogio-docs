@@ -37,6 +37,8 @@ Turns are never queued and never retried automatically.
 | Silence that ends a request | 20 windows (about 640 ms) | no |
 | Wait for an outcome after you stop speaking | 60 seconds | no |
 | Wait for a follow-up reply | 15 seconds, restarted after each answer | `interaction.replyTimeoutMs` |
+| Level of other local audio during an interaction | set per installation, 100% otherwise | `audio.attenuation.level` |
+| Time allowed for each `amixer` call | 2 seconds | no |
 
 The satellite does not listen while it is speaking: you cannot interrupt an answer.
 
