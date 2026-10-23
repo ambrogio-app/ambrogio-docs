@@ -9,17 +9,18 @@ The terminal client runs from a checkout of its repository. There is no installa
 
 ## Before you start
 
-- Node.js 22 or later, with npm.
+- Node.js 24 or later.
 - A terminal window at least 70 columns wide and 14 rows high.
 - The backend's address, for example `http://ambrogio.home.lan:3000`, reachable from this computer.
 
 ## Install
 
 ```bash
-git clone --branch v0.1.0 https://github.com/ambrogio-app/ambrogio-cli.git
+git clone --branch v0.2.0 https://github.com/ambrogio-app/ambrogio-cli.git
 cd ambrogio-cli
-npm ci
-npm run build
+npm install --global pnpm@12.11.2
+pnpm install --frozen-lockfile
+pnpm build
 ```
 
 ## Run
@@ -27,10 +28,8 @@ npm run build
 Pass the backend's address with `--server`:
 
 ```bash
-npm start -- --server http://ambrogio.home.lan:3000
+pnpm start --server http://ambrogio.home.lan:3000
 ```
-
-The `--` separates npm's own options from the client's.
 
 To avoid typing the address every time, set it in your shell profile:
 
@@ -38,14 +37,14 @@ To avoid typing the address every time, set it in your shell profile:
 export AMBROGIO_URL=http://ambrogio.home.lan:3000
 ```
 
-Then `npm start` is enough. If you pass `--server` as well, it wins over the variable.
+Then `pnpm start` is enough. If you pass `--server` as well, it wins over the variable.
 
 ## Give the client a stable name
 
 The client introduces itself to the backend as `cli-<hostname>`. If several people share a computer, or the hostname changes, set your own identifier:
 
 ```bash
-npm start -- --server http://ambrogio.home.lan:3000 --client-id cli-anna-laptop
+pnpm start --server http://ambrogio.home.lan:3000 --client-id cli-anna-laptop
 ```
 
 or `export AMBROGIO_CLIENT_ID=cli-anna-laptop`. The identifier only labels the connection on the backend. It does not separate conversations: everyone sees the same list.
@@ -54,8 +53,8 @@ or `export AMBROGIO_CLIENT_ID=cli-anna-laptop`. The identifier only labels the c
 
 ```bash
 git pull
-npm ci
-npm run build
+pnpm install --frozen-lockfile
+pnpm build
 ```
 
 Check that the new version matches your backend; see [Versions and compatibility](../../reference/versions/).

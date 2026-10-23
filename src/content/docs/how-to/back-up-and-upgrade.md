@@ -54,9 +54,10 @@ From its folder:
 
 ```bash
 git pull
-pnpm install --frozen-lockfile && pnpm build   # satellite
-npm ci && npm run build                        # terminal client
+pnpm install --frozen-lockfile && pnpm build
 ```
+
+The terminal client `v0.2.0` needs Node.js 24 and pnpm 12.11.2; a checkout of `v0.1.0` used npm. Install pnpm with `npm install --global pnpm@12.11.2` before the first upgrade.
 
 With Docker, rebuild the satellite image and recreate the container. Restart the program afterwards.
 

@@ -80,7 +80,7 @@ Recreate the backend with `docker compose -f compose.example.yaml up -d`.
 
 Use the `https://` address everywhere. The clients switch to `wss://` for the session by themselves.
 
-- Terminal client: `npm start -- --server https://ambrogio.example.com`
+- Terminal client: `pnpm start --server https://ambrogio.example.com`
 - Satellite: `AMBROGIO_BACKEND_URL=https://ambrogio.example.com`
 - Web chat: `"backendUrl": "https://ambrogio.example.com"` in `config.json`
 
