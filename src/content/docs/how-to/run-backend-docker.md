@@ -16,7 +16,7 @@ sidebar:
 ```bash
 git clone https://github.com/ambrogio-app/ambrogio-backend.git
 cd ambrogio-backend
-git checkout v0.8.0
+git checkout v0.9.0
 ```
 
 `compose.example.yaml` mounts the TypeScript modules in `examples/` and stores the conversation archive in a Docker volume. The backend reads the exported objects once at startup. See [Backend configuration](../../reference/backend-configuration/) and [Agent configuration](../../reference/agent-configuration/) for the fields.
@@ -26,7 +26,7 @@ git checkout v0.8.0
 Create a local `.env` beside `compose.example.yaml`:
 
 ```dotenv
-AMBROGIO_VERSION=v0.8.0
+AMBROGIO_VERSION=v0.9.0
 MISTRAL_API_KEY=<your-api-key>
 AMBROGIO_LANGUAGE=en
 ```

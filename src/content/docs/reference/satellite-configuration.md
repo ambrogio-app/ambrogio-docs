@@ -15,7 +15,7 @@ node dist/main.js --config <file>
 
 | Exit code | Meaning |
 |---|---|
-| `1` | The satellite failed while starting or running. |
+| `1` | The satellite failed while starting or running, or did not finish stopping within 5 seconds of `SIGINT` or `SIGTERM`. |
 | `2` | Invalid arguments (`invalid_arguments`) or invalid configuration (`invalid_configuration`). |
 
 ## Configuration file

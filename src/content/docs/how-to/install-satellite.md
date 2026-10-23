@@ -43,7 +43,7 @@ Get the matching Compose file and TypeScript module:
 ```bash
 git clone https://github.com/ambrogio-app/ambrogio-satellite.git
 cd ambrogio-satellite
-git checkout v0.5.0
+git checkout v0.6.0
 ```
 
 Compose pulls the versioned image for the device's architecture.
@@ -63,7 +63,7 @@ Give each satellite a distinct `AMBROGIO_CLIENT_ID`. Other supported variables, 
 For Docker Compose, create `.env` next to `compose.example.yaml`:
 
 ```dotenv
-AMBROGIO_SATELLITE_VERSION=v0.5.0
+AMBROGIO_SATELLITE_VERSION=v0.6.0
 AMBROGIO_BACKEND_URL=http://192.168.1.20:3000
 AMBROGIO_CLIENT_ID=kitchen
 AMBROGIO_CLIENT_NAME=Kitchen
