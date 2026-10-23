@@ -4,7 +4,7 @@ This repository contains only the user documentation of Ambrogio: an Astro Starl
 
 ## Where facts come from
 
-- Every statement about behaviour, configuration fields, defaults, limits, messages and versions must be traceable to a contract or requirement in one of the three models, or to the code that implements it. Read them through the Reqvire MCP server of the repository concerned (`reqvire-backend` on 8082, `reqvire-cli` on 8083, `reqvire-satellite` on 8084) or directly in `system-model/`. Do not treat the three models as one graph.
+- Every statement about behaviour, configuration fields, defaults, limits, messages and versions must be traceable to a contract or requirement in one of the three models, or to the code that implements it. Read them with the Reqvire CLI run on the repository concerned (`--workspace <repository>`) or directly in `system-model/`. Do not treat the three models as one graph.
 - Do not document behaviour that the models do not record. If the code and the model disagree, report it instead of choosing one.
 - The backend owns the protocol and the HTTP API; the clients record the backend revision they are compatible with. Keep `reference/versions.md` in line with those records and with the published tags and images.
 - External facts (Home Assistant, Vosk, sherpa-onnx, openWakeWord) need a check against their official documentation.

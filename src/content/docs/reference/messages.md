@@ -55,7 +55,7 @@ The terminal client shows the backend's messages as they are. Its own texts are 
 
 | Italian | English | When |
 |---|---|---|
-| Uso: npm start -- --server http://host:porta [--client-id identificativo] [--language it\|en] | Usage: npm start -- --server http://host:port [--client-id identifier] [--language it\|en] | Usage, first line. |
+| Uso: pnpm start --server http://host:porta [--client-id identificativo] [--language it\|en] | Usage: pnpm start --server http://host:port [--client-id identifier] [--language it\|en] | Usage, first line. In release `v0.1.0` it starts with `npm start -- --server`. |
 | Oppure imposta AMBROGIO_URL, AMBROGIO_CLIENT_ID e AMBROGIO_LANGUAGE. | Or set AMBROGIO_URL, AMBROGIO_CLIENT_ID and AMBROGIO_LANGUAGE. | Usage, second line. |
 | Opzioni non valide. | Invalid options. | An option or the language is not valid. |
 | Indica l’URL del backend. | Specify the backend URL. | No backend address. |

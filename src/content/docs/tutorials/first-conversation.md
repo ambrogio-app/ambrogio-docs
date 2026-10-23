@@ -11,7 +11,7 @@ Allow time for the image build and dependencies. Everything runs on one Linux ma
 
 ## What you need
 
-- A Linux computer with [Docker](https://docs.docker.com/engine/install/), `git` and Node.js 22 or later.
+- A Linux computer with [Docker](https://docs.docker.com/engine/install/), `git` and Node.js 24 or later.
 - A [Mistral](https://console.mistral.ai/) account and an API key. This tutorial uses Mistral models, and each answer costs a little API credit.
 
 Check the tools before you start:
@@ -65,8 +65,9 @@ Open a second terminal and build the client:
 cd ~/ambrogio/src
 git clone https://github.com/ambrogio-app/ambrogio-cli.git
 cd ambrogio-cli
-npm ci
-npm run build
+npm install --global pnpm@12.11.2
+pnpm install --frozen-lockfile
+pnpm build
 ```
 
 ## Talk to Ambrogio
@@ -74,7 +75,7 @@ npm run build
 Start the client and point it at your backend:
 
 ```bash
-npm start -- --server http://localhost:3000
+pnpm start --server http://localhost:3000
 ```
 
 The screen splits in two. On the left is the list of chats, with **New chat** selected. On the right is the conversation, with the input field at the bottom.

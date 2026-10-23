@@ -30,14 +30,14 @@ Release list checked on 23 October 2026. The TypeScript configuration pages desc
 | Web chat | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-web:v0.1.0` (amd64, arm64) | yes |
 | Satellite | `v0.5.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.5.0` (amd64, arm64) | yes |
 
-All four programs speak the `ambrogio.v1` protocol, which has not changed since it was introduced. The terminal client and the satellite are tested against backend commit `58b0df4`, where the protocol was introduced; the web chat against backend `v0.1.0` (commit `a4578db`).
+All four programs speak the `ambrogio.v1` protocol, which has not changed since it was introduced. On their `main` branches the terminal client, the web chat and the satellite are tested against backend `v0.8.0` (commit `a570c01`). The released clients listed above were tested against older backend commits with the same protocol: the terminal client and the satellite against `58b0df4`, where the protocol was introduced, and the web chat against `v0.1.0` (commit `a4578db`).
 
 When you upgrade, compare your files with the [backend configuration](../backend-configuration/), [agent configuration](../agent-configuration/) and [satellite configuration](../satellite-configuration/) references: an older file may lack a field that is now required.
 
 ## Release rules
 
 - Backend, satellite and web chat images are published only for Git tags of the form `vMAJOR.MINOR.PATCH`. The image tag equals the Git tag. There is no `latest` tag.
-- An image is published only if the repository's checks (model validation and lint, type check, tests, build) and the secret scan pass on the tagged commit.
+- An image is published only if the repository's checks (model validation, lint and integrity check, type check, tests, build) and the secret scan pass on the tagged commit.
 - Backend images are built for `linux/amd64`. Satellite and web chat images are built for `linux/amd64` and `linux/arm64`.
 
 ## Language

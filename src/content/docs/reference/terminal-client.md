@@ -8,8 +8,10 @@ sidebar:
 ## Command line
 
 ```bash
-npm start -- --server <url> [--client-id <id>] [--language <it|en>]
+pnpm start --server <url> [--client-id <id>] [--language <it|en>]
 ```
+
+The client needs Node.js 24 or later and is installed with pnpm 12.11.2. Release `v0.1.0` predates this: it needs Node.js 22 or later, is installed with npm and starts with `npm start -- --server <url> …`.
 
 | Option | Variable | Default | Meaning |
 |---|---|---|---|

@@ -13,7 +13,7 @@ It takes about 20 minutes.
 
 - The backend from the first tutorial, with its configuration in `~/ambrogio/config`.
 - A microphone and a speaker (or headphones) connected to the computer.
-- Node.js 24 or later. The satellite needs a newer Node.js than the terminal client.
+- Node.js 24 or later.
 - The ALSA and OpenMP runtime libraries. On Debian and Ubuntu:
 
   ```bash
@@ -38,7 +38,7 @@ If it does not, read `docker compose -f compose.example.yaml logs backend` in th
 cd ~/ambrogio/src
 git clone https://github.com/ambrogio-app/ambrogio-satellite.git
 cd ambrogio-satellite
-npm install --global pnpm
+npm install --global pnpm@12.11.2
 pnpm install --frozen-lockfile
 pnpm build
 ```
@@ -79,7 +79,7 @@ Open another terminal and start the terminal client:
 
 ```bash
 cd ~/ambrogio/src/ambrogio-cli
-npm start -- --server http://localhost:3000
+pnpm start --server http://localhost:3000
 ```
 
 Your spoken conversations are at the top of the list. Open one: your words are there as text, as the backend transcribed them, followed by Ambrogio's answers. You can continue the conversation by typing.
