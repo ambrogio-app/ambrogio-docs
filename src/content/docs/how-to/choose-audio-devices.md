@@ -20,7 +20,7 @@ The first table shows microphones, the second speakers. Note the `name` and `id`
 With Docker, run the same command inside the image:
 
 ```bash
-docker run --rm --device /dev/snd --entrypoint node ghcr.io/ambrogio-app/ambrogio-satellite:v0.5.0 \
+docker run --rm --device /dev/snd --entrypoint node ghcr.io/ambrogio-app/ambrogio-satellite:v0.6.0 \
   -e "import('decibri').then(d => { console.table(d.Microphone.devices()); console.table(d.Speaker.devices()); })"
 ```
 

@@ -70,7 +70,7 @@ The terminal client shows the backend's messages as they are. Its own texts are 
 | Nuova chat | New chat | The new chat entry in the list. |
 | Caricamento conversazioni… | Loading conversations… | At start. |
 | Scrivi un messaggio per iniziare questa chat. | Write a message to start this chat. | A chat with no messages. |
-| Allarga il terminale ad almeno 70 colonne e 14 righe. La chat corrente resta aperta. | Enlarge the terminal to at least 70 columns and 14 rows. The current chat stays open. | The terminal is too small. Shown on two lines. |
+| Allarga il terminale ad almeno 70 colonne e 14 righe. La chat corrente resta aperta. | Enlarge the terminal to at least 70 columns and 14 rows. The current chat stays open. | The terminal is too small. Shown on two lines, which wrap further in a very narrow terminal. |
 | Scrivi un messaggio e premi Invio | Type a message and press Enter | Label of the input field. |
 | Messaggio… | Message… | Placeholder of the input field. |
 | ↑↓ scegli · Invio apri | ↑↓ select · Enter open | Keys of the chat list. |
