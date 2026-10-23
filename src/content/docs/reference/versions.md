@@ -26,11 +26,11 @@ Release list checked on 23 October 2026. The TypeScript configuration pages desc
 | Program | Latest release | Images | Works with the current clients |
 |---|---|---|---|
 | Backend | `v0.8.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.8.0` (amd64) | yes |
-| Terminal client | `v0.1.0` | none, run from a checkout of the tag | yes |
+| Terminal client | `v0.2.0` | none, run from a checkout of the tag | yes |
 | Web chat | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-web:v0.1.0` (amd64, arm64) | yes |
 | Satellite | `v0.5.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.5.0` (amd64, arm64) | yes |
 
-All four programs speak the `ambrogio.v1` protocol, which has not changed since it was introduced. On their `main` branches the terminal client, the web chat and the satellite are tested against backend `v0.8.0` (commit `a570c01`). The released clients listed above were tested against older backend commits with the same protocol: the terminal client and the satellite against `58b0df4`, where the protocol was introduced, and the web chat against `v0.1.0` (commit `a4578db`).
+All four programs speak the `ambrogio.v1` protocol, which has not changed since it was introduced. The terminal client `v0.2.0` and the `main` branches of the web chat and the satellite are tested against backend `v0.8.0` (commit `a570c01`). The web chat `v0.1.0` and the satellite `v0.5.0` were tested against older backend commits with the same protocol: the satellite against `58b0df4`, where the protocol was introduced, and the web chat against `v0.1.0` (commit `a4578db`).
 
 When you upgrade, compare your files with the [backend configuration](../backend-configuration/), [agent configuration](../agent-configuration/) and [satellite configuration](../satellite-configuration/) references: an older file may lack a field that is now required.
 
