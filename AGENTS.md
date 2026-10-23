@@ -31,6 +31,8 @@ When a page starts mixing kinds, split it and link the parts.
 
 ## Links and publishing
 
+`main` accepts changes only through a pull request whose CI and secret scan pass: a GitHub ruleset rejects direct pushes, force pushes and deletion, for everyone. Work on a branch and open a pull request.
+
 The site is published on GitHub Pages at <https://ambrogio-app.github.io/ambrogio-docs/> by `.github/workflows/pages.yml` on every push to `main`, after the CI and the secret scan pass. Because it is served under `/ambrogio-docs/`, links between pages are relative (`../../reference/versions/`), never root-relative (`/reference/versions/`); `npm run check:links` fails on links that leave the base.
 
 ## Checks
