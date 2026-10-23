@@ -22,51 +22,15 @@ It takes about 20 minutes.
 
   On recent Ubuntu releases the first package is called `libasound2t64`.
 
-## Turn on voice in the backend
+## Check voice in the backend
 
-The Docker image already includes Vosk recognition models and Piper voices for Italian and English. Voice has its own configuration file. Create `voice.json` next to the others:
-
-```json title="~/ambrogio/config/voice.json"
-{
-  "languages": {
-    "it": {
-      "voskModelPath": "/opt/ambrogio/models/vosk-model-small-it-0.22",
-      "voiceEngine": "piper",
-      "voiceModelDir": "/opt/ambrogio/voices/vits-piper-it_IT-paola-medium"
-    },
-    "en": {
-      "voskModelPath": "/opt/ambrogio/models/vosk-model-small-en-us-0.15",
-      "voiceEngine": "piper",
-      "voiceModelDir": "/opt/ambrogio/voices/vits-piper-en_US-kristin-medium"
-    }
-  }
-}
-```
-
-The `en` profile is selected because the first tutorial set `conversations.json.language` to `en`. The `it` profile is ready if you switch languages later. `voiceEngine` selects Piper; the paths point to models already inside the image.
-
-Replace the running container with one that has the new configuration variable:
+The backend Compose example from the first tutorial already mounts `examples/voice.ts` and sets `AMBROGIO_VOICE_CONFIG_PATH`. Its English Piper profile uses models included in the image. Check that the backend still answers:
 
 ```bash
-docker rm -f ambrogio
-docker run -d --name ambrogio -p 3000:3000 \
-  -v ~/ambrogio/config:/etc/ambrogio:ro \
-  -v ~/ambrogio/data:/data \
-  -e AMBROGIO_HTTP_CONFIG_PATH=/etc/ambrogio/http.json \
-  -e AMBROGIO_CONVERSATIONS_CONFIG_PATH=/etc/ambrogio/conversations.json \
-  -e AMBROGIO_VOICE_CONFIG_PATH=/etc/ambrogio/voice.json \
-  ambrogio-backend:local
+curl -s http://localhost:3000/api/conversations
 ```
 
-Removing the container does not touch your conversations: they live in `~/ambrogio/data`.
-
-Check that the backend came up:
-
-```bash
-curl http://localhost:3000/api/conversations
-```
-
-You get the list of conversations, now with the one from the first tutorial in it. If the connection is refused, check `docker logs ambrogio` and the paths in the selected `voice.json` profile.
+If it does not, read `docker compose -f compose.example.yaml logs backend` in the backend repository. [Backend configuration](../../reference/backend-configuration/#voicets) lists the voice settings.
 
 ## Build the satellite
 
@@ -81,30 +45,13 @@ pnpm build
 
 ## Configure the satellite
 
-Copy the example configuration:
+The satellite's `config.example.ts` reads its backend address and identity from environment variables. In the satellite repository, run:
 
 ```bash
-cp config.example.json config.json
-```
-
-Open `config.json` and change the `client` section. The satellite introduces itself to the backend with these values:
-
-```json title="config.json"
-{
-  "backend": { "baseUrl": "http://localhost:3000" },
-  "client": { "id": "desk", "name": "Desk" },
-  "audio": {},
-  "wakeWord": { "model": "hey_jarvis" },
-  "interaction": { "replyTimeoutMs": 15000 }
-}
-```
-
-The empty `audio` section means "use the system's default microphone and speaker".
-
-## Start the satellite
-
-```bash
-node dist/main.js --config config.json
+export AMBROGIO_BACKEND_URL=http://localhost:3000
+export AMBROGIO_CLIENT_ID=desk
+export AMBROGIO_CLIENT_NAME=Desk
+node dist/main.js --config config.example.ts
 ```
 
 The satellite writes its log as JSON lines. After a few seconds you see a line that contains:

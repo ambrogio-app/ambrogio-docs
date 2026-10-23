@@ -31,7 +31,7 @@ When the file is missing or invalid, the page shows "Invalid web client configur
 
 ## Backend setting
 
-The page's origin must be listed in `allowedOrigins` of the backend's `http.json`, otherwise the backend refuses the conversation session with `403` and sends no CORS headers for the list and history. See [Backend configuration](../backend-configuration/#httpjson).
+The page's origin must be listed in `allowedOrigins` of the backend's `http.ts`, otherwise the backend refuses the conversation session with `403` and sends no CORS headers for the list and history. See [Backend configuration](../backend-configuration/#httpts).
 
 ## Container
 

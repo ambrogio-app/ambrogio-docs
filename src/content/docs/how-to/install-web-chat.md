@@ -39,15 +39,9 @@ The page reads this file when it opens. Keep it outside the image, for example i
 
 ## 3. Allow the chat address in the backend
 
-Add the chat address to `allowedOrigins` in the backend's `http.json`. Write it exactly as it appears in the browser's address bar, with scheme and port, without a path or trailing slash:
+Add the chat address to `allowedOrigins` in the backend's HTTP configuration. Write it exactly as it appears in the browser's address bar, with scheme and port, without a path or trailing slash:
 
-```json title="/srv/ambrogio/config/http.json"
-{
-  "host": "0.0.0.0",
-  "port": 3000,
-  "allowedOrigins": ["http://ambrogio.home.lan:8080"]
-}
-```
+Set `AMBROGIO_ALLOWED_ORIGINS=https://chat.example.com` in the backend Compose `.env`, then recreate the backend. The Compose service forwards this variable to `examples/http.ts`.
 
 Restart the backend. Without this entry the backend refuses the page: the sidebar shows "Cannot connect to the backend." instead of the conversations, and every message ends with the same text.
 

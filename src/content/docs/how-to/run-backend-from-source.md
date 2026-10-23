@@ -24,28 +24,34 @@ pnpm build
 
 ## Configure
 
-Create the configuration folder and an archive folder, then write the files described in [Run the backend with Docker](../run-backend-docker/#3-write-the-configuration). Use host paths instead of container paths:
+Create the configuration and archive folders:
 
 ```bash
 sudo mkdir -p /etc/ambrogio/agents /var/lib/ambrogio
 sudo chown -R "$USER" /etc/ambrogio /var/lib/ambrogio
 ```
 
-```json title="/etc/ambrogio/conversations.json"
-{ "archivePath": "/var/lib/ambrogio/conversations.sqlite", "language": "en" }
+Copy the modules from `examples/` into `/etc/ambrogio/`, including `agents/orchestrator.ts` and `agents/generic.ts`. Change `archivePath` in `conversations.ts` to a host path through `AMBROGIO_ARCHIVE_PATH`, and set `MISTRAL_API_KEY` for the agents.
+
+```bash
+cp examples/http.ts examples/conversations.ts /etc/ambrogio/
+cp examples/agents/orchestrator.ts examples/agents/generic.ts /etc/ambrogio/agents/
+export AMBROGIO_ARCHIVE_PATH=/var/lib/ambrogio/conversations.sqlite
+export AMBROGIO_LANGUAGE=en
+export MISTRAL_API_KEY=<your-api-key>
 ```
 
-The other files (`http.json`, `agents/orchestrator.json` and at least one more agent) are the same as with Docker. With `"host": "127.0.0.1"` only programs on the same machine can connect; use `0.0.0.0` or the host's LAN address to let other devices in.
+Set `AMBROGIO_HTTP_HOST=127.0.0.1` to accept connections only from the same machine. Use `0.0.0.0` or the host LAN address for other devices.
 
 ## Start
 
 ```bash
-AMBROGIO_HTTP_CONFIG_PATH=/etc/ambrogio/http.json \
-AMBROGIO_CONVERSATIONS_CONFIG_PATH=/etc/ambrogio/conversations.json \
+AMBROGIO_HTTP_CONFIG_PATH=/etc/ambrogio/http.ts \
+AMBROGIO_CONVERSATIONS_CONFIG_PATH=/etc/ambrogio/conversations.ts \
 node apps/server/dist/main.js
 ```
 
-Add `AMBROGIO_VOICE_CONFIG_PATH=/etc/ambrogio/voice.json` to enable voice. Without Docker there are no bundled models: provide Vosk and sherpa-onnx Piper or Kokoro directories yourself, then put their host paths in `voice.json`. See [Change the voice](../change-voice/#use-a-different-voice).
+Add `AMBROGIO_VOICE_CONFIG_PATH=/etc/ambrogio/voice.ts` to enable voice. Without Docker there are no bundled models: provide Vosk and sherpa-onnx Piper or Kokoro directories yourself, then put their host paths in `voice.ts`. See [Change the voice](../change-voice/#use-a-different-voice).
 
 Stop the server with `Ctrl+C` or `SIGTERM`. Turns that are still being answered at that moment are saved as *interrupted*; see [Turns and outcomes](../../explanation/turns/#when-the-server-stops).
 

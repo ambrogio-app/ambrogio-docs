@@ -26,7 +26,7 @@ This is a deliberate choice for the first versions: the family shares one identi
 
 ## Secrets
 
-API keys and MCP tokens live in plain JSON files in the configuration folder, one agent per file. The backend:
+API keys and MCP tokens can be passed as environment variables to TypeScript agent modules. Protect the Compose `.env` and the container environment. The backend:
 
 - never sends one agent's credentials to another agent or to the language model;
 - never writes them to the logs or to error messages.

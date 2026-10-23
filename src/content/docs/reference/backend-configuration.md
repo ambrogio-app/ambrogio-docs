@@ -7,17 +7,17 @@ sidebar:
 
 The backend reads its configuration once, at startup. Changes take effect on the next restart. If a required file is missing or a value is invalid, the backend does not start: it logs a `server_startup_failed` event that names the problem and prints `Unable to start HTTP server.` to standard error. See [Troubleshooting](../../how-to/troubleshoot/#the-backend-does-not-start).
 
-Environment variables only say *where* the files are. They never replace a value inside a file.
+Each TypeScript module exports a default configuration object. The modules may read `process.env`, so Docker Compose can provide every value. Convert numbers and booleans in the module before export. The backend validates the exported values at startup. Environment variables used inside a module are defined by that module, not by the backend schema.
 
 ## Environment variables
 
 | Variable | Required | Meaning |
 |---|---|---|
-| `AMBROGIO_HTTP_CONFIG_PATH` | yes | Path of [`http.json`](#httpjson). |
-| `AMBROGIO_CONVERSATIONS_CONFIG_PATH` | yes | Path of [`conversations.json`](#conversationsjson). |
-| `AMBROGIO_VOICE_CONFIG_PATH` | no | Path of [`voice.json`](#voicejson). If the variable is not set, voice is disabled. If it is set to an empty string, startup fails. |
+| `AMBROGIO_HTTP_CONFIG_PATH` | yes | Path of [`http.ts`](#httpts). |
+| `AMBROGIO_CONVERSATIONS_CONFIG_PATH` | yes | Path of [`conversations.ts`](#conversationsts). |
+| `AMBROGIO_VOICE_CONFIG_PATH` | no | Path of [`voice.ts`](#voicets). If the variable is not set, voice is disabled. If it is set to an empty string, startup fails. |
 
-File names are up to you; the names on this page are conventions.
+File names are up to you; the names on this page match the repository examples. Use Node.js 24 or later to load `.ts` modules.
 
 ## Fixed paths
 
@@ -28,7 +28,7 @@ File names are up to you; the names on this page are conventions.
 | `/opt/ambrogio/voices/` | Bundled Italian and English Piper voices. A mount at this path replaces them. |
 | `/opt/ambrogio/kokoro/` | Bundled multilingual Kokoro model. |
 
-## `http.json`
+## `http.ts`
 
 Network listener and HTTP security settings.
 
@@ -47,17 +47,19 @@ Network listener and HTTP security settings.
 
 Example:
 
-```json
-{
-  "host": "0.0.0.0",
-  "port": 3000,
-  "allowedOrigins": [],
-  "publicHttps": true,
-  "hstsMaxAgeSeconds": 31536000
-}
+```ts
+export default {
+  host: process.env.AMBROGIO_HTTP_HOST || '0.0.0.0',
+  port: Number(process.env.AMBROGIO_HTTP_PORT || 3000),
+  allowedOrigins: process.env.AMBROGIO_ALLOWED_ORIGINS?.split(',').map(origin => origin.trim()).filter(Boolean) || [],
+  publicHttps: process.env.AMBROGIO_PUBLIC_HTTPS === 'true',
+  ...(!process.env.AMBROGIO_HSTS_MAX_AGE_SECONDS ? {} : {
+    hstsMaxAgeSeconds: Number(process.env.AMBROGIO_HSTS_MAX_AGE_SECONDS),
+  }),
+};
 ```
 
-## `conversations.json`
+## `conversations.ts`
 
 Conversation storage, language, time zone and list pages.
 
@@ -71,21 +73,21 @@ Conversation storage, language, time zone and list pages.
 
 Example:
 
-```json
-{
-  "archivePath": "/data/conversations.sqlite",
-  "language": "en",
-  "timeZone": "Europe/London",
-  "listPageSize": 20,
-  "maxListPageSize": 100
-}
+```ts
+export default {
+  archivePath: process.env.AMBROGIO_ARCHIVE_PATH || '/data/conversations.sqlite',
+  language: process.env.AMBROGIO_LANGUAGE || 'en',
+  timeZone: process.env.AMBROGIO_TIME_ZONE || 'UTC',
+  listPageSize: Number(process.env.AMBROGIO_LIST_PAGE_SIZE || 20),
+  maxListPageSize: Number(process.env.AMBROGIO_MAX_LIST_PAGE_SIZE || 100),
+};
 ```
 
-## `voice.json`
+## `voice.ts`
 
-Speech recognition and synthesis. Read only when `AMBROGIO_VOICE_CONFIG_PATH` is set. The recommended format has a `languages` object with `it` and/or `en` profiles. The backend selects the profile matching `conversations.json.language`. The active profile is required; another profile may be omitted. Paths are inside the container and may refer to bundled models or models supplied by Docker mounts.
+Speech recognition and synthesis. Read only when `AMBROGIO_VOICE_CONFIG_PATH` is set. The recommended format has a `languages` object with `it` and/or `en` profiles. The backend selects the profile matching `conversations.ts.language`. The active profile is required; another profile may be omitted. Paths are inside the container and may refer to bundled models or models supplied by Docker mounts.
 
-Each language profile has these fields. Any other field makes the file invalid.
+Each language profile has these fields. Any other field makes the exported object invalid.
 
 | Field | Type | Meaning |
 |---|---|---|
@@ -97,7 +99,7 @@ Each language profile has these fields. Any other field makes the file invalid.
 
 Only the active profile's models are loaded before the server starts listening. Both profiles are checked for valid fields. Speech synthesis uses up to four CPU threads. Audio has the sample rate of the loaded model; the multilingual Kokoro models produce 24 kHz. Ambrogio passes no lexicon files to Kokoro, so languages that sherpa-onnx pronounces only through a lexicon, such as Chinese, are not supported.
 
-The earlier format with one profile at the root of `voice.json` remains valid. It uses the same models regardless of `conversations.json.language`; use `languages` to switch recognition and synthesis together.
+The earlier format with one profile at the root of `voice.ts` remains valid. It uses the same models regardless of `conversations.ts.language`; use `languages` to switch recognition and synthesis together.
 
 ### Voices of `kokoro-multi-lang-v1_0`
 
@@ -119,44 +121,57 @@ Pick the voice and a matching `voiceLanguage`. Numbers from the [sherpa-onnx Kok
 
 Example with the Piper voices included in the Docker image:
 
-```json
-{
-  "languages": {
-    "it": {
-      "voskModelPath": "/opt/ambrogio/models/vosk-model-small-it-0.22",
-      "voiceEngine": "piper",
-      "voiceModelDir": "/opt/ambrogio/voices/vits-piper-it_IT-paola-medium"
+```ts
+const itEngine = process.env.AMBROGIO_IT_VOICE_ENGINE || 'piper';
+const enEngine = process.env.AMBROGIO_EN_VOICE_ENGINE || 'piper';
+
+export default {
+  languages: {
+    it: {
+      voskModelPath: process.env.AMBROGIO_IT_VOSK_MODEL_PATH || '/opt/ambrogio/models/vosk-model-small-it-0.22',
+      voiceEngine: itEngine,
+      voiceModelDir: process.env.AMBROGIO_IT_VOICE_MODEL_DIR || (itEngine === 'kokoro'
+        ? '/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0' : '/opt/ambrogio/voices/vits-piper-it_IT-paola-medium'),
+      ...(itEngine === 'kokoro' ? {
+        voiceSpeaker: Number(process.env.AMBROGIO_IT_VOICE_SPEAKER || 35),
+        voiceLanguage: process.env.AMBROGIO_IT_VOICE_LANGUAGE || 'it',
+      } : {}),
     },
-    "en": {
-      "voskModelPath": "/opt/ambrogio/models/vosk-model-small-en-us-0.15",
-      "voiceEngine": "piper",
-      "voiceModelDir": "/opt/ambrogio/voices/vits-piper-en_US-kristin-medium"
-    }
-  }
-}
+    en: {
+      voskModelPath: process.env.AMBROGIO_EN_VOSK_MODEL_PATH || '/opt/ambrogio/models/vosk-model-small-en-us-0.15',
+      voiceEngine: enEngine,
+      voiceModelDir: process.env.AMBROGIO_EN_VOICE_MODEL_DIR || (enEngine === 'kokoro'
+        ? '/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0' : '/opt/ambrogio/voices/vits-piper-en_US-kristin-medium'),
+      ...(enEngine === 'kokoro' ? {
+        voiceSpeaker: Number(process.env.AMBROGIO_EN_VOICE_SPEAKER || 3),
+        voiceLanguage: process.env.AMBROGIO_EN_VOICE_LANGUAGE || 'en',
+      } : {}),
+    },
+  },
+};
 ```
 
 Example with the bundled Kokoro model:
 
-```json
-{
-  "languages": {
-    "it": {
-      "voskModelPath": "/opt/ambrogio/models/vosk-model-small-it-0.22",
-      "voiceEngine": "kokoro",
-      "voiceModelDir": "/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0",
-      "voiceSpeaker": 35,
-      "voiceLanguage": "it"
+```ts
+export default {
+  languages: {
+    it: {
+      voskModelPath: process.env.AMBROGIO_IT_VOSK_MODEL_PATH || '/opt/ambrogio/models/vosk-model-small-it-0.22',
+      voiceEngine: 'kokoro',
+      voiceModelDir: process.env.AMBROGIO_IT_VOICE_MODEL_DIR || '/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0',
+      voiceSpeaker: Number(process.env.AMBROGIO_IT_VOICE_SPEAKER || 35),
+      voiceLanguage: process.env.AMBROGIO_IT_VOICE_LANGUAGE || 'it',
     },
-    "en": {
-      "voskModelPath": "/opt/ambrogio/models/vosk-model-small-en-us-0.15",
-      "voiceEngine": "kokoro",
-      "voiceModelDir": "/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0",
-      "voiceSpeaker": 3,
-      "voiceLanguage": "en"
-    }
-  }
-}
+    en: {
+      voskModelPath: process.env.AMBROGIO_EN_VOSK_MODEL_PATH || '/opt/ambrogio/models/vosk-model-small-en-us-0.15',
+      voiceEngine: 'kokoro',
+      voiceModelDir: process.env.AMBROGIO_EN_VOICE_MODEL_DIR || '/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0',
+      voiceSpeaker: Number(process.env.AMBROGIO_EN_VOICE_SPEAKER || 3),
+      voiceLanguage: process.env.AMBROGIO_EN_VOICE_LANGUAGE || 'en',
+    },
+  },
+};
 ```
 
 ## Signals

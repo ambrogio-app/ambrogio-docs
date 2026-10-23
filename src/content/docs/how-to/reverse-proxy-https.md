@@ -11,9 +11,7 @@ The backend speaks plain HTTP and has no login. To use HTTPS, put a reverse prox
 
 Publish the backend's port only on the loopback interface, so that clients have to go through the proxy:
 
-```bash
-docker run ... -p 127.0.0.1:3000:3000 ... IMAGE
-```
+Change the backend Compose service port mapping to `127.0.0.1:3000:3000`, then run `docker compose -f compose.example.yaml up -d`.
 
 If the proxy runs in another container, put both on the same Docker network instead and publish nothing.
 
@@ -67,31 +65,27 @@ The backend pings every session every 30 seconds, which keeps idle connections w
 
 ## 3. Tell the backend it is served over HTTPS
 
-When the public address is HTTPS only, set `publicHttps` in `http.json` so the backend sends a `Strict-Transport-Security` header:
+When the public address is HTTPS only, set these values in the backend Compose `.env` so the backend sends a `Strict-Transport-Security` header:
 
-```json title="http.json"
-{
-  "host": "0.0.0.0",
-  "port": 3000,
-  "publicHttps": true,
-  "hstsMaxAgeSeconds": 86400
-}
+```dotenv
+AMBROGIO_PUBLIC_HTTPS=true
+AMBROGIO_HSTS_MAX_AGE_SECONDS=31536000
 ```
 
 `hstsMaxAgeSeconds` is required with `publicHttps`. Start with one day; raise it to a year (`31536000`) once you are sure HTTPS stays. The backend never adds `includeSubDomains` or `preload`. If your proxy already sends this header, set it in only one place.
 
-Restart the backend.
+Recreate the backend with `docker compose -f compose.example.yaml up -d`.
 
 ## 4. Point the clients at the new address
 
 Use the `https://` address everywhere. The clients switch to `wss://` for the session by themselves.
 
 - Terminal client: `npm start -- --server https://ambrogio.example.com`
-- Satellite: `"backend": { "baseUrl": "https://ambrogio.example.com" }`
+- Satellite: `AMBROGIO_BACKEND_URL=https://ambrogio.example.com`
 - Web chat: `"backendUrl": "https://ambrogio.example.com"` in `config.json`
 
 All three accept a path prefix, such as `https://example.com/ambrogio/`. The backend itself always serves `/api/...`, so a proxy that uses a prefix must strip it before forwarding.
 
 ## About `allowedOrigins`
 
-The terminal client and the satellite are not web pages and send no `Origin` header, so they need nothing here. The [web chat](../install-web-chat/) is a web page: list the HTTPS address where people open it, for example `"https://chat.example.com"`, and set its `config.json` to the HTTPS address of the backend. Add other entries only for browser applications of your own. See [Backend configuration](../../reference/backend-configuration/#httpjson).
+The terminal client and the satellite are not web pages and send no `Origin` header, so they need nothing here. The [web chat](../install-web-chat/) is a web page: list the HTTPS address where people open it, for example `"https://chat.example.com"`, and set its `config.json` to the HTTPS address of the backend. Add other entries only for browser applications of your own. See [Backend configuration](../../reference/backend-configuration/#httpts).

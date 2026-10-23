@@ -21,14 +21,14 @@ Before upgrading, check that the backend you plan to run is that revision or a l
 
 ## Current state
 
-Checked on 22 October 2026. Ambrogio is in preview: this documentation describes only the latest releases, and the configuration may change from one release to the next.
+Release list checked on 23 October 2026. The TypeScript configuration pages describe the backend and satellite releases below. Ambrogio is in preview, and configuration may change between releases.
 
 | Program | Latest release | Images | Works with the current clients |
 |---|---|---|---|
-| Backend | `v0.7.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.7.0` (amd64) | yes |
+| Backend | `v0.8.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.8.0` (amd64) | yes |
 | Terminal client | `v0.1.0` | none, run from a checkout of the tag | yes |
 | Web chat | `v0.1.0` | `ghcr.io/ambrogio-app/ambrogio-web:v0.1.0` (amd64, arm64) | yes |
-| Satellite | `v0.4.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.4.0` (amd64, arm64) | yes |
+| Satellite | `v0.5.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.5.0` (amd64, arm64) | yes |
 
 All four programs speak the `ambrogio.v1` protocol, which has not changed since it was introduced. The terminal client and the satellite are tested against backend commit `58b0df4`, where the protocol was introduced; the web chat against backend `v0.1.0` (commit `a4578db`).
 
@@ -42,6 +42,6 @@ When you upgrade, compare your files with the [backend configuration](../backend
 
 ## Language
 
-The backend adds the language selected in `conversations.json` to each answering agent's instructions. The orchestrator only selects an agent. The backend image includes Italian and English Vosk models, Piper voices and a multilingual Kokoro model; see [Change the voice](../../how-to/change-voice/). You can still use external models and voices.
+The backend adds the language selected in `conversations.ts` to each answering agent's instructions. The orchestrator only selects an agent. The backend image includes Italian and English Vosk models, Piper voices and a multilingual Kokoro model; see [Change the voice](../../how-to/change-voice/). You can still use external models and voices.
 
-The texts written by Ambrogio itself are in English or Italian: the backend's messages follow `language` in [`conversations.json`](../backend-configuration/#conversationsjson), the web chat's interface follows its `language` or the browser, and the terminal client's interface follows `--language` or the system locale. The satellite has no spoken messages: it signals problems with a tone.
+The texts written by Ambrogio itself are in English or Italian: the backend's messages follow `language` in [`conversations.ts`](../backend-configuration/#conversationsts), the web chat's interface follows its `language` or the browser, and the terminal client's interface follows `--language` or the system locale. The satellite has no spoken messages: it signals problems with a tone.

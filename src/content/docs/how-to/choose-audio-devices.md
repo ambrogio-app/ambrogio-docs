@@ -20,7 +20,7 @@ The first table shows microphones, the second speakers. Note the `name` and `id`
 With Docker, run the same command inside the image:
 
 ```bash
-docker run --rm --device /dev/snd --entrypoint node ambrogio-satellite \
+docker run --rm --device /dev/snd --entrypoint node ghcr.io/ambrogio-app/ambrogio-satellite:v0.5.0 \
   -e "import('decibri').then(d => { console.table(d.Microphone.devices()); console.table(d.Speaker.devices()); })"
 ```
 
@@ -33,22 +33,18 @@ Each of `audio.microphone` and `audio.speaker` takes a string, which works in on
 
 A number is treated as text, not as the row index.
 
-```json title="config.json"
-{
-  "backend": { "baseUrl": "http://192.168.1.20:3000" },
-  "client": { "id": "kitchen", "name": "Kitchen" },
-  "audio": {
-    "microphone": "alsa:plughw:CARD=Device,DEV=0",
-    "speaker": "Headphones"
-  }
-}
+Set the device selectors in the satellite Compose `.env`:
+
+```dotenv
+AMBROGIO_MICROPHONE=USB
+AMBROGIO_SPEAKER=alsa:plughw:CARD=Headphones,DEV=0
 ```
 
 You can set only one of the two; the other stays on the default.
 
 ## 3. Restart and test
 
-Restart the satellite. A selector that matches no device is never replaced by the default, so a mistake shows up instead of going unnoticed:
+Recreate the satellite with `docker compose -f compose.example.yaml up -d`. A selector that matches no device is never replaced by the default, so a mistake shows up instead of going unnoticed:
 
 - A wrong **microphone** stops the satellite at startup, with `"event":"satellite_process_failed"` in the log.
 - A wrong **speaker** is found only when the satellite first plays something. After the wake word you hear no beep, and the log shows `"event":"satellite_ready_cue_failed"`.

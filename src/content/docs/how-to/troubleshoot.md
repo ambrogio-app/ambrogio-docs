@@ -24,22 +24,22 @@ Look at `err.message` and find it in this table.
 | `err.message` | What to check |
 |---|---|
 | `Missing HTTP configuration path`, `Missing conversation configuration path` | `AMBROGIO_HTTP_CONFIG_PATH` or `AMBROGIO_CONVERSATIONS_CONFIG_PATH` is not set. In Docker, `docker inspect ambrogio` shows the variables. |
-| `Invalid HTTP configuration file`, `Invalid conversation configuration file`, `Invalid voice configuration file` | The file does not exist at that path (in Docker: inside the container), cannot be read, or is not a JSON object. For voice, `languages` may contain only `it` and `en`; the active language needs a profile. Each profile requires `voiceEngine`; `voiceSpeaker` (a whole number) and `voiceLanguage` are required with `kokoro` and not allowed with `piper`. |
-| `Invalid HTTP listener configuration` | `host` or `port` in `http.json`. |
+| `Invalid HTTP configuration file`, `Invalid conversation configuration file`, `Invalid voice configuration file` | The file does not exist at that path (in Docker: inside the container), cannot be read, cannot be imported, or does not export a valid object. For voice, `languages` may contain only `it` and `en`; the active language needs a profile. Each profile requires `voiceEngine`; `voiceSpeaker` (a whole number) and `voiceLanguage` are required with `kokoro` and not allowed with `piper`. |
+| `Invalid HTTP listener configuration` | `host` or `port` in `http.ts`. |
 | `Invalid HTTP CORS origins` | An entry in `allowedOrigins` has a path, a trailing slash or `*`. |
 | `Invalid public HTTPS configuration`, `Invalid HSTS duration` | `publicHttps` must be a boolean; with `true`, set `hstsMaxAgeSeconds` to a positive whole number. |
-| `Invalid conversation list limits`, `Invalid conversation language`, `Invalid conversation archive path`, `Missing conversation archive path` | The named field in `conversations.json`. |
-| `Invalid conversation time zone` | `timeZone` in `conversations.json` is not an IANA time zone name such as `Europe/Rome`. Remove it to use UTC. |
+| `Invalid conversation list limits`, `Invalid conversation language`, `Invalid conversation archive path`, `Missing conversation archive path` | The named field in `conversations.ts`. |
+| `Invalid conversation time zone` | `timeZone` in `conversations.ts` is not an IANA time zone name such as `Europe/Rome`. Remove it to use UTC. |
 | `Conversation archive could not be prepared` | The folder of `archivePath` does not exist or is not writable, or the database could not be updated. |
 | `Invalid voice configuration path` | `AMBROGIO_VOICE_CONFIG_PATH` is set but empty. Remove it to run without voice. |
 | `Voice resources are unavailable` | `voskModelPath` is not a readable folder, or `voiceModelDir` lacks the files of its engine: with `piper` exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`; with `kokoro` exactly one `.onnx` file, `voices.bin`, `tokens.txt` and `espeak-ng-data/`. |
 | `Voice speaker is not in the model` | `voiceSpeaker` is not lower than the number of voices of the Kokoro model. See [Voices of `kokoro-multi-lang-v1_0`](../../reference/backend-configuration/#voices-of-kokoro-multi-lang-v1_0). |
 | `Voice components could not be loaded` | The files are there but a model failed to load. Download it again. |
 | `Agent configuration directory unavailable` | `/etc/ambrogio/agents` does not exist. In Docker, check that the configuration folder is mounted at `/etc/ambrogio`. |
-| `Missing orchestrator configuration` | There is no `orchestrator.json`. |
-| `No specialist agent configured` | There is no agent file besides `orchestrator.json`. |
+| `Missing orchestrator configuration` | There is no `orchestrator.ts`. |
+| `No specialist agent configured` | There is no agent file besides `orchestrator.ts`. |
 | `Invalid agent configuration filename: <file>` | The name must be lowercase letters, digits and hyphens, starting with a letter. |
-| `Invalid agent configuration: <id>` | That agent's file. Common mistakes: broken JSON, `description` missing (or present in `orchestrator.json`), `maxToolCalls` missing with `mcp` or present without it, `provider` not among `mistral`, `openai`, `anthropic`, `google` and `openai-compatible`, `baseURL` missing or not an `http(s)://` address with `openai-compatible` or present with another provider, an `mcp.url` that is not `http(s)://`, an `mcp.tools` that is empty, not an array or with a repeated name. |
+| `Invalid agent configuration: <id>` | That agent's file. Common mistakes: a module that cannot be imported, `description` missing (or present in `orchestrator.ts`), `maxToolCalls` missing with `mcp` or present without it, `provider` not among `mistral`, `openai`, `anthropic`, `google` and `openai-compatible`, `baseURL` missing or not an `http(s)://` address with `openai-compatible` or present with another provider, an `mcp.url` that is not `http(s)://`, an `mcp.tools` that is empty, not an array or with a repeated name. |
 | `Invalid agent options: <id>` | `llm.options` may contain only `temperature` (0 or more) and `max_tokens` (1 or more). |
 | `Agent MCP connection failed: <id>` | The backend could not connect to that agent's MCP server or list its tools. Test `mcp.url` from the backend host (in Docker, `localhost` is the container), and check the token or OAuth settings. |
 | `Agent MCP tool unavailable: <id>` | A name in that agent's `mcp.tools` is not among the tools of its MCP server. Names are case-sensitive and must be written as the server declares them. |
@@ -84,8 +84,8 @@ The satellite checks its whole file before it starts and stops at the first prob
 {"level":"info","time":...,"event":"invalid_configuration","reason":"invalid_configuration","field":"wakeWord.model"}
 ```
 
-- `"reason":"configuration_unavailable"`: the file does not exist or cannot be read. Check the path after `--config`, or the mount at `/config/satellite.json` in Docker.
-- `"field":"config"`: the file is not a JSON object, or it has a section the satellite does not know. A misspelt section, such as `wakeword` instead of `wakeWord`, ends up here.
+- `"reason":"configuration_unavailable"`: the file does not exist or cannot be read. Check the path after `--config`, or the mount at `/config/satellite.ts` in Docker.
+- `"field":"config"`: the module does not export a valid object, or it has a section the satellite does not know. A misspelt section, such as `wakeword` instead of `wakeWord`, ends up here.
 - Any other `field`: that field is wrong. [Satellite configuration](../../reference/satellite-configuration/) lists the rules for each one. The usual suspects are a `baseUrl` with spaces or a query string, a `wakeWord.model` that is not in the models folder, a `threshold` outside 0–1, a `patience` that is not a whole number from 1 to 10, a `replyTimeoutMs` that is not a whole number, and audio selectors with spaces around them.
 
 `invalid_arguments` means the command line was wrong: it must be exactly `--config <file>`.

@@ -38,59 +38,58 @@ pnpm build
 
 ### With Docker
 
-Build the image on the device, or on another machine with the same architecture:
+Get the matching Compose file and TypeScript module:
 
 ```bash
 git clone https://github.com/ambrogio-app/ambrogio-satellite.git
 cd ambrogio-satellite
-docker build -t ambrogio-satellite .
+git checkout v0.5.0
 ```
 
-Releases are also published as images for amd64 and arm64, for example `ghcr.io/ambrogio-app/ambrogio-satellite:v0.3.1`. To use one, pull it and put its name in place of `ambrogio-satellite` in the commands below. [Versions and compatibility](../../reference/versions/) lists the current releases.
+Compose pulls the versioned image for the device's architecture.
 
-## 2. Write the configuration
+## 2. Set the environment
 
-Start from the example in the repository:
+The repository provides `config.example.ts`, which reads `process.env` and exports the configuration object. For a host process, set at least the backend address:
 
 ```bash
-cp config.example.json config.json
+export AMBROGIO_BACKEND_URL=http://192.168.1.20:3000
+export AMBROGIO_CLIENT_ID=kitchen
+export AMBROGIO_CLIENT_NAME=Kitchen
 ```
 
-Set the backend address and a name for the room:
+Give each satellite a distinct `AMBROGIO_CLIENT_ID`. Other supported variables, including audio devices and wake word settings, are mapped in `compose.example.yaml` and listed in [Satellite configuration](../../reference/satellite-configuration/).
 
-```json title="config.json"
-{
-  "backend": { "baseUrl": "http://192.168.1.20:3000" },
-  "client": { "id": "kitchen", "name": "Kitchen" }
-}
+For Docker Compose, create `.env` next to `compose.example.yaml`:
+
+```dotenv
+AMBROGIO_SATELLITE_VERSION=v0.5.0
+AMBROGIO_BACKEND_URL=http://192.168.1.20:3000
+AMBROGIO_CLIENT_ID=kitchen
+AMBROGIO_CLIENT_NAME=Kitchen
 ```
 
-Give each satellite its own `client.id`; the backend uses it to tell satellites apart. Every section other than `backend` is optional. Without `audio`, the satellite uses the default microphone and speaker, and [Choose audio devices](../choose-audio-devices/) explains how to pick others. [Satellite configuration](../../reference/satellite-configuration/) lists every field.
+Compose forwards only variables listed in its `environment` section. Keep `.env` private.
 
 ## 3. Start it
 
 On the host:
 
 ```bash
-node dist/main.js --config config.json
+node dist/main.js --config config.example.ts
 ```
 
-`--config` is the only option, and it is required. Nothing can be set through environment variables.
-
-With Docker:
+With Docker Compose:
 
 ```bash
-docker run -d --name ambrogio-satellite --restart unless-stopped \
-  --network host --device /dev/snd \
-  -v "$PWD/config.json:/config/satellite.json:ro" \
-  ambrogio-satellite
+docker compose -f compose.example.yaml up -d
 ```
 
-`--device /dev/snd` gives the container the sound card. If the host runs PipeWire or PulseAudio, the container may not reach the device the desktop is using. In that case run the satellite on the host, or set up the container to use the host's sound server.
+The image loads `/config/satellite.ts`. The example Compose file mounts `config.example.ts` there, uses the host network and gives the container access to `/dev/snd`. If the host sound server holds the device, run the satellite on the host or configure access to that server.
 
 ## 4. Check it
 
-Watch the log. On the host it is printed to the terminal; with Docker, run `docker logs -f ambrogio-satellite`. When the satellite is listening you see:
+Watch the log. On the host it is printed to the terminal; with Compose, run `docker compose -f compose.example.yaml logs -f satellite`. When the satellite is listening you see:
 
 ```
 {"level":"info","time":...,"event":"satellite_ready"}

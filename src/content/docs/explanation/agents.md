@@ -5,7 +5,7 @@ sidebar:
   label: Agents and the orchestrator
 ---
 
-Ambrogio does not send every request to one big assistant. It has a team: an *orchestrator* that decides who should answer, and *specialised agents* that write the answers. You define the team with one JSON file per member.
+Ambrogio does not send every request to one big assistant. It has a team: an *orchestrator* that decides who should answer, and *specialised agents* that write the answers. You define the team with one TypeScript module per member.
 
 ## Two steps for every turn
 

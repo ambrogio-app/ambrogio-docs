@@ -1,108 +1,45 @@
 ---
 title: Run the backend with Docker
-description: Install the Ambrogio backend as a long-running Docker container on your home server.
+description: Run the Ambrogio backend with Docker Compose and TypeScript configuration.
 sidebar:
   label: Run the backend with Docker
 ---
 
-This guide sets up the backend as a permanent service on a home server. If you have never run Ambrogio, follow [Your first conversation](../../tutorials/first-conversation/) first.
-
 ## Before you start
 
-- A Linux host with Docker. The image is built for `linux/amd64`.
-- An API key for the model provider of your agents. The examples use Mistral; [Providers](../../reference/agent-configuration/#providers) lists the others.
-- A decision on where to keep files on the host. This guide uses `/srv/ambrogio`.
+- A Linux host with Docker Compose.
+- A Mistral API key, or credentials for another [supported provider](../../reference/agent-configuration/#providers).
+- The backend release checkout for the Compose file and TypeScript modules.
 
-## 1. Get an image
-
-Pick one of these:
-
-- **Published image.** Images are published to `ghcr.io/ambrogio-app/ambrogio-backend` with a tag for every release, such as `v0.6.0`. There is no `latest` tag, so you always name a version. See [Versions and compatibility](../../reference/versions/).
-- **Build it yourself** from a commit you choose:
-
-  ```bash
-  git clone https://github.com/ambrogio-app/ambrogio-backend.git
-  cd ambrogio-backend
-  git checkout <commit-or-tag>
-  docker build -t ambrogio-backend:<commit-or-tag> .
-  ```
-
-The rest of this guide calls the image `IMAGE`.
-
-## 2. Lay out the host folders
+## 1. Get the Compose example
 
 ```bash
-sudo mkdir -p /srv/ambrogio/config/agents /srv/ambrogio/data
+git clone https://github.com/ambrogio-app/ambrogio-backend.git
+cd ambrogio-backend
+git checkout v0.8.0
 ```
 
-| Host path | Mounted at | Contents |
-|---|---|---|
-| `/srv/ambrogio/config` | `/etc/ambrogio` (read-only) | All JSON configuration, including `agents/` |
-| `/srv/ambrogio/data` | `/data` | The SQLite conversation archive |
+`compose.example.yaml` mounts the TypeScript modules in `examples/` and stores the conversation archive in a Docker volume. The backend reads the exported objects once at startup. See [Backend configuration](../../reference/backend-configuration/) and [Agent configuration](../../reference/agent-configuration/) for the fields.
 
-The backend always looks for agents in `/etc/ambrogio/agents`, so the configuration folder must be mounted at `/etc/ambrogio`.
+## 2. Set the environment
 
-## 3. Write the configuration
+Create a local `.env` beside `compose.example.yaml`:
 
-Create at least these files. [Backend configuration](../../reference/backend-configuration/) and [Agent configuration](../../reference/agent-configuration/) list every field.
-
-```json title="/srv/ambrogio/config/http.json"
-{ "host": "0.0.0.0", "port": 3000 }
+```dotenv
+AMBROGIO_VERSION=v0.8.0
+MISTRAL_API_KEY=<your-api-key>
+AMBROGIO_LANGUAGE=en
 ```
 
-```json title="/srv/ambrogio/config/conversations.json"
-{ "archivePath": "/data/conversations.sqlite", "language": "en" }
-```
+Compose pulls the versioned image when you start the service. Keep `.env` private. The Compose file maps each supported variable into the container's `environment` section; a new variable in `.env` has no effect until you map it there. The `examples/*.ts` modules read those variables through `process.env`. To use another provider, set the provider, model and API key variables shown in `compose.example.yaml`.
 
-```json title="/srv/ambrogio/config/agents/orchestrator.json"
-{
-  "instructions": "Choose the agent that should answer the family's latest message. Route general questions and unclear requests to general. Return only the selected agent identifier.",
-  "llm": { "provider": "mistral", "model": "mistral-medium-latest", "apiKey": "..." }
-}
-```
-
-```json title="/srv/ambrogio/config/agents/general.json"
-{
-  "description": "Answers general questions and makes conversation.",
-  "instructions": "Answer briefly and plainly.",
-  "llm": { "provider": "mistral", "model": "mistral-medium-latest", "apiKey": "..." }
-}
-```
-
-The agent files contain your API key. Make them readable only by the account that runs Docker:
+## 3. Start and check
 
 ```bash
-sudo chmod 600 /srv/ambrogio/config/agents/*.json
-```
-
-`host` must be `0.0.0.0` inside a container, otherwise Docker cannot forward the port.
-
-For speech, create `voice.json` with a profile for each language you use and set `AMBROGIO_VOICE_CONFIG_PATH` when starting the container. The image includes Italian and English models; [Enable voice](../enable-voice/) shows the file. To use your own models, mount them with Compose and put their container paths in the matching profile; see [Change the voice](../change-voice/#use-a-different-voice).
-
-## 4. Start the container
-
-```bash
-docker run -d --name ambrogio --restart unless-stopped \
-  -p 3000:3000 \
-  -v /srv/ambrogio/config:/etc/ambrogio:ro \
-  -v /srv/ambrogio/data:/data \
-  -e AMBROGIO_HTTP_CONFIG_PATH=/etc/ambrogio/http.json \
-  -e AMBROGIO_CONVERSATIONS_CONFIG_PATH=/etc/ambrogio/conversations.json \
-  IMAGE
-```
-
-`--restart unless-stopped` brings Ambrogio back after a reboot. To expose it only to the host itself, for example behind a reverse proxy on the same machine, use `-p 127.0.0.1:3000:3000`.
-
-## 5. Check it
-
-```bash
+docker compose -f compose.example.yaml up -d
 curl -s http://localhost:3000/api/conversations
 ```
 
-A JSON object with `items` and `nextCursor` means the backend is up. If not, see [Troubleshooting](../troubleshoot/).
+A JSON response with `items` and `nextCursor` shows that the backend is running. Read failures with `docker compose -f compose.example.yaml logs backend` and [Troubleshooting](../troubleshoot/).
 
-## Next
-
-- To add voice, follow [Enable voice](../enable-voice/).
-- To reach Ambrogio over HTTPS, follow [Put the backend behind HTTPS](../reverse-proxy-https/).
-- Read [Security and privacy](../../explanation/security/) before you open the port to anything beyond your home network.
+The example enables voice and mounts `examples/voice.ts`. To disable it, remove `AMBROGIO_VOICE_CONFIG_PATH` from the service environment; [Enable voice](../enable-voice/) covers its settings. To add a specialist agent, mount its `.ts` module in `/etc/ambrogio/agents/`; see [Add an agent](../add-agent/).

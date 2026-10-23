@@ -1,6 +1,6 @@
 ---
 title: Satellite configuration
-description: Command line and JSON fields of the Ambrogio voice satellite.
+description: Command line and TypeScript configuration fields of the Ambrogio voice satellite.
 sidebar:
   label: Satellite configuration
 ---
@@ -11,7 +11,7 @@ sidebar:
 node dist/main.js --config <file>
 ```
 
-`--config` is the only argument and is required. Environment variables are not read. In the Docker image the command is fixed to `--config /config/satellite.json`.
+`--config` is the only argument and is required. The module may read environment variables. In the Docker image the command is fixed to `--config /config/satellite.ts`. Node.js 24 or later loads the module.
 
 | Exit code | Meaning |
 |---|---|
@@ -20,16 +20,31 @@ node dist/main.js --config <file>
 
 ## Configuration file
 
-One JSON object with up to five sections. Unknown sections and unknown fields are rejected. The whole file, and the chosen wake word model, are checked before the microphone is opened.
+One TypeScript module exports a default object with up to five sections. Unknown sections and unknown fields are rejected. The exported object and chosen wake word model are checked before the microphone is opened. The example uses `process.env`; numeric values are converted with `Number(...)`.
 
-```json
-{
-  "backend": { "baseUrl": "http://192.168.1.20:3000" },
-  "client": { "id": "kitchen", "name": "Kitchen" },
-  "audio": { "microphone": "USB", "speaker": "alsa:plughw:CARD=Headphones,DEV=0" },
-  "wakeWord": { "model": "hey_jarvis", "threshold": 0.5, "patience": 2 },
-  "interaction": { "replyTimeoutMs": 15000 }
-}
+```ts
+export default {
+  backend: { baseUrl: process.env.AMBROGIO_BACKEND_URL },
+  client: {
+    ...(process.env.AMBROGIO_CLIENT_ID ? { id: process.env.AMBROGIO_CLIENT_ID } : {}),
+    ...(process.env.AMBROGIO_CLIENT_NAME ? { name: process.env.AMBROGIO_CLIENT_NAME } : {}),
+  },
+  audio: {
+    ...(process.env.AMBROGIO_MICROPHONE ? { microphone: process.env.AMBROGIO_MICROPHONE } : {}),
+    ...(process.env.AMBROGIO_SPEAKER ? { speaker: process.env.AMBROGIO_SPEAKER } : {}),
+    ...(process.env.AMBROGIO_ATTENUATION_DEVICE ? { attenuation: {
+      device: process.env.AMBROGIO_ATTENUATION_DEVICE,
+      control: process.env.AMBROGIO_ATTENUATION_CONTROL,
+      level: Number(process.env.AMBROGIO_ATTENUATION_LEVEL),
+    } } : {}),
+  },
+  wakeWord: {
+    model: process.env.AMBROGIO_WAKE_WORD_MODEL || 'hey_jarvis',
+    threshold: Number(process.env.AMBROGIO_WAKE_WORD_THRESHOLD || 0.5),
+    patience: Number(process.env.AMBROGIO_WAKE_WORD_PATIENCE || 2),
+  },
+  interaction: { replyTimeoutMs: Number(process.env.AMBROGIO_REPLY_TIMEOUT_MS || 15000) },
+};
 ```
 
 ### `backend`
@@ -97,7 +112,7 @@ Optional.
 
 | Path | Contents |
 |---|---|
-| `/config/satellite.json` | Configuration file. Mount it read-only. |
+| `/config/satellite.ts` | Configuration file. Mount it read-only. |
 | `/app/models/wakeword/` | Wake word models. A mount here replaces the bundled ones. |
 | `/app/assets/` | Recorded warning messages. |
 

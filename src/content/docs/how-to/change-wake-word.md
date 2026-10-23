@@ -17,28 +17,20 @@ Three wake words come with the satellite:
 | `hey_mycroft` | "Hey Mycroft" |
 | `alexa` | "Alexa" (without "Hey") |
 
-```json title="config.json"
-"wakeWord": { "model": "hey_mycroft" }
-```
-
-Restart the satellite.
+Set `AMBROGIO_WAKE_WORD_MODEL=hey_mycroft` in the satellite Compose `.env`, then recreate the satellite.
 
 ## Make it more or less sensitive
 
 `threshold` is how confident the detector must be before it reacts. It is a number above 0 and up to 1; the default is `0.5`.
 
-```json title="config.json"
-"wakeWord": { "model": "hey_jarvis", "threshold": 0.6 }
-```
+Set `AMBROGIO_WAKE_WORD_THRESHOLD=0.6` in `.env`, then recreate the satellite.
 
 - If the satellite wakes up when nobody called it, raise the threshold a little, for example to `0.6`.
 - If it often misses you, lower it, for example to `0.4`.
 
 `patience` is how many consecutive 80 ms blocks must reach the threshold; the default is `2`.
 
-```json title="config.json"
-"wakeWord": { "model": "alexa", "threshold": 0.6, "patience": 3 }
-```
+Set `AMBROGIO_WAKE_WORD_MODEL=alexa`, `AMBROGIO_WAKE_WORD_THRESHOLD=0.6` and `AMBROGIO_WAKE_WORD_PATIENCE=3` in `.env`, then recreate the satellite.
 
 - If short sounds such as a cough or a clap wake it up, raise `patience` to `3`.
 - If it misses you when you say the wake word quickly, lower `patience` to `1`.
@@ -61,15 +53,11 @@ The image keeps its models in `/app/models/wakeword`. Mounting a folder there re
 - `melspectrogram.onnx` and `embedding_model.onnx`, copied from `models/wakeword/` in the satellite repository;
 - any bundled model you still want, such as `hey_jarvis_v0.1.onnx`.
 
-Then add `-v /path/to/folder:/app/models/wakeword:ro` to `docker run`.
+Then add `/path/to/folder:/app/models/wakeword:ro` to the satellite service `volumes` in Compose.
 
 ### Select it
 
-```json title="config.json"
-"wakeWord": { "model": "ciao_ambrogio" }
-```
-
-Restart the satellite. If the model name is not in the folder, or the two shared files are missing, the satellite refuses the configuration and exits with `"event":"invalid_configuration"` and `"field":"wakeWord.model"`.
+Set `AMBROGIO_WAKE_WORD_MODEL=ciao_ambrogio` in `.env`, then recreate the satellite. If the model name is not in the folder, or the two shared files are missing, the satellite refuses the configuration and exits with `"event":"invalid_configuration"` and `"field":"wakeWord.model"`.
 
 :::caution[Licenses]
 The bundled models are licensed CC BY-NC-SA 4.0, for non-commercial use only. For your own models, keeping track of where they came from and under which license is up to you. See [Bundled models and licenses](../../reference/bundled-models/).

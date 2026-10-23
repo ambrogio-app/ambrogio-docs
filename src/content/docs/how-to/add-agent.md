@@ -5,47 +5,45 @@ sidebar:
   label: Add an agent
 ---
 
-An agent is one JSON file in the `agents` folder of the backend configuration. Adding a file adds an agent; removing it removes the agent. Changes take effect when the backend restarts.
+An agent is one TypeScript module in the `agents` folder of the backend configuration. Adding a file adds an agent; removing it removes the agent. Changes take effect when the backend restarts.
 
 This guide adds a cooking agent that uses a cheaper model than the general one.
 
 ## 1. Choose a name
 
-The file name without `.json` is the agent's identifier. It must start with a lowercase letter and contain only lowercase letters, digits and hyphens: `cooking`, `home-assistant` and `kids2` work, `Cooking` and `my_agent` do not. `orchestrator` is reserved.
+The file name without `.ts` is the agent's identifier. It must start with a lowercase letter and contain only lowercase letters, digits and hyphens: `cooking`, `home-assistant` and `kids2` work, `Cooking` and `my_agent` do not. `orchestrator` is reserved.
 
 ## 2. Write the file
 
-```json title="agents/cooking.json"
-{
-  "description": "Recipes, cooking times, ingredient substitutions and weekly meal plans.",
-  "instructions": "You help a family in the kitchen. Give quantities in grams and times in minutes. Keep recipes short enough to read aloud.",
-  "llm": {
-    "provider": "mistral",
-    "model": "mistral-small-latest",
-    "apiKey": "..."
-  }
-}
+```ts title="examples/agents/cooking.ts"
+export default {
+  description: 'Recipes, cooking times and ingredient substitutions.',
+  instructions: 'Give quantities in grams and times in minutes. Keep recipes brief.',
+  llm: {
+    provider: 'mistral',
+    model: 'mistral-small-latest',
+    apiKey: process.env.MISTRAL_API_KEY,
+    options: { temperature: 0.3, max_tokens: 400 },
+  },
+};
 ```
 
 - `description` is what the orchestrator reads when it decides who answers. Describe what the agent is for, not how it behaves. If two descriptions overlap, the orchestrator has to guess.
 - `instructions` is the agent's system prompt. The family never sees it.
 - `llm` can name a different provider and model from the other agents. [Providers](../../reference/agent-configuration/#providers) lists the choices.
 
-To make answers more or less varied, or to cap their length, add `options`:
+`llm.options` in the example sets a temperature and response length. See [Agent configuration](../../reference/agent-configuration/#llm).
 
-```json
-"llm": {
-  "provider": "mistral",
-  "model": "mistral-small-latest",
-  "apiKey": "...",
-  "options": { "temperature": 0.3, "max_tokens": 400 }
-}
+Mount the new module in the backend service `volumes` in `compose.example.yaml`:
+
+```yaml
+- ./examples/agents/cooking.ts:/etc/ambrogio/agents/cooking.ts:ro
 ```
 
 ## 3. Restart the backend
 
 ```bash
-docker restart ambrogio
+docker compose -f compose.example.yaml up -d
 ```
 
 If the file has a mistake, the backend does not start, and its log has a `server_startup_failed` line with `Invalid agent configuration: cooking`. Every agent file must be valid for the backend to start.
@@ -58,7 +56,7 @@ If the wrong agent keeps answering, make the descriptions more distinct, or say 
 
 ## Remove an agent
 
-Delete or rename the file so that it no longer ends in `.json`, then restart. At least one agent besides the orchestrator must remain.
+Remove its mount from the backend service `volumes`, then recreate the container. At least one agent besides the orchestrator must remain.
 
 ## See also
 

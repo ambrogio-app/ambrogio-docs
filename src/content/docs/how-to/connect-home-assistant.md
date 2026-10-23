@@ -11,7 +11,7 @@ Home Assistant can act as an [MCP](https://modelcontextprotocol.io/) server. You
 
 - Home Assistant is reachable from the machine that runs the Ambrogio backend.
 - You can log in to Home Assistant as an administrator.
-- Backend `v0.6.0`, and a checkout of `ambrogio-backend` at the same tag for the example file.
+- A backend build with TypeScript configuration modules and a matching repository checkout.
 
 ## 1. Turn on the MCP server in Home Assistant
 
@@ -31,46 +31,28 @@ Home Assistant only lets MCP clients see and control the entities that are **exp
 2. Under **Long-lived access tokens**, select **Create token** and name it `Ambrogio`.
 3. Copy the token. Home Assistant shows it only once.
 
-## 4. Add the agent file
+## 4. Add the agent module
 
-The backend repository ships a ready configuration in `examples/agents/home-assistant.json`. Copy it into the backend's `agents` folder:
+The backend repository provides `examples/agents/home-assistant.ts`. Mount it in the backend service in `compose.example.yaml`:
+
+```yaml
+- ./examples/agents/home-assistant.ts:/etc/ambrogio/agents/home-assistant.ts:ro
+```
+
+The module reads its MCP URL and token from the container environment. Add these mappings under the backend service's `environment` section:
+
+```yaml
+AMBROGIO_HOME_ASSISTANT_MCP_URL: ${AMBROGIO_HOME_ASSISTANT_MCP_URL:-http://homeassistant.local:8123/api/mcp}
+HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN: ${HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN:?Set HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN}
+```
+
+Add `HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN=<your-token>` to the private `.env`. The example agent uses `MISTRAL_API_KEY` from the existing Compose service. Set `AMBROGIO_HOME_ASSISTANT_MCP_URL` if Home Assistant uses another address. Its `maxToolCalls` limit is five. The file name, `home-assistant`, is the agent identifier. The backend supplies the selected response language from `conversations.ts`.
 
 ```bash
-cp ambrogio-backend/examples/agents/home-assistant.json /srv/ambrogio/config/agents/
+docker compose -f compose.example.yaml up -d
 ```
 
-Open the copy and replace the two placeholders, `<MISTRAL_API_KEY>` and `<HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN>`. If your Home Assistant is not at `homeassistant.local:8123`, change `mcp.url` too. The result looks like this:
-
-```json title="agents/home-assistant.json"
-{
-  "description": "Reads the state of the home's lights, switches and sensors through Home Assistant and turns devices on or off.",
-  "instructions": "You control the family's home through Home Assistant. Answer briefly. Choose freely among the available tools and use the ones the request needs. To answer a question about the state of a device or a sensor, read its current state and do not turn on, turn off or change anything. Change a device only when the user asks for a change. When the user refers to several devices, for example all the lights or the lights of a room, act on all of them, using the area or the device type when a tool allows it. Say that an action happened only after a tool has confirmed it; if a tool fails or a device is not available, say so.",
-  "llm": {
-    "provider": "mistral",
-    "model": "mistral-medium-latest",
-    "apiKey": "your Mistral key"
-  },
-  "maxToolCalls": 5,
-  "mcp": {
-    "url": "http://homeassistant.local:8123/api/mcp",
-    "auth": { "type": "bearer", "token": "the token from step 3" }
-  }
-}
-```
-
-The backend tells this agent to answer in the language selected in `conversations.json`, so the example does not need a language instruction. The file name, `home-assistant`, is the agent's name. `maxToolCalls` is the most tool calls the agent may make for one request. Five is enough to check a state and change a couple of devices. If the agent needs more, the turn fails with the standard error message instead of running on.
-
-Protect the file, since it holds two secrets:
-
-```bash
-chmod 600 /srv/ambrogio/config/agents/home-assistant.json
-```
-
-## 5. Restart and try it
-
-```bash
-docker restart ambrogio
-```
+## 5. Try it
 
 The backend connects to Home Assistant at startup and asks which tools and prompts it offers. At every request it reads Home Assistant's prompt again: it tells the model how to use the tools and lists the areas and devices exposed to Assist. A device you expose or rename in Home Assistant works from the next request, without restarting the backend. If Home Assistant cannot be reached, or the token is wrong, the backend does not start, and its log shows `"event":"server_startup_failed"` with the message `Agent MCP connection failed: home-assistant`.
 
