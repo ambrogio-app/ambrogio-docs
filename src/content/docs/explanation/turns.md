@@ -57,6 +57,8 @@ Stopping or restarting the backend does not wait for answers in progress. Every 
 
 Interrupted turns are not retried. Repeat the question if you still need the answer.
 
+After saving the interrupted turns, the backend closes its resources in the reverse order it opened them: the listener, the voice components, the archive and the MCP connections. It gives itself 10 seconds for the whole shutdown. If something does not close in time, it logs `server_shutdown_timeout` and exits anyway with code `1`, so a stuck connection cannot keep it running. Docker must wait longer than that before it kills the container, which is why the Compose example sets `stop_grace_period: 15s`.
+
 ## Time limits
 
 An answer must be complete within 30 seconds, counting the orchestrator's choice, the agent's answer and any tool calls. This prevents a stalled request to the model from keeping a conversation busy forever. A turn that hits the limit fails with the standard message.

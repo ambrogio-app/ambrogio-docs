@@ -11,7 +11,7 @@ Home Assistant can act as an [MCP](https://modelcontextprotocol.io/) server. You
 
 - Home Assistant is reachable from the machine that runs the Ambrogio backend.
 - You can log in to Home Assistant as an administrator.
-- A backend build with TypeScript configuration modules and a matching repository checkout.
+- The backend running with the Compose example, and a checkout of the backend repository at the same version.
 
 ## 1. Turn on the MCP server in Home Assistant
 
@@ -31,22 +31,23 @@ Home Assistant only lets MCP clients see and control the entities that are **exp
 2. Under **Long-lived access tokens**, select **Create token** and name it `Ambrogio`.
 3. Copy the token. Home Assistant shows it only once.
 
-## 4. Add the agent module
+## 4. Add the agent file
 
-The backend repository provides `examples/agents/home-assistant.ts`. Mount it in the backend service in `compose.example.yaml`:
+The backend repository provides `examples/agents/home-assistant.json`. Copy it, for example to `agents/home-assistant.json`, and set `mcp.url` to your Home Assistant address followed by `/api/mcp`. The example address is `http://homeassistant.local:8123/api/mcp`.
+
+Mount your copy in the backend service in `compose.example.yaml`:
 
 ```yaml
-- ./examples/agents/home-assistant.ts:/etc/ambrogio/agents/home-assistant.ts:ro
+- ./agents/home-assistant.json:/etc/ambrogio/agents/home-assistant.json:ro
 ```
 
-The module reads its MCP URL and token from the container environment. Add these mappings under the backend service's `environment` section:
+The file contains no token. Its `mcp.auth.tokenEnv` names the variable `HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN`. Add it under the backend service's `environment` section:
 
 ```yaml
-AMBROGIO_HOME_ASSISTANT_MCP_URL: ${AMBROGIO_HOME_ASSISTANT_MCP_URL:-http://homeassistant.local:8123/api/mcp}
 HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN: ${HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN:?Set HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN}
 ```
 
-Add `HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN=<your-token>` to the private `.env`. The example agent uses `MISTRAL_API_KEY` from the existing Compose service. Set `AMBROGIO_HOME_ASSISTANT_MCP_URL` if Home Assistant uses another address. Its `maxToolCalls` limit is five. The file name, `home-assistant`, is the agent identifier. The backend supplies the selected response language from `conversations.ts`.
+Add `HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN=<your-token>` to the private `.env` beside the Compose file. The agent uses `MISTRAL_API_KEY`, which the Compose service already passes. Its `maxToolCalls` limit is five. The file name, `home-assistant`, is the agent identifier. The backend supplies the response language selected by `AMBROGIO_LANGUAGE`.
 
 ```bash
 docker compose -f compose.example.yaml up -d

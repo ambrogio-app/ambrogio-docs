@@ -19,7 +19,7 @@ If the proxy runs in another container, put both on the same Docker network inst
 
 The proxy must forward two kinds of traffic to the same port:
 
-- ordinary `GET` requests under `/api/conversations`;
+- ordinary `GET` requests under `/api/v1/` and, for older clients, under `/api/conversations`;
 - a WebSocket upgrade on `/api/session`.
 
 ### Caddy
@@ -65,14 +65,14 @@ The backend pings every session every 30 seconds, which keeps idle connections w
 
 ## 3. Tell the backend it is served over HTTPS
 
-When the public address is HTTPS only, set these values in the backend Compose `.env` so the backend sends a `Strict-Transport-Security` header:
+When the public address is HTTPS only, set these values in the backend service's `environment` section of the Compose file, so the backend sends a `Strict-Transport-Security` header:
 
-```dotenv
-AMBROGIO_PUBLIC_HTTPS=true
-AMBROGIO_HSTS_MAX_AGE_SECONDS=31536000
+```yaml
+AMBROGIO_PUBLIC_HTTPS: "true"
+AMBROGIO_HSTS_MAX_AGE_SECONDS: "86400"
 ```
 
-`hstsMaxAgeSeconds` is required with `publicHttps`. Start with one day; raise it to a year (`31536000`) once you are sure HTTPS stays. The backend never adds `includeSubDomains` or `preload`. If your proxy already sends this header, set it in only one place.
+`AMBROGIO_HSTS_MAX_AGE_SECONDS` is required when `AMBROGIO_PUBLIC_HTTPS` is `true`. Start with one day; raise it to a year (`31536000`) once you are sure HTTPS stays. The backend never adds `includeSubDomains` or `preload`. If your proxy already sends this header, set it in only one place.
 
 Recreate the backend with `docker compose -f compose.example.yaml up -d`.
 
@@ -86,6 +86,6 @@ Use the `https://` address everywhere. The clients switch to `wss://` for the se
 
 All three accept a path prefix, such as `https://example.com/ambrogio/`. The backend itself always serves `/api/...`, so a proxy that uses a prefix must strip it before forwarding.
 
-## About `allowedOrigins`
+## About `AMBROGIO_ALLOWED_ORIGINS`
 
-The terminal client and the satellite are not web pages and send no `Origin` header, so they need nothing here. The [web chat](../install-web-chat/) is a web page: list the HTTPS address where people open it, for example `"https://chat.example.com"`, and set its `config.json` to the HTTPS address of the backend. Add other entries only for browser applications of your own. See [Backend configuration](../../reference/backend-configuration/#httpts).
+The terminal client and the satellite are not web pages and send no `Origin` header, so they need nothing here. The [web chat](../install-web-chat/) is a web page: list the HTTPS address where people open it, for example `https://chat.example.com`, and set its `config.json` to the HTTPS address of the backend. Add other entries only for browser applications of your own. See [Backend configuration](../../reference/backend-configuration/#http-listener).

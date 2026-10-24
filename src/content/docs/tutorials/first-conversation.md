@@ -22,7 +22,7 @@ git --version
 node --version
 ```
 
-`node --version` must print `v22` or higher.
+`node --version` must print `v24` or higher.
 
 ## Build the backend image
 
@@ -40,19 +40,18 @@ The build downloads dependencies and two bundled voices, so the first run takes 
 
 ## Configure and start the backend
 
-The repository includes TypeScript configuration modules and a Compose example. The modules read environment variables and export the values the backend validates at startup. In `ambrogio-backend`, create `.env`:
+The repository includes a Compose example and two example agent files. The Compose example passes the backend its settings as environment variables and mounts the agent files. In `ambrogio-backend`, create `.env`:
 
 ```dotenv
 AMBROGIO_VERSION=local
 MISTRAL_API_KEY=<your-api-key>
-AMBROGIO_LANGUAGE=en
 ```
 
-The locally built image contains the TypeScript loader. Keep `.env` private. The example Compose file maps these variables into the container. Start the backend:
+Keep `.env` private. Compose uses it to fill in the image version and your API key. Start the backend:
 
 ```bash
 docker compose -f compose.example.yaml up -d
-curl -s http://localhost:3000/api/conversations
+curl -s http://localhost:3000/api/v1/conversations
 ```
 
 The response has empty `items` and a `nextCursor`. If it does not, check `docker compose -f compose.example.yaml logs backend` and [Troubleshooting](../../how-to/troubleshoot/). The example also enables voice, using models included in the image.
@@ -106,7 +105,7 @@ You have:
 
 - built and started the Ambrogio backend with one orchestrator and one agent;
 - talked to it from the terminal client;
-- reopened a conversation that the backend stored in `~/ambrogio/data/conversations.sqlite`.
+- reopened a conversation that the backend stored in the `conversations` Docker volume.
 
 The backend keeps running in the background. Stop it with `docker compose -f compose.example.yaml stop` and start it again with `docker compose -f compose.example.yaml start`; your conversations survive both.
 

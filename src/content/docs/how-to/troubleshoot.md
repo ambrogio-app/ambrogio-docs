@@ -23,27 +23,22 @@ Look at `err.message` and find it in this table.
 
 | `err.message` | What to check |
 |---|---|
-| `Missing HTTP configuration path`, `Missing conversation configuration path` | `AMBROGIO_HTTP_CONFIG_PATH` or `AMBROGIO_CONVERSATIONS_CONFIG_PATH` is not set. In Docker, `docker inspect ambrogio` shows the variables. |
-| `Invalid HTTP configuration file`, `Invalid conversation configuration file`, `Invalid voice configuration file` | The file does not exist at that path (in Docker: inside the container), cannot be read, cannot be imported, or does not export a valid object. For voice, `languages` may contain only `it` and `en`; the active language needs a profile. Each profile requires `voiceEngine`; `voiceSpeaker` (a whole number) and `voiceLanguage` are required with `kokoro` and not allowed with `piper`. |
-| `Invalid HTTP listener configuration` | `host` or `port` in `http.ts`. |
-| `Invalid HTTP CORS origins` | An entry in `allowedOrigins` has a path, a trailing slash or `*`. |
-| `Invalid public HTTPS configuration`, `Invalid HSTS duration` | `publicHttps` must be a boolean; with `true`, set `hstsMaxAgeSeconds` to a positive whole number. |
-| `Invalid conversation list limits`, `Invalid conversation language`, `Invalid conversation archive path`, `Missing conversation archive path` | The named field in `conversations.ts`. |
-| `Invalid conversation time zone` | `timeZone` in `conversations.ts` is not an IANA time zone name such as `Europe/Rome`. Remove it to use UTC. |
-| `Conversation archive could not be prepared` | The folder of `archivePath` does not exist or is not writable, or the database could not be updated. |
-| `Invalid voice configuration path` | `AMBROGIO_VOICE_CONFIG_PATH` is set but empty. Remove it to run without voice. |
-| `Voice resources are unavailable` | `voskModelPath` is not a readable folder, or `voiceModelDir` lacks the files of its engine: with `piper` exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`; with `kokoro` exactly one `.onnx` file, `voices.bin`, `tokens.txt` and `espeak-ng-data/`. |
-| `Voice speaker is not in the model` | `voiceSpeaker` is not lower than the number of voices of the Kokoro model. See [Voices of `kokoro-multi-lang-v1_0`](../../reference/backend-configuration/#voices-of-kokoro-multi-lang-v1_0). |
+| `Missing environment variable <NAME>` | A required variable is not set, or is set to an empty string. In production `AMBROGIO_ENV`, `AMBROGIO_HTTP_HOST`, `AMBROGIO_HTTP_PORT`, `AMBROGIO_PUBLIC_HTTPS` and `AMBROGIO_ARCHIVE_PATH` are required; with voice, each listed language needs its profile variables. In Docker, `docker inspect ambrogio` shows the variables of the container. |
+| `Invalid environment variable <NAME>: <condition>` | The variable has a value the backend does not accept; the condition says what it expects. Common cases: `AMBROGIO_ENV` other than `development`, `test` or `production`; a port outside 1–65535; `AMBROGIO_PUBLIC_HTTPS` other than `true` or `false`; `AMBROGIO_HSTS_MAX_AGE_SECONDS` missing with `AMBROGIO_PUBLIC_HTTPS=true`; an origin with a path, a trailing slash or `*`; `AMBROGIO_LANGUAGE` other than `en` or `it`; a time zone that is not an IANA name such as `Europe/Rome`; `AMBROGIO_LIST_PAGE_SIZE` above `AMBROGIO_MAX_LIST_PAGE_SIZE`; `AMBROGIO_VOICE_LANGUAGES` without `AMBROGIO_LANGUAGE` or with an unknown or repeated language; a `SPEAKER` or `LANGUAGE` voice variable with the `piper` engine. |
+| `Conversation archive could not be prepared` | The folder of `AMBROGIO_ARCHIVE_PATH` does not exist or is not writable, or the database could not be updated. |
+| `Voice resources are unavailable` | `AMBROGIO_VOICE_<L>_VOSK_MODEL_PATH` of the active language is not a readable folder, or `AMBROGIO_VOICE_<L>_MODEL_DIR` lacks the files of its engine: with `piper` exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`; with `kokoro` exactly one `.onnx` file, `voices.bin`, `tokens.txt` and `espeak-ng-data/`. |
+| `Voice speaker is not in the model` | `AMBROGIO_VOICE_<L>_SPEAKER` is not lower than the number of voices of the Kokoro model. See [Voices of `kokoro-multi-lang-v1_0`](../../reference/backend-configuration/#voices-of-kokoro-multi-lang-v1_0). |
 | `Voice components could not be loaded` | The files are there but a model failed to load. Download it again. |
-| `Agent configuration directory unavailable` | `/etc/ambrogio/agents` does not exist. In Docker, check that the configuration folder is mounted at `/etc/ambrogio`. |
-| `Missing orchestrator configuration` | There is no `orchestrator.ts`. |
-| `No specialist agent configured` | There is no agent file besides `orchestrator.ts`. |
+| `Agent configuration directory unavailable` | The agents folder, `AMBROGIO_AGENTS_DIR` or `/etc/ambrogio/agents` by default, does not exist. In Docker, check the mounts of the agent files. |
+| `Missing orchestrator configuration` | There is no `orchestrator.json`. |
+| `No specialist agent configured` | There is no agent file besides `orchestrator.json`. |
 | `Invalid agent configuration filename: <file>` | The name must be lowercase letters, digits and hyphens, starting with a letter. |
-| `Invalid agent configuration: <id>` | That agent's file. Common mistakes: a module that cannot be imported, `description` missing (or present in `orchestrator.ts`), `maxToolCalls` missing with `mcp` or present without it, `provider` not among `mistral`, `openai`, `anthropic`, `google` and `openai-compatible`, `baseURL` missing or not an `http(s)://` address with `openai-compatible` or present with another provider, an `mcp.url` that is not `http(s)://`, an `mcp.tools` that is empty, not an array or with a repeated name. |
+| `Missing environment variable <NAME> for agent <id>` | The variable named by `apiKeyEnv`, `tokenEnv` or `clientSecretEnv` in that agent's file is not set in the backend environment. In Docker, add it to the service's `environment` section. |
+| `Invalid agent configuration: <id>` | That agent's file. Common mistakes: invalid JSON, a field the backend does not know (a literal `apiKey`, `token` or `clientSecret` included: name the variable with `apiKeyEnv`, `tokenEnv` or `clientSecretEnv` instead), a variable name that is not uppercase letters, digits and underscores, `description` missing (or present in `orchestrator.json`), `maxToolCalls` missing with `mcp` or present without it, `provider` not among `mistral`, `openai`, `anthropic`, `google` and `openai-compatible`, `baseURL` missing or not an `http(s)://` address with `openai-compatible` or present with another provider, an `mcp.url` that is not `http(s)://`, an `mcp.tools` that is empty, not an array or with a repeated name. |
 | `Invalid agent options: <id>` | `llm.options` may contain only `temperature` (0 or more) and `max_tokens` (1 or more). |
 | `Agent MCP connection failed: <id>` | The backend could not connect to that agent's MCP server or list its tools. Test `mcp.url` from the backend host (in Docker, `localhost` is the container), and check the token or OAuth settings. |
 | `Agent MCP tool unavailable: <id>` | A name in that agent's `mcp.tools` is not among the tools of its MCP server. Names are case-sensitive and must be written as the server declares them. |
-| `HTTP listener could not start` | The port is already in use, or `host` is not an address of this machine. |
+| `HTTP listener could not start` | The port is already in use, or `AMBROGIO_HTTP_HOST` is not an address of this machine. |
 
 For errors that come from outside Ambrogio (a library, the network, the operating system), the line shows only the step that failed, not the original message, so no secret can end up in the log.
 
@@ -51,7 +46,7 @@ For errors that come from outside Ambrogio (a library, the network, the operatin
 
 ## The terminal client cannot connect
 
-- Check the address from the same computer: `curl http://ambrogio.home.lan:3000/api/conversations`.
+- Check the address from the same computer: `curl http://ambrogio.home.lan:3000/api/v1/conversations`.
 - The client refuses addresses with a user name, password, query string or `#fragment`.
 - If the list loads but sending a message fails, the WebSocket on `/api/session` is being blocked. Behind a proxy, check that it forwards upgrades; see [Put the backend behind HTTPS](../reverse-proxy-https/).
 - A backend built from a commit older than the `ambrogio.v1` protocol cannot hold a session with the current client. Use a release, or a commit from `58b0df4` onwards; see [Versions and compatibility](../../reference/versions/).
@@ -78,17 +73,28 @@ The backend log has a `conversation_reply_failed` event for each of these.
 
 ## The satellite exits with `invalid_configuration`
 
-The satellite checks its whole file before it starts and stops at the first problem. The log line says what it found:
+The satellite checks its environment variables before it starts and stops at the first problem. The log line names the variable and the problem, never its value:
 
 ```
-{"level":"info","time":...,"event":"invalid_configuration","reason":"invalid_configuration","field":"wakeWord.model"}
+{"level":"info","time":...,"event":"invalid_configuration","variable":"AMBROGIO_WAKE_WORD_MODEL","condition":"invalid"}
 ```
 
-- `"reason":"configuration_unavailable"`: the file does not exist or cannot be read. Check the path after `--config`, or the mount at `/config/satellite.ts` in Docker.
-- `"field":"config"`: the module does not export a valid object, or it has a section the satellite does not know. A misspelt section, such as `wakeword` instead of `wakeWord`, ends up here.
-- Any other `field`: that field is wrong. [Satellite configuration](../../reference/satellite-configuration/) lists the rules for each one. The usual suspects are a `baseUrl` with spaces or a query string, a `wakeWord.model` that is not in the models folder, a `threshold` outside 0–1, a `patience` that is not a whole number from 1 to 10, a `replyTimeoutMs` that is not a whole number, and audio selectors with spaces around them.
+- `"condition":"missing"`: the variable is not set, or is empty. `AMBROGIO_ENV` and `AMBROGIO_BACKEND_URL` are always required; the three `AMBROGIO_ATTENUATION_*` variables go together. In Docker, check the service's `environment` section.
+- `"condition":"invalid"`: the value is wrong. [Satellite configuration](../../reference/satellite-configuration/) lists the rules for each variable. The usual suspects are an `AMBROGIO_ENV` other than `development`, `test` or `production`, an `AMBROGIO_BACKEND_URL` with spaces or a query string, an `AMBROGIO_WAKE_WORD_MODEL` that is not in the models folder, a threshold outside 0–1, a patience that is not a whole number from 1 to 10, a reply timeout that is not a whole number, and audio selectors with spaces around them.
 
-`invalid_arguments` means the command line was wrong: it must be exactly `--config <file>`.
+`invalid_arguments` means the command line had arguments: the satellite takes none.
+
+## The satellite does not start
+
+When the satellite cannot start, it prints `Unable to start Ambrogio satellite.` to standard error and writes one `satellite_startup_failed` line. Its `err.message` says which step failed:
+
+| `err.message` | What to check |
+|---|---|
+| `Wake word model could not be loaded` | The model file of `AMBROGIO_WAKE_WORD_MODEL` or the shared files of the models folder are damaged. Copy the folder again; see [Change the wake word](../change-wake-word/). |
+| `Voice activity model could not be loaded` | The bundled speech detection model is damaged. Reinstall the satellite or pull the image again. |
+| `Microphone could not be started` | The selected microphone does not exist or is busy. See [Choose audio devices](../choose-audio-devices/). |
+
+When two things fail, for example the microphone and then the release of a model, `err.type` is `LifecycleError` and `err.faults` lists both.
 
 ## The satellite plays two descending tones
 
@@ -102,15 +108,15 @@ The satellite plays this error tone in two cases. Its log tells you which:
 - Check that the microphone works: `arecord -d 5 test.wav && aplay test.wav`.
 - Make sure the satellite uses the right microphone; see [Choose audio devices](../choose-audio-devices/).
 - With the `alexa` model, say only "Alexa".
-- Lower `wakeWord.threshold` a little, for example to `0.4`.
-- Lower `wakeWord.patience` to `1`.
+- Lower `AMBROGIO_WAKE_WORD_THRESHOLD` a little, for example to `0.4`.
+- Lower `AMBROGIO_WAKE_WORD_PATIENCE` to `1`.
 
 ## The satellite wakes up by itself
 
 Every wake-up writes a `satellite_wake_detected` line with its `score` and `chunks`. Compare the lines of the false wake-ups with those of your real requests to choose the values below.
 
-- If a cough, a clap or another short sound wakes it up, raise `wakeWord.patience`, for example to `3`.
-- Otherwise raise `wakeWord.threshold` a little, for example to `0.6`.
+- If a cough, a clap or another short sound wakes it up, raise `AMBROGIO_WAKE_WORD_PATIENCE`, for example to `3`.
+- Otherwise raise `AMBROGIO_WAKE_WORD_THRESHOLD` a little, for example to `0.6`.
 - Move the device away from the TV.
 
 ## No beep after the wake word

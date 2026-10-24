@@ -62,4 +62,4 @@ The client ignores `expectsReply`: the input field is always available.
 
 ## Compatibility
 
-The client uses the `ambrogio.v1` protocol and the HTTP API of the backend, and works with every backend release that offers them. See [Versions and compatibility](../versions/).
+The client uses the `ambrogio.v1` protocol and HTTP API `v1` of the backend, and works with every backend release that offers them. See [Versions and compatibility](../versions/).

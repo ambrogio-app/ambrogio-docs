@@ -14,7 +14,7 @@ A satellite is a Linux device with a microphone and a speaker. It listens for th
 - A microphone and a speaker that work with ALSA.
 - The backend's address as seen from the device, for example `http://192.168.1.20:3000`.
 
-You can run the satellite directly on the host or in Docker. The configuration file is the same for both.
+You can run the satellite directly on the host or in Docker. Both read the same environment variables.
 
 ## 1. Get the satellite
 
@@ -38,45 +38,53 @@ pnpm build
 
 ### With Docker
 
-Get the matching Compose file and TypeScript module:
+Get the matching Compose file:
 
 ```bash
 git clone https://github.com/ambrogio-app/ambrogio-satellite.git
 cd ambrogio-satellite
-git checkout v0.6.0
+git checkout <version>
 ```
 
 Compose pulls the versioned image for the device's architecture.
 
 ## 2. Set the environment
 
-The repository provides `config.example.ts`, which reads `process.env` and exports the configuration object. For a host process, set at least the backend address:
+The satellite reads its configuration from environment variables. `AMBROGIO_ENV` and `AMBROGIO_BACKEND_URL` are required; every other variable has a default or is optional. [Satellite configuration](../../reference/satellite-configuration/) lists them all.
+
+For a host process:
 
 ```bash
+export AMBROGIO_ENV=production
 export AMBROGIO_BACKEND_URL=http://192.168.1.20:3000
 export AMBROGIO_CLIENT_ID=kitchen
 export AMBROGIO_CLIENT_NAME=Kitchen
 ```
 
-Give each satellite a distinct `AMBROGIO_CLIENT_ID`. Other supported variables, including audio devices and wake word settings, are mapped in `compose.example.yaml` and listed in [Satellite configuration](../../reference/satellite-configuration/).
+Give each satellite a distinct `AMBROGIO_CLIENT_ID`. Without it the satellite uses `satellite-<hostname>`.
 
 For Docker Compose, create `.env` next to `compose.example.yaml`:
 
 ```dotenv
-AMBROGIO_SATELLITE_VERSION=v0.6.0
+AMBROGIO_SATELLITE_VERSION=<version>
 AMBROGIO_BACKEND_URL=http://192.168.1.20:3000
-AMBROGIO_CLIENT_ID=kitchen
-AMBROGIO_CLIENT_NAME=Kitchen
 ```
 
-Compose forwards only variables listed in its `environment` section. Keep `.env` private.
+The example Compose file sets `AMBROGIO_ENV: production` and passes `AMBROGIO_BACKEND_URL`. To set another variable, add it to the satellite service's `environment` section, for example:
+
+```yaml
+AMBROGIO_CLIENT_ID: kitchen
+AMBROGIO_CLIENT_NAME: Kitchen
+```
+
+Keep `.env` private.
 
 ## 3. Start it
 
 On the host:
 
 ```bash
-node dist/main.js --config config.example.ts
+node dist/main.js
 ```
 
 With Docker Compose:
@@ -85,7 +93,7 @@ With Docker Compose:
 docker compose -f compose.example.yaml up -d
 ```
 
-The image loads `/config/satellite.ts`. The example Compose file mounts `config.example.ts` there, uses the host network and gives the container access to `/dev/snd`. If the host sound server holds the device, run the satellite on the host or configure access to that server.
+The example Compose file uses the host network and gives the container access to `/dev/snd`. If the host sound server holds the device, run the satellite on the host or configure access to that server.
 
 ## 4. Check it
 
@@ -97,5 +105,5 @@ Watch the log. On the host it is printed to the terminal; with Compose, run `doc
 
 Say "Hey Jarvis", wait for the beep and ask something.
 
-- If you hear two descending tones and the log shows `satellite_failure`, the satellite cannot reach the backend. From the device, run `curl http://192.168.1.20:3000/api/conversations` with your address.
-- If the satellite exits at once with `"event":"invalid_configuration"`, the `field` in the same line names the setting it refused. See [Troubleshooting](../troubleshoot/#the-satellite-exits-with-invalid_configuration).
+- If you hear two descending tones and the log shows `satellite_failure`, the satellite cannot reach the backend. From the device, run `curl http://192.168.1.20:3000/api/v1/conversations` with your address.
+- If the satellite exits at once with `"event":"invalid_configuration"`, the `variable` in the same line names the variable it refused and `condition` says whether it is `missing` or `invalid`. See [Troubleshooting](../troubleshoot/#the-satellite-exits-with-invalid_configuration).
