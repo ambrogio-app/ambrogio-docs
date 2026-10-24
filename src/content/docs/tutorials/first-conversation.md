@@ -51,7 +51,7 @@ Keep `.env` private. Compose uses it to fill in the image version and your API k
 
 ```bash
 docker compose -f compose.example.yaml up -d
-curl -s http://localhost:3000/api/conversations
+curl -s http://localhost:3000/api/v1/conversations
 ```
 
 The response has empty `items` and a `nextCursor`. If it does not, check `docker compose -f compose.example.yaml logs backend` and [Troubleshooting](../../how-to/troubleshoot/). The example also enables voice, using models included in the image.

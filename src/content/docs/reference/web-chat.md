@@ -14,7 +14,7 @@ Read by the page every time it opens, from the same folder as `index.html`, bypa
 | `backendUrl` | string | required | Backend address as the browser sees it. Absolute `http://` or `https://` URL with no user name, password, query or fragment. A path prefix is allowed. |
 | `language` | `"it"` or `"en"` | the first supported language of the browser, otherwise `"en"` | Language of the interface. |
 
-Any other field, an unsupported `language` or an invalid `backendUrl` makes the file invalid. From `backendUrl` the page derives `api/conversations` for the list and history, and `api/session` for the conversation session, with `ws://` for `http://` and `wss://` for `https://`.
+Any other field, an unsupported `language` or an invalid `backendUrl` makes the file invalid. From `backendUrl` the page derives `api/v1/conversations` for the list and history ([HTTP API](../http-api/) `v1`), and `api/session` for the conversation session, with `ws://` for `http://` and `wss://` for `https://`.
 
 When the file is missing or invalid, the page shows "Invalid web client configuration" in the browser's language (see [Interface texts](#interface-texts)), followed by a technical reason, and contacts nothing else:
 
@@ -92,7 +92,7 @@ Ambrogio's answers are shown as Markdown, including tables and task lists. HTML 
 
 ### Address of the open chat
 
-The open conversation appears in the address as `#/c/<conversationId>`; **New chat** has no fragment. You can reload the page, bookmark a conversation or use the browser's back button. A fragment of another form is ignored. If the conversation does not exist, the page shows the backend's message, such as "Conversation not found.", and **New chat** stays available.
+The open conversation appears in the address as `#/c/<conversationId>`; **New chat** has no fragment. You can reload the page, bookmark a conversation or use the browser's back button. A fragment of another form is ignored. If the conversation does not exist, the page shows "Conversation not found." and **New chat** stays available.
 
 ### Identity
 
@@ -120,10 +120,12 @@ The chat list is a navigation region and the open chat the main region. Every co
 | Message too large | Messaggio troppo grande (massimo 64 KiB). | Message too large (64 KiB at most). |
 | Backend unreachable | Impossibile collegarsi al backend. | Cannot connect to the backend. |
 | Protocol error | Errore del protocollo. | Protocol error. |
+| Conversation not found | Conversazione non trovata. | Conversation not found. |
+| Backend HTTP error | Il backend ha risposto con un errore (HTTP \<n\>). | The backend answered with an error (HTTP \<n\>). |
 | Invalid configuration | Configurazione del client web non valida | Invalid web client configuration |
 
-Messages produced by the backend, such as refusals and turn errors, appear as the backend sends them, in the language set by its [`AMBROGIO_LANGUAGE`](../backend-configuration/#conversations).
+Messages produced by the backend, such as refusals and turn errors, appear as the backend sends them, in the language set by its [`AMBROGIO_LANGUAGE`](../backend-configuration/#conversations). An error of the list or of a history read is shown with the texts above, chosen from the [problem `type`](../http-api/#problem-types): "Conversation not found." for `/problems/conversation-not-found`, the HTTP error text for any other error.
 
 ## Compatibility
 
-The client uses the `ambrogio.v1` protocol and the HTTP API of the backend, and works with every backend release that offers them. See [Versions and compatibility](../versions/).
+The client uses the `ambrogio.v1` protocol and HTTP API `v1` of the backend, and works with every backend release that offers them. See [Versions and compatibility](../versions/).

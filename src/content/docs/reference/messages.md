@@ -30,11 +30,14 @@ Sent with `turn.rejected` when a turn is not accepted. The turn is not stored.
 
 This text is also stored as the turn's `error`.
 
-## HTTP errors
+## HTTP errors of the previous version
+
+The errors of HTTP API `v1` are [Problem Details](../http-api/#error-responses) with English texts, the same in every language; the clients show their own texts. Only the endpoints of the [previous version](../http-api/#previous-version-without-a-version-in-the-path) answer with a translated message:
 
 | Status | Italian | English |
 |---|---|---|
 | 400 (list) | Richiesta di paginazione non valida. | Invalid pagination request. |
+| 400 (history) | Invalid HTTP request. | Invalid HTTP request. |
 | 404 | Conversazione non trovata. | Conversation not found. |
 | 500 | Non riesco a completare la risposta. | I can't complete the response. |
 
@@ -49,7 +52,7 @@ The satellite plays two sounds of its own, the same in every language. It does n
 
 ## Terminal client
 
-The terminal client shows the backend's messages as they are. Its own texts are in Italian or English, depending on its [language](../terminal-client/#command-line). `<host>` is the host name, `<n>` an HTTP status, `<text>` your message and `<detail>` the error.
+The terminal client shows the backend's turn messages as they are; for errors of the list or of a history read it shows its own texts, chosen from the [problem `type`](../http-api/#problem-types). Its own texts are in Italian or English, depending on its [language](../terminal-client/#command-line). `<host>` is the host name, `<n>` an HTTP status, `<text>` your message and `<detail>` the error.
 
 ### Start
 
@@ -116,7 +119,8 @@ These texts replace `<detail>` above, or end a turn when the backend sends no me
 | URL del backend non valido. | Invalid backend URL. | The address cannot be parsed. |
 | L’URL del backend deve essere HTTP(S), senza credenziali, query o frammento. | The backend URL must be HTTP(S), without credentials, query or fragment. | The address is not allowed. |
 | Risposta JSON del backend non valida. | Invalid JSON response from the backend. | The backend's answer is not JSON. |
-| Errore HTTP \<n\>. | HTTP error \<n\>. | An HTTP error without a message from the backend. |
+| Conversazione non trovata. | Conversation not found. | The backend answered `/problems/conversation-not-found`. |
+| Errore HTTP \<n\>. | HTTP error \<n\>. | Any other HTTP error of the list or of a history read. |
 | Risposta dell’elenco non valida. | Invalid list response. | The list does not have the expected form. |
 | Voce dell’elenco non valida. | Invalid list entry. | An entry of the list does not have the expected form. |
 | Risposta dello storico non valida. | Invalid history response. | The history does not have the expected form. |

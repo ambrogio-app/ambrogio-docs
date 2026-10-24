@@ -27,7 +27,7 @@ It takes about 20 minutes.
 The backend Compose example from the first tutorial already enables voice with `AMBROGIO_VOICE_LANGUAGES`. Its English profile uses a Piper voice and a Vosk model included in the image. Check that the backend still answers:
 
 ```bash
-curl -s http://localhost:3000/api/conversations
+curl -s http://localhost:3000/api/v1/conversations
 ```
 
 If it does not, read `docker compose -f compose.example.yaml logs backend` in the backend repository. [Backend configuration](../../reference/backend-configuration/#voice) lists the voice settings.

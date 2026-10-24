@@ -23,9 +23,9 @@ The backend logs warnings and errors only. It does not log ordinary requests.
 | Event | Meaning |
 |---|---|
 | `server_startup_failed` | The backend could not start. See below. |
-| `http.unexpected_failure` | An HTTP request failed with a server error. |
-| `conversation_list_http_failed` | Reading the conversation list failed. |
-| `conversation_history_http_failed` | Reading a conversation failed. |
+| `http.unexpected_failure` | An HTTP request failed with a server error, including a failed read of the conversation list or of a conversation through HTTP API `v1`. |
+| `conversation_list_http_failed` | Reading the conversation list through the previous API version, `/api/conversations`, failed. |
+| `conversation_history_http_failed` | Reading a conversation through the previous API version failed. |
 | `conversation_turn_admission_failed` | A turn could not be stored when it arrived. |
 | `conversation_reply_failed` | Producing an answer failed: model error, 30-second limit, tool limit or invalid agent choice. |
 | `conversation_turn_completion_failed` | The outcome of a turn could not be stored. |

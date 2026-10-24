@@ -36,7 +36,7 @@ Compose reads `.env` only to fill in `${AMBROGIO_VERSION}` and `${MISTRAL_API_KE
 
 ```bash
 docker compose -f compose.example.yaml up -d
-curl -s http://localhost:3000/api/conversations
+curl -s http://localhost:3000/api/v1/conversations
 ```
 
 A JSON response with `items` and `nextCursor` shows that the backend is running. Read failures with `docker compose -f compose.example.yaml logs backend` and [Troubleshooting](../troubleshoot/).

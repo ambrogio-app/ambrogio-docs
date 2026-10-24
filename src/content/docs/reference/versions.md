@@ -14,9 +14,10 @@ The backend owns the conversation protocol and the HTTP API. Clients use only th
 | Interface | Version | Offered by | Used by |
 |---|---|---|---|
 | Conversation protocol | `ambrogio.v1` (WebSocket subprotocol) | Backend | Terminal client, web chat, satellite |
-| HTTP API (conversation list and history) | first version, without a version in the path (`/api/conversations`) | Backend | Terminal client, web chat |
+| HTTP API (conversation list and history) | `v1`, under `/api/v1/`, errors as Problem Details | Backend, from the next release after `v0.9.0` | Terminal client and web chat, from their next releases after `v0.2.0` |
+| HTTP API (conversation list and history) | first version, without a version in the path (`/api/conversations`), errors as `{ "error": … }` | Backend, every release; kept while a client release uses it | Terminal client `v0.2.0`, web chat `v0.2.0` |
 
-A client works with every backend release that offers the interface versions it uses. An incompatible change to a public interface gets a new major version, such as `ambrogio.v2`, and the backend keeps offering the previous version while a client release still uses it. A change to [`protocol/ambrogio-v1.schema.json`](https://github.com/ambrogio-app/ambrogio-backend/blob/main/protocol/ambrogio-v1.schema.json) that is not a new version is compatible by rule.
+A client works with every backend release that offers the interface versions it uses. An incompatible change to a public interface gets a new major version, such as `ambrogio.v2` or `/api/v2/`, and the backend keeps offering the previous version while a client release still uses it. The protocol and the HTTP API have separate version cycles: a new HTTP API version does not change the protocol, and the other way round. A change to [`protocol/ambrogio-v1.schema.json`](https://github.com/ambrogio-app/ambrogio-backend/blob/main/protocol/ambrogio-v1.schema.json) that is not a new version is compatible by rule.
 
 ## Current state
 
@@ -35,7 +36,7 @@ When you upgrade, compare your configuration with the [backend configuration](..
 
 ## Next release: configuration change
 
-The next backend release after `v0.9.0` and the next satellite release after `v0.6.0`, not yet released, change the configuration in a way that is not compatible with earlier files. The conversation protocol and the HTTP API do not change, so the clients keep working.
+The next backend release after `v0.9.0` and the next satellite release after `v0.6.0`, not yet released, change the configuration in a way that is not compatible with earlier files. The conversation protocol does not change. The backend adds [HTTP API `v1`](../http-api/) under `/api/v1/`, with errors as Problem Details, and keeps the previous endpoints under `/api/conversations`, so the terminal client `v0.2.0` and the web chat `v0.2.0` keep working; their next releases use `v1` and need a backend that offers it.
 
 | Before | From the next release |
 |---|---|

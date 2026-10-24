@@ -105,5 +105,5 @@ Watch the log. On the host it is printed to the terminal; with Compose, run `doc
 
 Say "Hey Jarvis", wait for the beep and ask something.
 
-- If you hear two descending tones and the log shows `satellite_failure`, the satellite cannot reach the backend. From the device, run `curl http://192.168.1.20:3000/api/conversations` with your address.
+- If you hear two descending tones and the log shows `satellite_failure`, the satellite cannot reach the backend. From the device, run `curl http://192.168.1.20:3000/api/v1/conversations` with your address.
 - If the satellite exits at once with `"event":"invalid_configuration"`, the `variable` in the same line names the variable it refused and `condition` says whether it is `missing` or `invalid`. See [Troubleshooting](../troubleshoot/#the-satellite-exits-with-invalid_configuration).
