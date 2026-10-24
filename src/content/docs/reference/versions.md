@@ -9,15 +9,14 @@ The four programs are released separately. They work together when the clients s
 
 ## How compatibility is recorded
 
-The backend owns the conversation protocol and the HTTP API. Each client records the exact backend revision it is tested against:
+The backend owns the conversation protocol and the HTTP API. Clients use only those public interfaces, and compatibility follows their versions:
 
-| Client | Where the backend revision is recorded |
-|---|---|
-| Terminal client | `system-model/Contracts/TerminalConversation.md`, section *Contratti pubblici del backend Ambrogio* |
-| Web chat | `system-model/Contracts/WebConversation.md`, section *Contratti pubblici del backend Ambrogio* |
-| Satellite | `system-model/Contracts/VoiceSatellite.md`, section *Contratto vocale backend di riferimento* |
+| Interface | Version | Offered by | Used by |
+|---|---|---|---|
+| Conversation protocol | `ambrogio.v1` (WebSocket subprotocol) | Backend | Terminal client, web chat, satellite |
+| HTTP API (conversation list and history) | first version, without a version in the path (`/api/conversations`) | Backend | Terminal client, web chat |
 
-Before upgrading, check that the backend you plan to run is that revision or a later one with the same protocol. A change to [`protocol/ambrogio-v1.schema.json`](https://github.com/ambrogio-app/ambrogio-backend/blob/main/protocol/ambrogio-v1.schema.json) in the backend is the thing to look for. An incompatible change gets a new subprotocol name, such as `ambrogio.v2`.
+A client works with every backend release that offers the interface versions it uses. An incompatible change to a public interface gets a new major version, such as `ambrogio.v2`, and the backend keeps offering the previous version while a client release still uses it. A change to [`protocol/ambrogio-v1.schema.json`](https://github.com/ambrogio-app/ambrogio-backend/blob/main/protocol/ambrogio-v1.schema.json) that is not a new version is compatible by rule.
 
 ## Current state
 
@@ -30,14 +29,14 @@ Release list checked on 23 October 2026. The TypeScript configuration pages desc
 | Web chat | `v0.2.0` | `ghcr.io/ambrogio-app/ambrogio-web:v0.2.0` (amd64, arm64) | yes |
 | Satellite | `v0.6.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.6.0` (amd64, arm64) | yes |
 
-All four programs speak the `ambrogio.v1` protocol, which has not changed since it was introduced. The terminal client `v0.2.0`, the web chat `v0.2.0` and the satellite `v0.6.0` are tested against backend `v0.8.0` (commit `a570c01`). Backend `v0.9.0` keeps the same protocol and HTTP API.
+All four programs speak the `ambrogio.v1` protocol, which has not changed since it was introduced, and backend `v0.9.0` offers the same HTTP API as earlier releases. The terminal client `v0.2.0`, the web chat `v0.2.0` and the satellite `v0.6.0` were tested against backend `v0.8.0`; from the next releases, each client is tested in CI against the backend under development, through the backend's test entry point.
 
 When you upgrade, compare your files with the [backend configuration](../backend-configuration/), [agent configuration](../agent-configuration/) and [satellite configuration](../satellite-configuration/) references: an older file may lack a field that is now required.
 
 ## Release rules
 
 - Backend, satellite and web chat images are published only for Git tags of the form `vMAJOR.MINOR.PATCH`. The image tag equals the Git tag. There is no `latest` tag.
-- An image is published only if the repository's checks (model validation, lint and integrity check, type check, tests, build) and the secret scan pass on the tagged commit.
+- An image is published only if the repository's checks (checks of the whole engineering model, type check, tests, build) and the secret scan pass on the tagged commit.
 - Backend images are built for `linux/amd64`. Satellite and web chat images are built for `linux/amd64` and `linux/arm64`.
 
 ## Language

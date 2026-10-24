@@ -60,11 +60,11 @@ This has a practical consequence: a conversation does not belong to a client. A 
 
 The programs run on different machines, have different dependencies and change at different speeds. The satellite needs audio libraries and runs on ARM boards; the backend needs speech models and runs on a server; the terminal client and the web chat need neither. The web chat is optional too: if you do not want it, you do not install its container. Keeping them apart means a satellite update does not force you to touch the server, and the other way round.
 
-What holds them together is the protocol. The backend owns it, and each client records which backend revision it has been tested against. [Versions and compatibility](../../reference/versions/) explains how to read that.
+What holds them together is the protocol. The backend owns it and the HTTP API; clients use only those public interfaces, and an incompatible change gets a new interface version. [Versions and compatibility](../../reference/versions/) explains how to read that.
 
 ## How the code is organised
 
-Each repository is built model-first with [Reqvire](https://reqvire.org/): capabilities, requirements, contracts and verifications are written in `system-model/` before the code changes. When this documentation states a limit or a default, it comes from those contracts. If you want to know *why* something behaves as it does, the decisions are recorded there, with dates and the alternatives that were considered.
+Ambrogio is built model-first with [Reqvire](https://reqvire.org/): capabilities, requirements, contracts and verifications are written before the code changes. They form one model spread over the repositories: each repository keeps its part in `system-model/`, and [`ambrogio-model`](https://github.com/ambrogio-app/ambrogio-model) holds the product capabilities, the shared vocabulary and the rules common to all repositories. When this documentation states a limit or a default, it comes from those contracts. If you want to know *why* something behaves as it does, the decisions and their reasons are recorded there; their history is in Git.
 
 Inside, the code follows a ports-and-adapters design: the rules of conversations and turns do not depend on Node.js, SQLite, the model providers or the audio libraries, which are plugged in at the edges. The web chat is organised by feature instead, and each feature keeps its logic apart from its React components, so the protocol handling is tested without a browser.
 

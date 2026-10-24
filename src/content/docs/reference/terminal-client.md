@@ -50,7 +50,7 @@ The client must run in an interactive terminal of at least 70 × 14 characters.
 |---|---|
 | Start | Selects a local **New chat**. Nothing is created on the backend until you send the first message. |
 | First message sent | Opens the WebSocket session. One session serves every chat. |
-| Message empty or larger than 64 KiB | Not sent. |
+| Message empty or larger than 64 KiB | Not sent: the text stays in the input and the status line shows "Write a non-empty message." or "Message too large (maximum 64 KiB)." |
 | Answer arriving | Shows the text as it streams in. |
 | `turn.completed` | The turn is done and saved. |
 | `turn.failed` or `turn.rejected` | Replaces the partial text with the backend's message. |
@@ -62,4 +62,4 @@ The client ignores `expectsReply`: the input field is always available.
 
 ## Compatibility
 
-The backend revision this client is tested against is recorded in `system-model/Contracts/TerminalConversation.md` in its repository. See [Versions and compatibility](../versions/).
+The client uses the `ambrogio.v1` protocol and the HTTP API of the backend, and works with every backend release that offers them. See [Versions and compatibility](../versions/).

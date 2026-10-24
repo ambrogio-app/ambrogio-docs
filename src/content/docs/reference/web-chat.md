@@ -122,8 +122,8 @@ The chat list is a navigation region and the open chat the main region. Every co
 | Protocol error | Errore del protocollo. | Protocol error. |
 | Invalid configuration | Configurazione del client web non valida | Invalid web client configuration |
 
-Messages produced by the backend, such as refusals and turn errors, appear as the backend sends them, in the language set in its `conversations.json`.
+Messages produced by the backend, such as refusals and turn errors, appear as the backend sends them, in the language set in its [`conversations.ts`](../backend-configuration/#conversationsts).
 
 ## Compatibility
 
-The backend revision this client is tested against is recorded in `system-model/Contracts/WebConversation.md` in its repository. See [Versions and compatibility](../versions/).
+The client uses the `ambrogio.v1` protocol and the HTTP API of the backend, and works with every backend release that offers them. See [Versions and compatibility](../versions/).
