@@ -19,7 +19,7 @@ If the proxy runs in another container, put both on the same Docker network inst
 
 The proxy must forward two kinds of traffic to the same port:
 
-- ordinary `GET` requests under `/api/v1/` and, for older clients, under `/api/conversations`;
+- ordinary `GET` requests under `/api/v1/`;
 - a WebSocket upgrade on `/api/session`.
 
 ### Caddy

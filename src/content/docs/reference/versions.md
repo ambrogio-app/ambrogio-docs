@@ -9,15 +9,14 @@ The four programs are released separately. They work together when the clients s
 
 ## How compatibility is recorded
 
-The backend owns the conversation protocol and the HTTP API. Clients use only those public interfaces, and compatibility follows their versions:
+The backend owns the conversation protocol and the HTTP API. Clients use only those public interfaces. Each release declares the interface versions it offers (backend) or uses (clients):
 
 | Interface | Version | Offered by | Used by |
 |---|---|---|---|
 | Conversation protocol | `ambrogio.v1` (WebSocket subprotocol) | Backend | Terminal client, web chat, satellite |
 | HTTP API (conversation list and history) | `v1`, under `/api/v1/`, errors as Problem Details | Backend, from `v0.10.1` | Terminal client and web chat, from `v0.3.0` |
-| HTTP API (conversation list and history) | first version, without a version in the path (`/api/conversations`), errors as `{ "error": … }` | Backend, every release; kept while a client release uses it | Terminal client `v0.2.0`, web chat `v0.2.0` |
 
-A client works with every backend release that offers the interface versions it uses. An incompatible change to a public interface gets a new major version, such as `ambrogio.v2` or `/api/v2/`, and the backend keeps offering the previous version while a client release still uses it. The protocol and the HTTP API have separate version cycles: a new HTTP API version does not change the protocol, and the other way round. A change to [`protocol/ambrogio-v1.schema.json`](https://github.com/ambrogio-app/ambrogio-backend/blob/main/protocol/ambrogio-v1.schema.json) that is not a new version is compatible by rule.
+The backend and the clients are updated together. The backend offers one version of each interface and does not keep earlier ones. An incompatible change to a public interface is made in the backend and in the clients that use it at the same time, the version in the interface name changes, such as `ambrogio.v2` or `/api/v2/`, and the backend and those clients are released together. A client release works with the backend releases that offer the interface versions it uses; [Current state](#current-state) says which releases work together. The protocol and the HTTP API have separate version cycles: a new HTTP API version does not change the protocol, and the other way round. A change to [`protocol/ambrogio-v1.schema.json`](https://github.com/ambrogio-app/ambrogio-backend/blob/main/protocol/ambrogio-v1.schema.json) that is not a new version is compatible by rule.
 
 ## Current state
 
@@ -25,16 +24,16 @@ Release list checked on 24 October 2026. Ambrogio is in preview, and configurati
 
 | Program | Latest release | Images | Interfaces |
 |---|---|---|---|
-| Backend | `v0.10.1` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.10.1` (amd64) | offers `ambrogio.v1`, HTTP API `v1` and the unversioned HTTP API |
+| Backend | `v0.10.1` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.10.1` (amd64) | offers `ambrogio.v1` and HTTP API `v1` |
 | Terminal client | `v0.3.0` | none, run from a checkout of the tag | uses `ambrogio.v1` and HTTP API `v1` |
 | Web chat | `v0.3.0` | `ghcr.io/ambrogio-app/ambrogio-web:v0.3.0` (amd64, arm64) | uses `ambrogio.v1` and HTTP API `v1` |
 | Satellite | `v0.7.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.7.0` (amd64, arm64) | uses `ambrogio.v1` |
 
-All four current releases work together. Backend `v0.10.1` also serves the terminal client `v0.2.0` and the web chat `v0.2.0` through the unversioned HTTP API, and every satellite release, since `ambrogio.v1` has not changed. Backend `v0.10.0` was tagged but not published: use `v0.10.1`. The terminal client `v0.3.0` and the web chat `v0.3.0` need a backend that offers HTTP API `v1`, that is `v0.10.1` or later. Each client release is tested in CI against the backend under development, through the backend's test entry point.
+All four current releases work together, and the backend works with every satellite release, since `ambrogio.v1` has not changed. The terminal client `v0.2.0` and the web chat `v0.2.0` read conversations through endpoints without a version in the path, `/api/conversations`, which only backend `v0.10.1` and earlier answer: the next backend release after `v0.10.1` no longer serves them, so upgrade those clients to `v0.3.0` or later before you upgrade the backend. Backend `v0.10.0` was tagged but not published: use `v0.10.1`. The terminal client `v0.3.0` and the web chat `v0.3.0` need a backend that offers HTTP API `v1`, that is `v0.10.1` or later. Each client release is tested in CI against the backend under development, through the backend's test entry point.
 
 ## Upgrading to backend `v0.10.1` and satellite `v0.7.0`
 
-Backend `v0.10.1` and satellite `v0.7.0` change the configuration in a way that is not compatible with earlier releases. The conversation protocol does not change. The backend adds [HTTP API `v1`](../http-api/) under `/api/v1/`, with errors as Problem Details, and keeps the previous endpoints under `/api/conversations`.
+Backend `v0.10.1` and satellite `v0.7.0` change the configuration in a way that is not compatible with earlier releases. The conversation protocol does not change. The backend adds [HTTP API `v1`](../http-api/) under `/api/v1/`, with errors as Problem Details, and still answers on the previous endpoints under `/api/conversations`; later backend releases do not.
 
 | Before | From backend `v0.10.1` and satellite `v0.7.0` |
 |---|---|

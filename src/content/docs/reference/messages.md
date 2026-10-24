@@ -30,16 +30,9 @@ Sent with `turn.rejected` when a turn is not accepted. The turn is not stored.
 
 This text is also stored as the turn's `error`.
 
-## HTTP errors of the previous version
+## HTTP errors
 
-The errors of HTTP API `v1` are [Problem Details](../http-api/#error-responses) with English texts, the same in every language; the clients show their own texts. Only the endpoints of the [previous version](../http-api/#previous-version-without-a-version-in-the-path) answer with a translated message:
-
-| Status | Italian | English |
-|---|---|---|
-| 400 (list) | Richiesta di paginazione non valida. | Invalid pagination request. |
-| 400 (history) | Invalid HTTP request. | Invalid HTTP request. |
-| 404 | Conversazione non trovata. | Conversation not found. |
-| 500 | Non riesco a completare la risposta. | I can't complete the response. |
+The errors of the [HTTP API](../http-api/#error-responses) are Problem Details with English texts, the same in every language; the clients show their own texts.
 
 ## Satellite sounds
 
