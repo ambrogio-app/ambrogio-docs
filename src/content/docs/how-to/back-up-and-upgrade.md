@@ -24,7 +24,7 @@ The `.env` contains API keys or tokens; agent files contain none. Keep backups s
 The simplest safe copy is taken with the backend stopped:
 
 ```bash
-docker stop ambrogio
+docker stop --time 15 ambrogio
 cp /srv/ambrogio/data/conversations.sqlite /backup/conversations-$(date +%F).sqlite
 docker start ambrogio
 ```

@@ -17,7 +17,8 @@ The satellite takes no arguments. Any argument is refused with `invalid_argument
 
 | Exit code | Meaning |
 |---|---|
-| `1` | The satellite failed while starting or running, or did not finish stopping within 5 seconds of `SIGINT` or `SIGTERM`. |
+| `0` | Stopped cleanly after `SIGINT` or `SIGTERM`. |
+| `1` | The satellite could not start (`satellite_startup_failed`), a resource could not be released when stopping (`satellite_process_failed`), the shutdown took longer than 5 seconds after `SIGINT` or `SIGTERM` (`satellite_shutdown_timeout`), or a fatal error stopped it. |
 | `2` | Invalid arguments (`invalid_arguments`) or invalid configuration (`invalid_configuration`). |
 
 An invalid configuration produces one log line with `event: "invalid_configuration"`, `variable` (the name of the variable) and `condition` (`missing` or `invalid`). The line never contains the value. See [Logs](../logs/).

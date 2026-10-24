@@ -84,6 +84,18 @@ The satellite checks its environment variables before it starts and stops at the
 
 `invalid_arguments` means the command line had arguments: the satellite takes none.
 
+## The satellite does not start
+
+When the satellite cannot start, it prints `Unable to start Ambrogio satellite.` to standard error and writes one `satellite_startup_failed` line. Its `err.message` says which step failed:
+
+| `err.message` | What to check |
+|---|---|
+| `Wake word model could not be loaded` | The model file of `AMBROGIO_WAKE_WORD_MODEL` or the shared files of the models folder are damaged. Copy the folder again; see [Change the wake word](../change-wake-word/). |
+| `Voice activity model could not be loaded` | The bundled speech detection model is damaged. Reinstall the satellite or pull the image again. |
+| `Microphone could not be started` | The selected microphone does not exist or is busy. See [Choose audio devices](../choose-audio-devices/). |
+
+When two things fail, for example the microphone and then the release of a model, `err.type` is `LifecycleError` and `err.faults` lists both.
+
 ## The satellite plays two descending tones
 
 The satellite plays this error tone in two cases. Its log tells you which:

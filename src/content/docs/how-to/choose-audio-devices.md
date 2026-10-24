@@ -46,7 +46,7 @@ You can set only one of the two; the other stays on the default.
 
 Recreate the satellite with `docker compose -f compose.example.yaml up -d`. A selector that matches no device is never replaced by the default, so a mistake shows up instead of going unnoticed:
 
-- A wrong **microphone** stops the satellite at startup, with `"event":"satellite_process_failed"` in the log.
+- A wrong **microphone** stops the satellite at startup, with `"event":"satellite_startup_failed"` and the message `Microphone could not be started` in the log.
 - A wrong **speaker** is found only when the satellite first plays something. After the wake word you hear no beep, and the log shows `"event":"satellite_ready_cue_failed"`.
 
 Say the wake word once after every change to check both.

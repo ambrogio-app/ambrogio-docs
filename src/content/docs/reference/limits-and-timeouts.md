@@ -17,6 +17,7 @@ sidebar:
 | Incoming audio streams per session | 1 | no | `session.error` with `audio_busy`. |
 | Model request retries | 0 | no | A model error fails the turn. |
 | Session ping interval | 30 seconds | no | A session that does not answer by the next ping is closed. |
+| Shutdown after `SIGTERM` or `SIGINT` | 10 seconds | no | The backend logs `server_shutdown_timeout` and exits with code `1`. Give the container at least 15 seconds to stop. |
 | Conversations per list page | `AMBROGIO_LIST_PAGE_SIZE` (20), at most `AMBROGIO_MAX_LIST_PAGE_SIZE` (100) | yes | See [Backend configuration](../backend-configuration/#conversations). |
 | Speech synthesis threads | 4, or fewer if the CPU has fewer | no | |
 
@@ -39,6 +40,7 @@ Turns are never queued and never retried automatically.
 | Wait for a follow-up reply | 15 seconds, restarted after each answer | `AMBROGIO_REPLY_TIMEOUT_MS` |
 | Level of other local audio during an interaction | set per installation, 100% otherwise | `AMBROGIO_ATTENUATION_LEVEL` |
 | Time allowed for each `amixer` call | 2 seconds | no |
+| Shutdown after `SIGTERM` or `SIGINT` | 5 seconds | no |
 
 The satellite does not listen while it is speaking: you cannot interrupt an answer.
 

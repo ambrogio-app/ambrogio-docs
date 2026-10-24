@@ -118,7 +118,9 @@ The backend repository provides:
 
 | Signal | Effect |
 |---|---|
-| `SIGTERM`, `SIGINT` | Stops accepting turns, saves turns in progress as interrupted, closes sessions and exits. Exit code `0` on a clean stop. |
+| `SIGTERM`, `SIGINT` | Stops accepting turns, saves turns in progress as interrupted, closes sessions, then the listener, the voice components, the archive and the MCP connections, and exits. Exit code `0` on a clean stop, `1` if a resource could not be closed or the shutdown took longer than 10 seconds. A second signal does not restart the wait. |
+
+The backend needs up to 10 seconds to stop. `compose.example.yaml` sets `stop_grace_period: 15s` so that Docker does not kill it first; with `docker run` use `--stop-timeout 15`, and with `docker stop` use `--time 15`.
 
 ## See also
 
