@@ -101,7 +101,7 @@ The model must support tool calling and structured output with a JSON schema; an
 
 The two keys mean the same with every provider.
 
-Requests to the model are not retried. For the orchestrator, `mistral-medium-latest` is the model the project recommends.
+Requests to the model are not retried. For the orchestrator, `mistral-medium-latest` is the model the project recommends. It is an alias that Mistral AI points to the latest Mistral Medium version, so the model behind it changes when Mistral AI moves the alias.
 
 ## `mcp`
 
