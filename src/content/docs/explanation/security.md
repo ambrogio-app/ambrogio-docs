@@ -20,16 +20,16 @@ This is a deliberate choice for the first versions: the family shares one identi
 
 ## What the backend does protect
 
-- **Browsers.** Web pages cannot call the API or open a session from another site unless you list that site in `allowedOrigins`. This stops a malicious web page from talking to Ambrogio through a family member's browser. It does nothing against programs that are not browsers. List only the address of the [web chat](../../reference/web-chat/) and of browser applications you trust.
+- **Browsers.** Web pages cannot call the API or open a session from another site unless you list that site in `AMBROGIO_ALLOWED_ORIGINS`. This stops a malicious web page from talking to Ambrogio through a family member's browser. It does nothing against programs that are not browsers. List only the address of the [web chat](../../reference/web-chat/) and of browser applications you trust.
 - **HTTP headers.** Responses carry standard security headers, and HSTS when you declare the public address HTTPS-only.
 - **Caching.** Responses that contain conversations are marked not to be cached by browsers or proxies.
 
 ## Secrets
 
-API keys and MCP tokens can be passed as environment variables to TypeScript agent modules. Protect the Compose `.env` and the container environment. The backend:
+API keys, MCP tokens and OAuth client secrets live only in environment variables. Agent files are plain data and only name the variable that holds each secret, so they can be shared or versioned without exposing a key. Protect the Compose `.env` and the container environment. The backend:
 
 - never sends one agent's credentials to another agent or to the language model;
-- never writes them to the logs or to error messages.
+- never writes them to the logs or to error messages: a configuration error names the variable, never its value.
 
 Protecting the files themselves is up to you: restrict their permissions, mount them read-only into the container, and keep backups private. Never commit them to a repository.
 

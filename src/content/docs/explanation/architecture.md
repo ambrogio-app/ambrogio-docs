@@ -62,6 +62,14 @@ The programs run on different machines, have different dependencies and change a
 
 What holds them together is the protocol. The backend owns it and the HTTP API; clients use only those public interfaces, and an incompatible change gets a new interface version. [Versions and compatibility](../../reference/versions/) explains how to read that.
 
+## How configuration works
+
+The backend and the satellite are configured the way containers usually are: with environment variables. The code that reads and checks them is part of each program, one module per configurable part, so you set values and never run code of your own. Each program reads its configuration once, when it starts, and refuses to start if a value is missing or wrong, naming the variable but never its value, so a mistake cannot pass silently and a secret cannot end up in a log.
+
+Agent definitions are the one exception: an agent has long instructions and nested settings that do not fit well in variables, so each agent is a JSON file of plain data mounted into the backend. Secrets stay out of those files too. A file only names the variable that holds a key or token, so agent files can be copied, shared and kept in Git safely.
+
+Every process also declares its environment, `development`, `test` or `production`, in `AMBROGIO_ENV`. Some conveniences, such as listening on `127.0.0.1:3000` without being told, exist only in development, so a production installation never runs on a value nobody chose. Every default has one owner: the program applies it, and the example files do not repeat it, so changing a default in a new release cannot be undone by an old example. See [Backend configuration](../../reference/backend-configuration/) and [Satellite configuration](../../reference/satellite-configuration/).
+
 ## How the code is organised
 
 Ambrogio is built model-first with [Reqvire](https://reqvire.org/): capabilities, requirements, contracts and verifications are written before the code changes. They form one model spread over the repositories: each repository keeps its part in `system-model/`, and [`ambrogio-model`](https://github.com/ambrogio-app/ambrogio-model) holds the product capabilities, the shared vocabulary and the rules common to all repositories. When this documentation states a limit or a default, it comes from those contracts. If you want to know *why* something behaves as it does, the decisions and their reasons are recorded there; their history is in Git.

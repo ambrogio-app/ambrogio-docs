@@ -1,36 +1,46 @@
 ---
 title: Agent configuration
-description: Files and fields that define the orchestrator and the specialised agents.
+description: JSON files and fields that define the orchestrator and the specialised agents.
 sidebar:
   label: Agent configuration
 ---
 
-Agents are defined by TypeScript modules in `/etc/ambrogio/agents/`. Each module exports a default configuration object and may read `process.env`. The folder is read once at startup; exported values are validated before the backend starts.
+Agents are defined by JSON files in the agents folder, `/etc/ambrogio/agents/` unless `AMBROGIO_AGENTS_DIR` says otherwise (see [Backend configuration](../backend-configuration/#agents)). The files hold data only. They never contain secrets: an API key, token or client secret is named by the environment variable that holds it, and the backend reads that variable at startup. The folder is read once at startup and every file is validated before the backend starts.
 
 ## Files
 
 | File | Meaning |
 |---|---|
-| `orchestrator.ts` | The orchestrator. Required. |
-| `<id>.ts` | A specialised agent with identifier `<id>`. At least one is required. |
-| anything not ending in `.ts` | Ignored. |
+| `orchestrator.json` | The orchestrator. Required. |
+| `<id>.json` | A specialised agent with identifier `<id>`. At least one is required. |
+| anything not ending in `.json` | Ignored. |
 
 `<id>` must match `^[a-z][a-z0-9-]*$`: a lowercase letter, then lowercase letters, digits or hyphens.
 
-Every exported object must be valid for the backend to start. There is no field to disable an agent: remove or rename its file.
+Every file must be valid JSON with only the fields listed on this page; any other field, such as a literal `apiKey` or `token`, makes the file invalid. An invalid file stops the backend with `Invalid agent configuration: <id>`. There is no field to disable an agent: remove or rename its file.
 
-## `orchestrator.ts`
+## Credentials from environment variables
+
+Fields ending in `Env` name an environment variable. The name must match `^[A-Z][A-Z0-9_]*$`. If the variable is unset or empty at startup, the backend does not start, with `Missing environment variable <NAME> for agent <id>`. Several agents may name the same variable.
+
+| Field | Holds |
+|---|---|
+| `llm.apiKeyEnv` | The provider API key. |
+| `mcp.auth.tokenEnv` | The static Bearer token of the MCP server. |
+| `mcp.auth.clientSecretEnv` | The OAuth client secret. |
+
+## `orchestrator.json`
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `instructions` | string | yes | Instructions for choosing an agent. Ambrogio appends the list of agents (identifier and `description`) and a request to pick one. |
 | `llm` | object | yes | See [`llm`](#llm). |
 
-`description` and `mcp` are not allowed in this file.
+`description`, `mcp` and `maxToolCalls` are not allowed in this file.
 
 The orchestrator never writes the answer. Its only output is the identifier of the agent that will answer.
 
-## Specialised agent `<id>.ts`
+## Specialised agent `<id>.json`
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
@@ -50,9 +60,9 @@ At every turn handled by a specialised agent, Ambrogio adds this line right afte
 Current date and time: Monday, 19 October 2026 at 09:41 (Europe/Rome).
 ```
 
-The time zone is `timeZone` in [`conversations.ts`](../backend-configuration/#conversationsts), `UTC` when it is not set. The orchestrator does not get the line. The line is not stored in the conversation.
+The time zone is `AMBROGIO_TIME_ZONE` (see [Backend configuration](../backend-configuration/#conversations)), `UTC` when it is not set. The orchestrator does not get the line. The line is not stored in the conversation.
 
-The backend also tells each specialised agent to answer in the language selected in `conversations.ts`, Italian or English. This applies to agents with and without MCP. The orchestrator does not receive that instruction because it returns only an agent identifier. Agent files can be written in English without repeating the response language.
+The backend also tells each specialised agent to answer in the language selected by `AMBROGIO_LANGUAGE`, Italian or English. This applies to agents with and without MCP. The orchestrator does not receive that instruction because it returns only an agent identifier. Agent files can be written in English without repeating the response language.
 
 ## `llm`
 
@@ -60,9 +70,11 @@ The backend also tells each specialised agent to answer in the language selected
 |---|---|---|---|
 | `provider` | string | yes | Who runs the model. See [Providers](#providers). |
 | `model` | string | yes | Model identifier as the provider names it, for example `"mistral-medium-latest"`. |
-| `apiKey` | string | yes | API key for the provider. Required with every provider, even when the server does not check it. |
+| `apiKeyEnv` | string | yes | Name of the environment variable that holds the API key, for example `"MISTRAL_API_KEY"`. Required with every provider, even when the server does not check the key. |
 | `baseURL` | string | with `openai-compatible` only | Absolute `http://` or `https://` address of the API, for example `"http://localhost:11434/v1"`. Required with `openai-compatible`; not allowed with the other providers. |
 | `options` | object | no | Model options. See below. |
+
+No other field is allowed in `llm`.
 
 Each agent, the orchestrator included, has its own `llm`, so agents can use different providers.
 
@@ -99,7 +111,7 @@ Requests to the model are not retried. For the orchestrator, `mistral-medium-lat
 | `auth` | object | no | Credentials. Without it, no `Authorization` header is sent. |
 | `tools` | array of strings | no | Names of the server's tools the agent may use, as the server declares them. Without it, every tool is offered. The array must not be empty, and names must be non-empty strings without repeats. |
 
-A `transport` field is not allowed. Local (stdio) servers and the older HTTP+SSE transport are not supported.
+No other field is allowed in `mcp`, `transport` included. Local (stdio) servers and the older HTTP+SSE transport are not supported.
 
 The backend connects to the server and lists its tools at startup. If the server declares prompts, it also lists the prompts that have no required arguments. If the connection or either list fails, the backend does not start. If a name in `tools` is not among the server's tools, the backend does not start either, with `Agent MCP tool unavailable: <id>`.
 
@@ -117,7 +129,7 @@ The backend connects to the server and lists its tools at startup. If the server
 | Field | Type | Meaning |
 |---|---|---|
 | `type` | `"bearer"` | |
-| `token` | string | Sent as `Authorization: Bearer <token>` to this agent's `url` only. |
+| `tokenEnv` | string | Name of the environment variable that holds the token. The token is sent as `Authorization: Bearer <token>` to this agent's `url` only. |
 
 ### `auth` with OAuth client credentials
 
@@ -125,7 +137,7 @@ The backend connects to the server and lists its tools at startup. If the server
 |---|---|---|---|
 | `type` | `"oauth_client_credentials"` | yes | |
 | `clientId` | string | yes | Client registered with the authorization server. |
-| `clientSecret` | string | yes | Its secret. |
+| `clientSecretEnv` | string | yes | Name of the environment variable that holds the client secret. |
 | `issuer` | string | yes | Absolute `http://` or `https://` URL of the authorization server. Ambrogio checks that the server advertised by the MCP endpoint matches it before sending the secret. |
 | `scope` | string | no | Scope to request. |
 
@@ -133,98 +145,55 @@ Tokens are obtained with the OAuth `client_credentials` flow and renewed automat
 
 ## Examples
 
-Orchestrator:
+The backend repository provides these files in `examples/agents/`.
 
-```ts
-export default {
-  instructions: process.env.AMBROGIO_ORCHESTRATOR_INSTRUCTIONS
-    || "Choose the agent that should answer the family's latest message. Route general questions, conversation and unclear requests to generic. If the message answers a question from an agent, choose the same agent. Return only the selected agent identifier.",
-  llm: {
-    provider: process.env.AMBROGIO_ORCHESTRATOR_PROVIDER || 'mistral',
-    model: process.env.AMBROGIO_ORCHESTRATOR_MODEL || 'mistral-medium-latest',
-    apiKey: process.env.AMBROGIO_ORCHESTRATOR_API_KEY || process.env.MISTRAL_API_KEY,
-    ...(process.env.AMBROGIO_ORCHESTRATOR_BASE_URL ? { baseURL: process.env.AMBROGIO_ORCHESTRATOR_BASE_URL } : {}),
-    ...(process.env.AMBROGIO_ORCHESTRATOR_TEMPERATURE || process.env.AMBROGIO_ORCHESTRATOR_MAX_TOKENS ? {
-      options: {
-        ...(process.env.AMBROGIO_ORCHESTRATOR_TEMPERATURE ? {
-          temperature: Number(process.env.AMBROGIO_ORCHESTRATOR_TEMPERATURE),
-        } : {}),
-        ...(process.env.AMBROGIO_ORCHESTRATOR_MAX_TOKENS ? {
-          max_tokens: Number(process.env.AMBROGIO_ORCHESTRATOR_MAX_TOKENS),
-        } : {}),
-      },
-    } : {}),
-  },
-};
+Orchestrator, `orchestrator.json`:
+
+```json
+{
+  "instructions": "Choose the agent that should answer the family's latest message. Route general questions, conversation and unclear requests to generic. If the message answers a question from an agent, choose the same agent. Return only the selected agent identifier.",
+  "llm": {
+    "provider": "mistral",
+    "model": "mistral-medium-latest",
+    "apiKeyEnv": "MISTRAL_API_KEY"
+  }
+}
 ```
 
-Agent without tools:
+Agent without tools, `generic.json`:
 
-```ts
-export default {
-  description: process.env.AMBROGIO_GENERIC_DESCRIPTION || 'Answers general questions and makes conversation.',
-  instructions: process.env.AMBROGIO_GENERIC_INSTRUCTIONS
-    || 'You are Ambrogio, the family assistant. Answer briefly and plainly. Requests may come from speech recognition and contain misheard words; interpret them in context. If you cannot understand a request, ask the family to repeat it.',
-  llm: {
-    provider: process.env.AMBROGIO_GENERIC_PROVIDER || 'mistral',
-    model: process.env.AMBROGIO_GENERIC_MODEL || 'mistral-medium-latest',
-    apiKey: process.env.AMBROGIO_GENERIC_API_KEY || process.env.MISTRAL_API_KEY,
-    ...(process.env.AMBROGIO_GENERIC_BASE_URL ? { baseURL: process.env.AMBROGIO_GENERIC_BASE_URL } : {}),
-    ...(process.env.AMBROGIO_GENERIC_TEMPERATURE || process.env.AMBROGIO_GENERIC_MAX_TOKENS ? {
-      options: {
-        ...(process.env.AMBROGIO_GENERIC_TEMPERATURE ? {
-          temperature: Number(process.env.AMBROGIO_GENERIC_TEMPERATURE),
-        } : {}),
-        ...(process.env.AMBROGIO_GENERIC_MAX_TOKENS ? {
-          max_tokens: Number(process.env.AMBROGIO_GENERIC_MAX_TOKENS),
-        } : {}),
-      },
-    } : {}),
-  },
-};
+```json
+{
+  "description": "Answers general questions and makes conversation.",
+  "instructions": "You are Ambrogio, the family assistant. Answer briefly and plainly. Requests may come from speech recognition and contain misheard words; interpret them in context. If you cannot understand a request, ask the family to repeat it.",
+  "llm": {
+    "provider": "mistral",
+    "model": "mistral-medium-latest",
+    "apiKeyEnv": "MISTRAL_API_KEY"
+  }
+}
 ```
 
-Agent with an MCP server:
+Agent with an MCP server, `home-assistant.json`:
 
-```ts
-export default {
-  description: process.env.AMBROGIO_HOME_ASSISTANT_DESCRIPTION
-    || "Reads the state of the home's lights, switches and sensors through Home Assistant and turns devices on or off.",
-  instructions: process.env.AMBROGIO_HOME_ASSISTANT_INSTRUCTIONS
-    || "You control the family's home through Home Assistant. Answer briefly. Choose freely among the available tools and use the ones the request needs. To answer a question about the state of a device or a sensor, read its current state and do not turn on, turn off or change anything. Change a device only when the user asks for a change. When the user refers to several devices, for example all the lights or the lights of a room, act on all of them, using the area or the device type when a tool allows it. Say that an action happened only after a tool has confirmed it; if a tool fails or a device is not available, say so.",
-  llm: {
-    provider: process.env.AMBROGIO_HOME_ASSISTANT_PROVIDER || 'mistral',
-    model: process.env.AMBROGIO_HOME_ASSISTANT_MODEL || 'mistral-medium-latest',
-    apiKey: process.env.AMBROGIO_HOME_ASSISTANT_API_KEY || process.env.MISTRAL_API_KEY,
-    ...(process.env.AMBROGIO_HOME_ASSISTANT_BASE_URL ? { baseURL: process.env.AMBROGIO_HOME_ASSISTANT_BASE_URL } : {}),
-    ...(process.env.AMBROGIO_HOME_ASSISTANT_TEMPERATURE || process.env.AMBROGIO_HOME_ASSISTANT_MAX_TOKENS ? {
-      options: {
-        ...(process.env.AMBROGIO_HOME_ASSISTANT_TEMPERATURE ? {
-          temperature: Number(process.env.AMBROGIO_HOME_ASSISTANT_TEMPERATURE),
-        } : {}),
-        ...(process.env.AMBROGIO_HOME_ASSISTANT_MAX_TOKENS ? {
-          max_tokens: Number(process.env.AMBROGIO_HOME_ASSISTANT_MAX_TOKENS),
-        } : {}),
-      },
-    } : {}),
+```json
+{
+  "description": "Reads the state of the home's lights, switches and sensors through Home Assistant and turns devices on or off.",
+  "instructions": "You control the family's home through Home Assistant. Answer briefly. Choose freely among the available tools and use the ones the request needs. To answer a question about the state of a device or a sensor, read its current state and do not turn on, turn off or change anything. Change a device only when the user asks for a change. When the user refers to several devices, for example all the lights or the lights of a room, act on all of them, using the area or the device type when a tool allows it. Say that an action happened only after a tool has confirmed it; if a tool fails or a device is not available, say so.",
+  "llm": {
+    "provider": "mistral",
+    "model": "mistral-medium-latest",
+    "apiKeyEnv": "MISTRAL_API_KEY"
   },
-  maxToolCalls: Number(process.env.AMBROGIO_HOME_ASSISTANT_MAX_TOOL_CALLS || 5),
-  mcp: {
-    url: process.env.AMBROGIO_HOME_ASSISTANT_MCP_URL,
-    auth: process.env.AMBROGIO_HOME_ASSISTANT_AUTH_TYPE === 'oauth_client_credentials'
-      ? {
-        type: 'oauth_client_credentials',
-        clientId: process.env.AMBROGIO_HOME_ASSISTANT_OAUTH_CLIENT_ID,
-        clientSecret: process.env.AMBROGIO_HOME_ASSISTANT_OAUTH_CLIENT_SECRET,
-        issuer: process.env.AMBROGIO_HOME_ASSISTANT_OAUTH_ISSUER,
-        ...(process.env.AMBROGIO_HOME_ASSISTANT_OAUTH_SCOPE ? {
-          scope: process.env.AMBROGIO_HOME_ASSISTANT_OAUTH_SCOPE,
-        } : {}),
-      }
-      : { type: 'bearer', token: process.env.HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN },
-    ...(process.env.AMBROGIO_HOME_ASSISTANT_TOOLS ? {
-      tools: process.env.AMBROGIO_HOME_ASSISTANT_TOOLS.split(',').map(name => name.trim()),
-    } : {}),
-  },
-};
+  "maxToolCalls": 5,
+  "mcp": {
+    "url": "http://homeassistant.local:8123/api/mcp",
+    "auth": {
+      "type": "bearer",
+      "tokenEnv": "HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN"
+    }
+  }
+}
 ```
+
+Every file above names `MISTRAL_API_KEY`, and the Home Assistant file also names `HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN`; set those variables in the backend environment. Replace the `mcp.url` placeholder with the address of your server.

@@ -13,7 +13,7 @@ Text and voice clients use the same protocol, `ambrogio.v1`, over a WebSocket. T
 |---|---|
 | Path | `/api/session`, on the same port as HTTP |
 | Subprotocol | `ambrogio.v1` (required; otherwise `400`) |
-| `Origin` header | Absent, or listed in `allowedOrigins` (otherwise `403`) |
+| `Origin` header | Absent, or listed in `AMBROGIO_ALLOWED_ORIGINS` (otherwise `403`) |
 | Keep-alive | The server pings every 30 seconds and closes a session that does not answer by the next ping. |
 
 One session carries turns for many conversations. Several sessions with the same `clientId` are independent.

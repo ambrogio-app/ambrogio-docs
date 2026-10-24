@@ -5,7 +5,7 @@ sidebar:
   label: Messages
 ---
 
-These are the messages written by Ambrogio, not by the AI. The backend's messages follow `language` in [`conversations.ts`](../backend-configuration/#conversationsts). The satellite has no spoken messages of its own.
+These are the messages written by Ambrogio, not by the AI. The backend's messages follow `AMBROGIO_LANGUAGE` (see [Backend configuration](../backend-configuration/#conversations)). The satellite has no spoken messages of its own.
 
 ## Refusal reasons
 

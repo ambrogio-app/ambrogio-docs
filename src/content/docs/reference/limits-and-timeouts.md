@@ -17,7 +17,7 @@ sidebar:
 | Incoming audio streams per session | 1 | no | `session.error` with `audio_busy`. |
 | Model request retries | 0 | no | A model error fails the turn. |
 | Session ping interval | 30 seconds | no | A session that does not answer by the next ping is closed. |
-| Conversations per list page | `listPageSize` (20), at most `maxListPageSize` (100) | yes | See [`conversations.ts`](../backend-configuration/#conversationsts). |
+| Conversations per list page | `AMBROGIO_LIST_PAGE_SIZE` (20), at most `AMBROGIO_MAX_LIST_PAGE_SIZE` (100) | yes | See [Backend configuration](../backend-configuration/#conversations). |
 | Speech synthesis threads | 4, or fewer if the CPU has fewer | no | |
 
 Turns are never queued and never retried automatically.
@@ -26,8 +26,8 @@ Turns are never queued and never retried automatically.
 
 | Setting | Value | Configurable |
 |---|---|---|
-| Wake word threshold | 0.5 | `wakeWord.threshold` |
-| Consecutive blocks above the threshold | 2 blocks of 80 ms | `wakeWord.patience` |
+| Wake word threshold | 0.5 | `AMBROGIO_WAKE_WORD_THRESHOLD` |
+| Consecutive blocks above the threshold | 2 blocks of 80 ms | `AMBROGIO_WAKE_WORD_PATIENCE` |
 | Pause between wake-ups | 2 seconds | no |
 | Audio kept from before you start speaking | 1.5 seconds | no |
 | Speech detection window | 32 ms (512 samples at 16 kHz) | no |
@@ -36,8 +36,8 @@ Turns are never queued and never retried automatically.
 | Speech needed to start a request | 4 windows (about 130 ms) | no |
 | Silence that ends a request | 20 windows (about 640 ms) | no |
 | Wait for an outcome after you stop speaking | 60 seconds | no |
-| Wait for a follow-up reply | 15 seconds, restarted after each answer | `interaction.replyTimeoutMs` |
-| Level of other local audio during an interaction | set per installation, 100% otherwise | `audio.attenuation.level` |
+| Wait for a follow-up reply | 15 seconds, restarted after each answer | `AMBROGIO_REPLY_TIMEOUT_MS` |
+| Level of other local audio during an interaction | set per installation, 100% otherwise | `AMBROGIO_ATTENUATION_LEVEL` |
 | Time allowed for each `amixer` call | 2 seconds | no |
 
 The satellite does not listen while it is speaking: you cannot interrupt an answer.

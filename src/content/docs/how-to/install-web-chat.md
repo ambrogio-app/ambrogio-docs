@@ -39,9 +39,9 @@ The page reads this file when it opens. Keep it outside the image, for example i
 
 ## 3. Allow the chat address in the backend
 
-Add the chat address to `allowedOrigins` in the backend's HTTP configuration. Write it exactly as it appears in the browser's address bar, with scheme and port, without a path or trailing slash:
+Add the chat address to `AMBROGIO_ALLOWED_ORIGINS` in the backend configuration. Write it exactly as it appears in the browser's address bar, with scheme and port, without a path or trailing slash:
 
-Set `AMBROGIO_ALLOWED_ORIGINS=https://chat.example.com` in the backend Compose `.env`, then recreate the backend. The Compose service forwards this variable to `examples/http.ts`.
+Add `AMBROGIO_ALLOWED_ORIGINS: https://chat.example.com` to the backend service's `environment` section of the Compose file. Separate several origins with commas.
 
 Restart the backend. Without this entry the backend refuses the page: the sidebar shows "Cannot connect to the backend." instead of the conversations, and every message ends with the same text.
 
@@ -76,7 +76,7 @@ Open the chat address in a browser. The sidebar shows **New chat** and your stor
 | What you see | Cause |
 |---|---|
 | "Invalid web client configuration" with a reason | `config.json` is missing, not mounted at the right path, or has a wrong field. The reason names the problem. |
-| "Cannot connect to the backend." in the sidebar or after sending | The chat address is not in `allowedOrigins`, the backend is not reachable from the browser, or an HTTPS page points at an `http://` backend. |
+| "Cannot connect to the backend." in the sidebar or after sending | The chat address is not in `AMBROGIO_ALLOWED_ORIGINS`, the backend is not reachable from the browser, or an HTTPS page points at an `http://` backend. |
 
 ## Next
 

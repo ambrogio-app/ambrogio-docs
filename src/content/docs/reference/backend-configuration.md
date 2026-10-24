@@ -1,111 +1,86 @@
 ---
 title: Backend configuration
-description: Environment variables, files and fields read by the Ambrogio backend at startup.
+description: Environment variables read by the Ambrogio backend at startup.
 sidebar:
   label: Backend configuration
 ---
 
-The backend reads its configuration once, at startup. Changes take effect on the next restart. If a required file is missing or a value is invalid, the backend does not start: it logs a `server_startup_failed` event that names the problem and prints `Unable to start HTTP server.` to standard error. See [Troubleshooting](../../how-to/troubleshoot/#the-backend-does-not-start).
+The backend reads its configuration once, at startup, from environment variables. Changes take effect on the next restart. The configuration code is part of the backend: you set variables and mount [agent files](../agent-configuration/), you do not write code. If a required variable is missing or a value is invalid, the backend does not start: it logs a `server_startup_failed` event that names the variable and the problem, never its value, and prints `Unable to start HTTP server.` to standard error. See [Troubleshooting](../../how-to/troubleshoot/#the-backend-does-not-start).
 
-Each TypeScript module exports a default configuration object. The modules may read `process.env`, so Docker Compose can provide every value. Convert numbers and booleans in the module before export. The backend validates the exported values at startup. Environment variables used inside a module are defined by that module, not by the backend schema.
+## Rules for every variable
 
-## Environment variables
+- `AMBROGIO_ENV` is required in every environment: `development`, `test` or `production`. There is no default.
+- A variable set to an empty string counts as unset.
+- A default applies either in every environment or only in `development`. In `test` and `production`, a variable whose default is development-only is required.
+- Configuration errors name the variable and the condition, for example `Missing environment variable AMBROGIO_ARCHIVE_PATH` or `Invalid environment variable AMBROGIO_HTTP_PORT: expected an integer from 1 to 65535`.
+- A local `.env` file is read only by the development command `pnpm dev`, which runs `node --env-file=.env apps/server/dist/main.js`. Variables already set in the shell take precedence over the file. The backend never reads `.env` by itself, and the Docker image contains no `.env`. See [Run the backend from source](../../how-to/run-backend-from-source/).
 
-| Variable | Required | Meaning |
-|---|---|---|
-| `AMBROGIO_HTTP_CONFIG_PATH` | yes | Path of [`http.ts`](#httpts). |
-| `AMBROGIO_CONVERSATIONS_CONFIG_PATH` | yes | Path of [`conversations.ts`](#conversationsts). |
-| `AMBROGIO_VOICE_CONFIG_PATH` | no | Path of [`voice.ts`](#voicets). If the variable is not set, voice is disabled. If it is set to an empty string, startup fails. |
+## Runtime environment
 
-File names are up to you; the names on this page match the repository examples. Use Node.js 24 or later to load `.ts` modules.
-
-## Fixed paths
-
-| Path | Meaning |
-|---|---|
-| `/etc/ambrogio/agents/` | Folder of agent files. Cannot be changed. See [Agent configuration](../agent-configuration/). |
-| `/opt/ambrogio/models/` | Bundled Italian and English Vosk models in the Docker image. |
-| `/opt/ambrogio/voices/` | Bundled Italian and English Piper voices. A mount at this path replaces them. |
-| `/opt/ambrogio/kokoro/` | Bundled multilingual Kokoro model. |
-
-## `http.ts`
-
-Network listener and HTTP security settings.
-
-| Field | Type | Default | Meaning |
+| Variable | Values | Default | Required in production |
 |---|---|---|---|
-| `host` | string | required | Address to listen on. Use `0.0.0.0` in a container. |
-| `port` | integer, 1–65535 | required | Port to listen on. The same port serves HTTP and the WebSocket session. |
-| `allowedOrigins` | array of strings | `[]` | Web origins allowed to call the API from a browser, for example `"https://home.example.com"`. Each entry is an exact origin: scheme, host and optional port, with no path and no trailing slash. `"*"` is not accepted. |
-| `publicHttps` | boolean | `false` | Set to `true` when clients reach the backend only over HTTPS, typically through a reverse proxy. Enables the `Strict-Transport-Security` header. |
-| `hstsMaxAgeSeconds` | positive integer | none | `max-age` of the `Strict-Transport-Security` header. Required when `publicHttps` is `true`. |
+| `AMBROGIO_ENV` | `development`, `test`, `production` | none | yes |
 
-`allowedOrigins` affects two things:
+## HTTP listener
 
-- **CORS** for the `GET` endpoints. With an empty list, no CORS headers are sent.
+| Variable | Values | Default | Required in production |
+|---|---|---|---|
+| `AMBROGIO_HTTP_HOST` | Non-empty address to listen on. Use `0.0.0.0` in a container. | `127.0.0.1`, development only | yes |
+| `AMBROGIO_HTTP_PORT` | Integer, 1–65535. The same port serves HTTP and the WebSocket session. | `3000`, development only | yes |
+| `AMBROGIO_PUBLIC_HTTPS` | `true` or `false`. Set `true` when clients reach the backend only over HTTPS, typically through a reverse proxy. Enables the `Strict-Transport-Security` header. | `false`, development only | yes |
+| `AMBROGIO_HSTS_MAX_AGE_SECONDS` | Positive integer: `max-age` of the `Strict-Transport-Security` header. | none | when `AMBROGIO_PUBLIC_HTTPS` is `true` |
+| `AMBROGIO_ALLOWED_ORIGINS` | Comma-separated web origins allowed to call the API from a browser, for example `https://home.example.com`. Each entry is an exact origin: scheme, host and optional port, with no path and no trailing slash. `*` is not accepted. | unset: no origin is allowed | no |
+
+`AMBROGIO_ALLOWED_ORIGINS` affects two things:
+
+- **CORS** for the `GET` endpoints. With no origins, no CORS headers are sent.
 - **The WebSocket session.** A connection request with an `Origin` header is accepted only if the origin is in the list; otherwise it is refused with `403`. Requests without `Origin`, which is the case for the terminal client and the satellite, are always accepted. The web chat runs in a browser and always sends the `Origin` of its page, so that origin must be in the list.
 
-Example:
+## Conversations
 
-```ts
-export default {
-  host: process.env.AMBROGIO_HTTP_HOST || '0.0.0.0',
-  port: Number(process.env.AMBROGIO_HTTP_PORT || 3000),
-  allowedOrigins: process.env.AMBROGIO_ALLOWED_ORIGINS?.split(',').map(origin => origin.trim()).filter(Boolean) || [],
-  publicHttps: process.env.AMBROGIO_PUBLIC_HTTPS === 'true',
-  ...(!process.env.AMBROGIO_HSTS_MAX_AGE_SECONDS ? {} : {
-    hstsMaxAgeSeconds: Number(process.env.AMBROGIO_HSTS_MAX_AGE_SECONDS),
-  }),
-};
-```
-
-## `conversations.ts`
-
-Conversation storage, language, time zone and list pages.
-
-| Field | Type | Default | Meaning |
+| Variable | Values | Default | Required in production |
 |---|---|---|---|
-| `archivePath` | string | required | Path of the SQLite file that stores conversations. The file is created if it does not exist; its folder must exist and be writable. |
-| `language` | string | `"en"` | Language of the backend's own messages, agent answers and bundled speech models: `"it"` or `"en"`. Any other string falls back to `"en"`. |
-| `timeZone` | string | `"UTC"` | Time zone of the family, as an IANA name such as `"Europe/Rome"`. The agents get the current date and time in this zone; see [Current date and time](../agent-configuration/#current-date-and-time). A value that is not a known time zone stops the backend from starting. |
-| `listPageSize` | positive integer | `20` | Conversations per page when a client does not ask for a size. |
-| `maxListPageSize` | positive integer | `100` | Largest page a client may ask for. Must be at least `listPageSize`. |
+| `AMBROGIO_ARCHIVE_PATH` | Path of the SQLite file that stores conversations. The file is created if it does not exist; its folder must exist and be writable. | none | yes, in every environment |
+| `AMBROGIO_LANGUAGE` | `en` or `it`: language of the backend's own messages, agent answers and speech models. Any other value stops the backend from starting. | `en`, every environment | no |
+| `AMBROGIO_TIME_ZONE` | IANA time zone of the family, such as `Europe/Rome`. The agents get the current date and time in this zone; see [Current date and time](../agent-configuration/#current-date-and-time). | `UTC`, every environment | no |
+| `AMBROGIO_LIST_PAGE_SIZE` | Positive integer: conversations per page when a client does not ask for a size. | `20`, every environment | no |
+| `AMBROGIO_MAX_LIST_PAGE_SIZE` | Positive integer: largest page a client may ask for. Must be at least `AMBROGIO_LIST_PAGE_SIZE`. | `100`, every environment | no |
 
-Example:
+## Agents
 
-```ts
-export default {
-  archivePath: process.env.AMBROGIO_ARCHIVE_PATH || '/data/conversations.sqlite',
-  language: process.env.AMBROGIO_LANGUAGE || 'en',
-  timeZone: process.env.AMBROGIO_TIME_ZONE || 'UTC',
-  listPageSize: Number(process.env.AMBROGIO_LIST_PAGE_SIZE || 20),
-  maxListPageSize: Number(process.env.AMBROGIO_MAX_LIST_PAGE_SIZE || 100),
-};
-```
+| Variable | Values | Default | Required in production |
+|---|---|---|---|
+| `AMBROGIO_AGENTS_DIR` | Folder of the agent JSON files. See [Agent configuration](../agent-configuration/). | `/etc/ambrogio/agents`, every environment | no |
 
-## `voice.ts`
+The agent files name further variables that hold their credentials, such as `MISTRAL_API_KEY`. Those variables are required when a file names them.
 
-Speech recognition and synthesis. Read only when `AMBROGIO_VOICE_CONFIG_PATH` is set. The recommended format has a `languages` object with `it` and/or `en` profiles. The backend selects the profile matching `conversations.ts.language`. The active profile is required; another profile may be omitted. Paths are inside the container and may refer to bundled models or models supplied by Docker mounts.
+## Voice
 
-Each language profile has these fields. Any other field makes the exported object invalid.
+Voice is disabled when `AMBROGIO_VOICE_LANGUAGES` is unset or empty: no voice variable is read and no speech model is loaded. Text conversations work either way.
 
-| Field | Type | Meaning |
+| Variable | Values | Default | Required in production |
+|---|---|---|---|
+| `AMBROGIO_VOICE_LANGUAGES` | Comma-separated list of distinct languages among `it` and `en`, for example `en,it`. It must contain `AMBROGIO_LANGUAGE`. | unset: voice disabled | no |
+
+Each listed language `<L>` (`EN` or `IT`) has a profile:
+
+| Variable | Values | Required |
 |---|---|---|
-| `voskModelPath` | string | Folder of an unpacked [Vosk](https://alphacephei.com/vosk/models) model. Must be readable. |
-| `voiceEngine` | string | Required. `"piper"` for a sherpa-onnx Piper voice, `"kokoro"` for a sherpa-onnx Kokoro model. |
-| `voiceModelDir` | string | Folder of the voice or model. With `piper`: exactly one `.onnx` file, a `tokens.txt` file and an `espeak-ng-data/` folder. With `kokoro`: exactly one `.onnx` file (such as `model.onnx` or `model.int8.onnx`), `voices.bin`, `tokens.txt` and an `espeak-ng-data/` folder. All readable. |
-| `voiceSpeaker` | integer ≥ 0 | Required with `kokoro`, not allowed with `piper`. The number of the voice in the model. It must be lower than the number of voices the model declares, or the backend does not start. Voice names such as `"if_sara"` are not accepted. |
-| `voiceLanguage` | string | Required with `kokoro`, not allowed with `piper`. The espeak-ng language used to turn text into sounds, such as `"it"`, `"en"`, `"es"`, `"fr"`, `"hi"` or `"pt-br"`. The backend does not check the code. |
+| `AMBROGIO_VOICE_<L>_VOSK_MODEL_PATH` | Folder of an unpacked [Vosk](https://alphacephei.com/vosk/models) model. Must be readable. | yes |
+| `AMBROGIO_VOICE_<L>_ENGINE` | `piper` for a sherpa-onnx Piper voice, `kokoro` for a sherpa-onnx Kokoro model. | yes |
+| `AMBROGIO_VOICE_<L>_MODEL_DIR` | Folder of the voice or model. With `piper`: exactly one `.onnx` file, a `tokens.txt` file and an `espeak-ng-data/` folder. With `kokoro`: exactly one `.onnx` file (such as `model.onnx` or `model.int8.onnx`), `voices.bin`, `tokens.txt` and an `espeak-ng-data/` folder. All readable. | yes |
+| `AMBROGIO_VOICE_<L>_SPEAKER` | Integer ≥ 0: the number of the voice in the Kokoro model. It must be lower than the number of voices the model declares, or the backend does not start. Voice names such as `if_sara` are not accepted. | with `kokoro`; not allowed with `piper` |
+| `AMBROGIO_VOICE_<L>_LANGUAGE` | The espeak-ng language used to turn text into sounds, such as `it`, `en`, `es`, `fr`, `hi` or `pt-br`. The backend does not check the code. | with `kokoro`; not allowed with `piper` |
 
-Only the active profile's models are loaded before the server starts listening. Both profiles are checked for valid fields. Speech synthesis uses up to four CPU threads. Audio has the sample rate of the loaded model; the multilingual Kokoro models produce 24 kHz. Ambrogio passes no lexicon files to Kokoro, so languages that sherpa-onnx pronounces only through a lexicon, such as Chinese, are not supported.
+The profile of `AMBROGIO_LANGUAGE` is the active one: its models are loaded before the server starts listening. The variables of the other listed profile are checked but its models are not loaded. Paths are inside the container and may refer to [bundled models](../bundled-models/) or to models mounted into the container. No voice variable has a default.
 
-The earlier format with one profile at the root of `voice.ts` remains valid. It uses the same models regardless of `conversations.ts.language`; use `languages` to switch recognition and synthesis together.
+Speech synthesis uses up to four CPU threads. Audio has the sample rate of the loaded model; the multilingual Kokoro models produce 24 kHz. Ambrogio passes no lexicon files to Kokoro, so languages that sherpa-onnx pronounces only through a lexicon, such as Chinese, are not supported.
 
 ### Voices of `kokoro-multi-lang-v1_0`
 
-Pick the voice and a matching `voiceLanguage`. Numbers from the [sherpa-onnx Kokoro models page](https://k2-fsa.github.io/sherpa/onnx/tts/pretrained_models/kokoro.html) and k2-fsa's `generate_voices_bin.py`; other Kokoro models have their own lists.
+Pick the voice for `AMBROGIO_VOICE_<L>_SPEAKER` and a matching `AMBROGIO_VOICE_<L>_LANGUAGE`. Numbers from the [sherpa-onnx Kokoro models page](https://k2-fsa.github.io/sherpa/onnx/tts/pretrained_models/kokoro.html) and k2-fsa's `generate_voices_bin.py`; other Kokoro models have their own lists.
 
-| `voiceSpeaker` | Voices | `voiceLanguage` |
+| `SPEAKER` | Voices | `LANGUAGE` |
 |---|---|---|
 | 0–10 | American English, female: `af_alloy`, `af_aoede`, `af_bella`, `af_heart`, `af_jessica`, `af_kore`, `af_nicole`, `af_nova`, `af_river`, `af_sarah`, `af_sky` | `en` |
 | 11–19 | American English, male: `am_adam`, `am_echo`, `am_eric`, `am_fenrir`, `am_liam`, `am_michael`, `am_onyx`, `am_puck`, `am_santa` | `en` |
@@ -119,60 +94,25 @@ Pick the voice and a matching `voiceLanguage`. Numbers from the [sherpa-onnx Kok
 | 42–44 | Brazilian Portuguese: `pf_dora` (female), `pm_alex`, `pm_santa` (male) | `pt-br` |
 | 45–52 | Chinese: `zf_…`, `zm_…` | not supported |
 
-Example with the Piper voices included in the Docker image:
+## Fixed paths in the Docker image
 
-```ts
-const itEngine = process.env.AMBROGIO_IT_VOICE_ENGINE || 'piper';
-const enEngine = process.env.AMBROGIO_EN_VOICE_ENGINE || 'piper';
+| Path | Meaning |
+|---|---|
+| `/etc/ambrogio/agents/` | Default folder of agent files, empty in the image. |
+| `/data/` | Empty folder for the conversation archive, meant to be a mounted volume. |
+| `/opt/ambrogio/models/` | Bundled Italian and English Vosk models. |
+| `/opt/ambrogio/voices/` | Bundled Italian and English Piper voices. A mount at this path replaces them. |
+| `/opt/ambrogio/kokoro/` | Bundled multilingual Kokoro model. |
 
-export default {
-  languages: {
-    it: {
-      voskModelPath: process.env.AMBROGIO_IT_VOSK_MODEL_PATH || '/opt/ambrogio/models/vosk-model-small-it-0.22',
-      voiceEngine: itEngine,
-      voiceModelDir: process.env.AMBROGIO_IT_VOICE_MODEL_DIR || (itEngine === 'kokoro'
-        ? '/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0' : '/opt/ambrogio/voices/vits-piper-it_IT-paola-medium'),
-      ...(itEngine === 'kokoro' ? {
-        voiceSpeaker: Number(process.env.AMBROGIO_IT_VOICE_SPEAKER || 35),
-        voiceLanguage: process.env.AMBROGIO_IT_VOICE_LANGUAGE || 'it',
-      } : {}),
-    },
-    en: {
-      voskModelPath: process.env.AMBROGIO_EN_VOSK_MODEL_PATH || '/opt/ambrogio/models/vosk-model-small-en-us-0.15',
-      voiceEngine: enEngine,
-      voiceModelDir: process.env.AMBROGIO_EN_VOICE_MODEL_DIR || (enEngine === 'kokoro'
-        ? '/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0' : '/opt/ambrogio/voices/vits-piper-en_US-kristin-medium'),
-      ...(enEngine === 'kokoro' ? {
-        voiceSpeaker: Number(process.env.AMBROGIO_EN_VOICE_SPEAKER || 3),
-        voiceLanguage: process.env.AMBROGIO_EN_VOICE_LANGUAGE || 'en',
-      } : {}),
-    },
-  },
-};
-```
+## Example files
 
-Example with the bundled Kokoro model:
+The backend repository provides:
 
-```ts
-export default {
-  languages: {
-    it: {
-      voskModelPath: process.env.AMBROGIO_IT_VOSK_MODEL_PATH || '/opt/ambrogio/models/vosk-model-small-it-0.22',
-      voiceEngine: 'kokoro',
-      voiceModelDir: process.env.AMBROGIO_IT_VOICE_MODEL_DIR || '/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0',
-      voiceSpeaker: Number(process.env.AMBROGIO_IT_VOICE_SPEAKER || 35),
-      voiceLanguage: process.env.AMBROGIO_IT_VOICE_LANGUAGE || 'it',
-    },
-    en: {
-      voskModelPath: process.env.AMBROGIO_EN_VOSK_MODEL_PATH || '/opt/ambrogio/models/vosk-model-small-en-us-0.15',
-      voiceEngine: 'kokoro',
-      voiceModelDir: process.env.AMBROGIO_EN_VOICE_MODEL_DIR || '/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0',
-      voiceSpeaker: Number(process.env.AMBROGIO_EN_VOICE_SPEAKER || 3),
-      voiceLanguage: process.env.AMBROGIO_EN_VOICE_LANGUAGE || 'en',
-    },
-  },
-};
-```
+| File | Purpose |
+|---|---|
+| `.env.example` | Every variable the backend reads, with empty values except `AMBROGIO_ENV=development`. Copy it to `.env` for development. It repeats no default. |
+| `compose.example.yaml` | A production deployment that sets only the variables production requires, plus the bundled voices for English and Italian. |
+| `examples/agents/*.json` | Example agent files. See [Agent configuration](../agent-configuration/#examples). |
 
 ## Signals
 

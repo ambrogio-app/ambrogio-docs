@@ -31,7 +31,7 @@ When the file is missing or invalid, the page shows "Invalid web client configur
 
 ## Backend setting
 
-The page's origin must be listed in `allowedOrigins` of the backend's `http.ts`, otherwise the backend refuses the conversation session with `403` and sends no CORS headers for the list and history. See [Backend configuration](../backend-configuration/#httpts).
+The page's origin must be listed in the backend's `AMBROGIO_ALLOWED_ORIGINS`, otherwise the backend refuses the conversation session with `403` and sends no CORS headers for the list and history. See [Backend configuration](../backend-configuration/#http-listener).
 
 ## Container
 
@@ -122,7 +122,7 @@ The chat list is a navigation region and the open chat the main region. Every co
 | Protocol error | Errore del protocollo. | Protocol error. |
 | Invalid configuration | Configurazione del client web non valida | Invalid web client configuration |
 
-Messages produced by the backend, such as refusals and turn errors, appear as the backend sends them, in the language set in its [`conversations.ts`](../backend-configuration/#conversationsts).
+Messages produced by the backend, such as refusals and turn errors, appear as the backend sends them, in the language set by its [`AMBROGIO_LANGUAGE`](../backend-configuration/#conversations).
 
 ## Compatibility
 

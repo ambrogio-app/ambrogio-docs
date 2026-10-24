@@ -15,7 +15,7 @@ Lists conversations, most recently active first. Activity means the time the lat
 
 | Query parameter | Meaning |
 |---|---|
-| `limit` | Optional. Page size, from 1 to `maxListPageSize`. Defaults to `listPageSize` from [`conversations.ts`](../backend-configuration/#conversationsts). |
+| `limit` | Optional. Page size, from 1 to `AMBROGIO_MAX_LIST_PAGE_SIZE`. Defaults to `AMBROGIO_LIST_PAGE_SIZE`; see [Backend configuration](../backend-configuration/#conversations). |
 | `cursor` | Optional. The `nextCursor` value from the previous page. Treat it as opaque. |
 
 Any other parameter is an error.
@@ -74,8 +74,8 @@ For a spoken turn, `text` is the transcription. All times are ISO 8601 in UTC.
 
 ## Language
 
-Error messages follow `language` in `conversations.ts`. Both languages are listed in [Messages](../messages/).
+Error messages follow `AMBROGIO_LANGUAGE`. Both languages are listed in [Messages](../messages/).
 
 ## Browsers
 
-Only `GET` is allowed across origins, and only for origins listed in `allowedOrigins`. See [Backend configuration](../backend-configuration/#httpts).
+Only `GET` is allowed across origins, and only for origins listed in `AMBROGIO_ALLOWED_ORIGINS`. See [Backend configuration](../backend-configuration/#http-listener).

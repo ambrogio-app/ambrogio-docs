@@ -11,7 +11,6 @@ Use this when you want to run the backend directly on a Linux host, for example 
 
 - Linux with Node.js 24 or later and `pnpm`.
 - `libgomp1` if you plan to enable voice (`sudo apt install libgomp1` on Debian and Ubuntu).
-- Write access to `/etc/ambrogio`. The backend reads its agents from `/etc/ambrogio/agents`, and that path cannot be changed.
 
 ## Build
 
@@ -24,34 +23,44 @@ pnpm build
 
 ## Configure
 
-Create the configuration and archive folders:
+Create a folder for the agent files and one for the archive, and copy the example agents:
 
 ```bash
 sudo mkdir -p /etc/ambrogio/agents /var/lib/ambrogio
 sudo chown -R "$USER" /etc/ambrogio /var/lib/ambrogio
+cp examples/agents/orchestrator.json examples/agents/generic.json /etc/ambrogio/agents/
 ```
 
-Copy the modules from `examples/` into `/etc/ambrogio/`, including `agents/orchestrator.ts` and `agents/generic.ts`. Change `archivePath` in `conversations.ts` to a host path through `AMBROGIO_ARCHIVE_PATH`, and set `MISTRAL_API_KEY` for the agents.
+Set the variables the backend requires in production. Put them in the environment of the service that starts the backend, for example a systemd unit, or export them in the shell:
 
 ```bash
-cp examples/http.ts examples/conversations.ts /etc/ambrogio/
-cp examples/agents/orchestrator.ts examples/agents/generic.ts /etc/ambrogio/agents/
+export AMBROGIO_ENV=production
+export AMBROGIO_HTTP_HOST=127.0.0.1
+export AMBROGIO_HTTP_PORT=3000
+export AMBROGIO_PUBLIC_HTTPS=false
 export AMBROGIO_ARCHIVE_PATH=/var/lib/ambrogio/conversations.sqlite
-export AMBROGIO_LANGUAGE=en
 export MISTRAL_API_KEY=<your-api-key>
 ```
 
-Set `AMBROGIO_HTTP_HOST=127.0.0.1` to accept connections only from the same machine. Use `0.0.0.0` or the host LAN address for other devices.
+`AMBROGIO_HTTP_HOST=127.0.0.1` accepts connections only from the same machine. Use `0.0.0.0` or the host LAN address for other devices. To keep the agent files elsewhere, set `AMBROGIO_AGENTS_DIR`. [Backend configuration](../../reference/backend-configuration/) lists every variable and its default.
 
 ## Start
 
 ```bash
-AMBROGIO_HTTP_CONFIG_PATH=/etc/ambrogio/http.ts \
-AMBROGIO_CONVERSATIONS_CONFIG_PATH=/etc/ambrogio/conversations.ts \
 node apps/server/dist/main.js
 ```
 
-Add `AMBROGIO_VOICE_CONFIG_PATH=/etc/ambrogio/voice.ts` to enable voice. Without Docker there are no bundled models: provide Vosk and sherpa-onnx Piper or Kokoro directories yourself, then put their host paths in `voice.ts`. See [Change the voice](../change-voice/#use-a-different-voice).
+To enable voice, set `AMBROGIO_VOICE_LANGUAGES` and the profile variables of each listed language. Without Docker there are no bundled models: provide Vosk and sherpa-onnx Piper or Kokoro directories yourself and set their host paths. See [Change the voice](../change-voice/#use-a-different-voice).
+
+## Develop with a local `.env`
+
+For development, copy `.env.example` to `.env`, fill in the values you need and start with:
+
+```bash
+pnpm dev
+```
+
+`pnpm dev` runs `node --env-file=.env apps/server/dist/main.js`, with `AMBROGIO_ENV=development`. In development the HTTP listener defaults to `127.0.0.1:3000` without HTTPS. Variables already set in the shell take precedence over `.env`. The backend never loads `.env` by itself, so `node apps/server/dist/main.js` ignores it. Do not commit `.env`.
 
 Stop the server with `Ctrl+C` or `SIGTERM`. Turns that are still being answered at that moment are saved as *interrupted*; see [Turns and outcomes](../../explanation/turns/#when-the-server-stops).
 

@@ -5,7 +5,7 @@ sidebar:
   label: Choose audio devices
 ---
 
-Without an `audio` section, the satellite uses the system's default microphone and speaker. When the device has more than one, name the one you want.
+Without `AMBROGIO_MICROPHONE` and `AMBROGIO_SPEAKER`, the satellite uses the system's default microphone and speaker. When the device has more than one, name the one you want.
 
 ## 1. List the devices
 
@@ -20,24 +20,24 @@ The first table shows microphones, the second speakers. Note the `name` and `id`
 With Docker, run the same command inside the image:
 
 ```bash
-docker run --rm --device /dev/snd --entrypoint node ghcr.io/ambrogio-app/ambrogio-satellite:v0.6.0 \
+docker run --rm --device /dev/snd --entrypoint node ghcr.io/ambrogio-app/ambrogio-satellite:<version> \
   -e "import('decibri').then(d => { console.table(d.Microphone.devices()); console.table(d.Speaker.devices()); })"
 ```
 
 ## 2. Pick a selector
 
-Each of `audio.microphone` and `audio.speaker` takes a string, which works in one of two ways:
+Each of `AMBROGIO_MICROPHONE` and `AMBROGIO_SPEAKER` takes a string, which works in one of two ways:
 
 - **A stable ID** that starts with `alsa:`, copied from the `id` column, such as `alsa:plughw:CARD=Device,DEV=0`. This is the most precise choice.
 - **Part of the name**, such as `"USB"` or `"ReSpeaker"`. Case does not matter. Use text that only one device's name contains; when several names match, use the ID instead.
 
 A number is treated as text, not as the row index.
 
-Set the device selectors in the satellite Compose `.env`:
+Add the selectors to the satellite service's `environment` section in the Compose file (on the host, export them instead):
 
-```dotenv
-AMBROGIO_MICROPHONE=USB
-AMBROGIO_SPEAKER=alsa:plughw:CARD=Headphones,DEV=0
+```yaml
+AMBROGIO_MICROPHONE: USB
+AMBROGIO_SPEAKER: alsa:plughw:CARD=Headphones,DEV=0
 ```
 
 You can set only one of the two; the other stays on the default.

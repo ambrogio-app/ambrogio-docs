@@ -11,7 +11,7 @@ It takes about 20 minutes.
 
 ## What you need
 
-- The backend from the first tutorial, with its configuration in `~/ambrogio/config`.
+- The backend from the first tutorial, running with `compose.example.yaml`.
 - A microphone and a speaker (or headphones) connected to the computer.
 - Node.js 24 or later.
 - The ALSA and OpenMP runtime libraries. On Debian and Ubuntu:
@@ -24,13 +24,13 @@ It takes about 20 minutes.
 
 ## Check voice in the backend
 
-The backend Compose example from the first tutorial already mounts `examples/voice.ts` and sets `AMBROGIO_VOICE_CONFIG_PATH`. Its English Piper profile uses models included in the image. Check that the backend still answers:
+The backend Compose example from the first tutorial already enables voice with `AMBROGIO_VOICE_LANGUAGES`. Its English profile uses a Piper voice and a Vosk model included in the image. Check that the backend still answers:
 
 ```bash
 curl -s http://localhost:3000/api/conversations
 ```
 
-If it does not, read `docker compose -f compose.example.yaml logs backend` in the backend repository. [Backend configuration](../../reference/backend-configuration/#voicets) lists the voice settings.
+If it does not, read `docker compose -f compose.example.yaml logs backend` in the backend repository. [Backend configuration](../../reference/backend-configuration/#voice) lists the voice settings.
 
 ## Build the satellite
 
@@ -45,13 +45,14 @@ pnpm build
 
 ## Configure the satellite
 
-The satellite's `config.example.ts` reads its backend address and identity from environment variables. In the satellite repository, run:
+The satellite reads its configuration from environment variables. In the satellite repository, run:
 
 ```bash
+export AMBROGIO_ENV=production
 export AMBROGIO_BACKEND_URL=http://localhost:3000
 export AMBROGIO_CLIENT_ID=desk
 export AMBROGIO_CLIENT_NAME=Desk
-node dist/main.js --config config.example.ts
+node dist/main.js
 ```
 
 The satellite writes its log as JSON lines. After a few seconds you see a line that contains:

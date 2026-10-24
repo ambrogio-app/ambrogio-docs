@@ -5,20 +5,23 @@ sidebar:
   label: Enable voice
 ---
 
-Voice is active when `AMBROGIO_VOICE_CONFIG_PATH` points to a valid TypeScript module. The backend Docker Compose example already mounts `examples/voice.ts` at `/etc/ambrogio/voice.ts` and sets that path. Its Piper profiles use the included Italian and English models.
+Voice is active when `AMBROGIO_VOICE_LANGUAGES` lists at least one language. The backend Compose example already enables English and Italian with the Piper voices and Vosk models included in the image.
 
-## 1. Check the voice module
+## 1. Check the voice variables
 
-In `ambrogio-backend/compose.example.yaml`, keep these entries in the backend service:
+In `ambrogio-backend/compose.example.yaml`, keep these entries in the backend service's `environment` section:
 
 ```yaml
-volumes:
-  - ./examples/voice.ts:/etc/ambrogio/voice.ts:ro
-environment:
-  AMBROGIO_VOICE_CONFIG_PATH: /etc/ambrogio/voice.ts
+AMBROGIO_VOICE_LANGUAGES: en,it
+AMBROGIO_VOICE_EN_VOSK_MODEL_PATH: /opt/ambrogio/models/vosk-model-small-en-us-0.15
+AMBROGIO_VOICE_EN_ENGINE: piper
+AMBROGIO_VOICE_EN_MODEL_DIR: /opt/ambrogio/voices/vits-piper-en_US-kristin-medium
+AMBROGIO_VOICE_IT_VOSK_MODEL_PATH: /opt/ambrogio/models/vosk-model-small-it-0.22
+AMBROGIO_VOICE_IT_ENGINE: piper
+AMBROGIO_VOICE_IT_MODEL_DIR: /opt/ambrogio/voices/vits-piper-it_IT-paola-medium
 ```
 
-Set `AMBROGIO_LANGUAGE=en` or `it` in `.env` to choose the profile. The Compose service forwards it to the container. [Backend configuration](../../reference/backend-configuration/#voicets) describes the fields and validation.
+The backend uses the profile of `AMBROGIO_LANGUAGE`, `en` unless you set it, so that language must be in the list. To speak Italian, add `AMBROGIO_LANGUAGE: it`. [Backend configuration](../../reference/backend-configuration/#voice) describes every variable and its validation.
 
 ## 2. Recreate the backend
 
@@ -26,4 +29,4 @@ Set `AMBROGIO_LANGUAGE=en` or `it` in `.env` to choose the profile. The Compose 
 docker compose -f compose.example.yaml up -d
 ```
 
-Check `docker compose -f compose.example.yaml logs backend` if startup fails. To use another bundled voice or a custom model, follow [Change the voice](../change-voice/). On a host without Docker, install the models yourself and point the module at their host paths.
+Check `docker compose -f compose.example.yaml logs backend` if startup fails. To use another bundled voice or a custom model, follow [Change the voice](../change-voice/). On a host without Docker, install the models yourself and set the voice variables to their host paths.

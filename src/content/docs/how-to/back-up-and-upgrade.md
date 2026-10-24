@@ -11,13 +11,13 @@ Everything that matters lives on the backend host:
 
 | What | Where (Docker layout from these guides) |
 |---|---|
-| Conversations | The SQLite file named in `archivePath`, for example `/srv/ambrogio/data/conversations.sqlite` |
-| TypeScript modules, Compose file and private `.env` | Your backend repository checkout |
+| Conversations | The SQLite file named in `AMBROGIO_ARCHIVE_PATH`, for example `/srv/ambrogio/data/conversations.sqlite` on the host |
+| Agent JSON files, Compose file and private `.env` | Your backend repository checkout |
 | Your own voices or models, if any | `/srv/ambrogio/models/`, `/srv/ambrogio/voices/` |
 
-Satellites and terminal clients store nothing apart from their own configuration file.
+Satellites and terminal clients store nothing apart from their own configuration.
 
-The `.env` and any custom modules may contain API keys or tokens. Keep backups somewhere private.
+The `.env` contains API keys or tokens; agent files contain none. Keep backups somewhere private.
 
 ## Back up the conversations
 
@@ -44,7 +44,7 @@ Audio is never stored, so there are no recordings to back up.
 3. Get the new image: pull the new tag, or build from the new commit.
 4. Set `AMBROGIO_VERSION` to the new image tag in `.env`, then recreate the backend with `docker compose -f compose.example.yaml up -d`.
 
-5. Check the configuration reference for the new version. The format can still change between versions, and a file that the new version does not accept stops it from starting.
+5. Check the configuration reference for the new version. The configuration can still change between versions, and a configuration that the new version does not accept stops it from starting. [Versions and compatibility](../../reference/versions/#next-release-configuration-change) describes the move from TypeScript modules to environment variables.
 
 At startup the backend updates the database structure by itself. Your conversations are kept. There is no automatic way back: to return to the old version, restore the backup you made in step 2.
 
