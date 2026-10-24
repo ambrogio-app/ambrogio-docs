@@ -14,31 +14,29 @@ The backend owns the conversation protocol and the HTTP API. Clients use only th
 | Interface | Version | Offered by | Used by |
 |---|---|---|---|
 | Conversation protocol | `ambrogio.v1` (WebSocket subprotocol) | Backend | Terminal client, web chat, satellite |
-| HTTP API (conversation list and history) | `v1`, under `/api/v1/`, errors as Problem Details | Backend, from the next release after `v0.9.0` | Terminal client and web chat, from their next releases after `v0.2.0` |
+| HTTP API (conversation list and history) | `v1`, under `/api/v1/`, errors as Problem Details | Backend, from `v0.10.1` | Terminal client and web chat, from `v0.3.0` |
 | HTTP API (conversation list and history) | first version, without a version in the path (`/api/conversations`), errors as `{ "error": … }` | Backend, every release; kept while a client release uses it | Terminal client `v0.2.0`, web chat `v0.2.0` |
 
 A client works with every backend release that offers the interface versions it uses. An incompatible change to a public interface gets a new major version, such as `ambrogio.v2` or `/api/v2/`, and the backend keeps offering the previous version while a client release still uses it. The protocol and the HTTP API have separate version cycles: a new HTTP API version does not change the protocol, and the other way round. A change to [`protocol/ambrogio-v1.schema.json`](https://github.com/ambrogio-app/ambrogio-backend/blob/main/protocol/ambrogio-v1.schema.json) that is not a new version is compatible by rule.
 
 ## Current state
 
-Release list checked on 23 October 2026. The configuration reference pages describe the next, unreleased versions of the backend and the satellite; for the releases below, read the documentation of their tags. Ambrogio is in preview, and configuration may change between releases.
+Release list checked on 24 October 2026. Ambrogio is in preview, and configuration may change between releases.
 
-| Program | Latest release | Images | Works with the current clients |
+| Program | Latest release | Images | Interfaces |
 |---|---|---|---|
-| Backend | `v0.9.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.9.0` (amd64) | yes |
-| Terminal client | `v0.2.0` | none, run from a checkout of the tag | yes |
-| Web chat | `v0.2.0` | `ghcr.io/ambrogio-app/ambrogio-web:v0.2.0` (amd64, arm64) | yes |
-| Satellite | `v0.6.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.6.0` (amd64, arm64) | yes |
+| Backend | `v0.10.1` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.10.1` (amd64) | offers `ambrogio.v1`, HTTP API `v1` and the unversioned HTTP API |
+| Terminal client | `v0.3.0` | none, run from a checkout of the tag | uses `ambrogio.v1` and HTTP API `v1` |
+| Web chat | `v0.3.0` | `ghcr.io/ambrogio-app/ambrogio-web:v0.3.0` (amd64, arm64) | uses `ambrogio.v1` and HTTP API `v1` |
+| Satellite | `v0.7.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.7.0` (amd64, arm64) | uses `ambrogio.v1` |
 
-All four programs speak the `ambrogio.v1` protocol, which has not changed since it was introduced, and backend `v0.9.0` offers the same HTTP API as earlier releases. The terminal client `v0.2.0`, the web chat `v0.2.0` and the satellite `v0.6.0` were tested against backend `v0.8.0`; from the next releases, each client is tested in CI against the backend under development, through the backend's test entry point.
+All four current releases work together. Backend `v0.10.1` also serves the terminal client `v0.2.0` and the web chat `v0.2.0` through the unversioned HTTP API, and every satellite release, since `ambrogio.v1` has not changed. Backend `v0.10.0` was tagged but not published: use `v0.10.1`. The terminal client `v0.3.0` and the web chat `v0.3.0` need a backend that offers HTTP API `v1`, that is `v0.10.1` or later. Each client release is tested in CI against the backend under development, through the backend's test entry point.
 
-When you upgrade, compare your configuration with the [backend configuration](../backend-configuration/), [agent configuration](../agent-configuration/) and [satellite configuration](../satellite-configuration/) references: an older configuration may lack a value that is now required.
+## Upgrading to backend `v0.10.1` and satellite `v0.7.0`
 
-## Next release: configuration change
+Backend `v0.10.1` and satellite `v0.7.0` change the configuration in a way that is not compatible with earlier releases. The conversation protocol does not change. The backend adds [HTTP API `v1`](../http-api/) under `/api/v1/`, with errors as Problem Details, and keeps the previous endpoints under `/api/conversations`.
 
-The next backend release after `v0.9.0` and the next satellite release after `v0.6.0`, not yet released, change the configuration in a way that is not compatible with earlier files. The conversation protocol does not change. The backend adds [HTTP API `v1`](../http-api/) under `/api/v1/`, with errors as Problem Details, and keeps the previous endpoints under `/api/conversations`, so the terminal client `v0.2.0` and the web chat `v0.2.0` keep working; their next releases use `v1` and need a backend that offers it.
-
-| Before | From the next release |
+| Before | From backend `v0.10.1` and satellite `v0.7.0` |
 |---|---|
 | Backend: TypeScript modules `http.ts`, `conversations.ts` and `voice.ts`, chosen with `AMBROGIO_HTTP_CONFIG_PATH`, `AMBROGIO_CONVERSATIONS_CONFIG_PATH` and `AMBROGIO_VOICE_CONFIG_PATH` | Environment variables read by the backend itself, such as `AMBROGIO_HTTP_PORT`, `AMBROGIO_ARCHIVE_PATH` and `AMBROGIO_VOICE_LANGUAGES` with the `AMBROGIO_VOICE_<L>_*` profile variables. The `*_CONFIG_PATH` variables are no longer read. |
 | Backend: agent modules `<id>.ts` with credentials read from `process.env` | Data-only JSON files `<id>.json` that name the variables holding their credentials with `apiKeyEnv`, `tokenEnv` and `clientSecretEnv`. `.ts` files in the agents folder are ignored. |
