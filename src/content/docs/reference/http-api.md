@@ -1,13 +1,13 @@
 ---
 title: HTTP API
-description: The read-only HTTP endpoints that list conversations and return their history, their error responses, and the previous API version.
+description: The read-only HTTP endpoints that list conversations and return their history, and their error responses.
 sidebar:
   label: HTTP API
 ---
 
 Two `GET` endpoints let a client browse stored conversations. New turns are not sent over HTTP: they go through the [conversation protocol](../conversation-protocol/).
 
-The API carries its major version in the path. The current version is `v1`, under `/api/v1/`. It has its own version cycle, independent of the conversation protocol: the session stays on `/api/session` and is versioned by its WebSocket subprotocol, `ambrogio.v1`. The [previous version](#previous-version-without-a-version-in-the-path) is still served for older clients.
+The API carries its major version in the path. The current version is `v1`, under `/api/v1/`. It has its own version cycle, independent of the conversation protocol: the session stays on `/api/session` and is versioned by its WebSocket subprotocol, `ambrogio.v1`. The backend serves only this version: paths under `/api/` without a version, such as `/api/conversations`, get the `404` Problem Details of an unknown path. See [Versions and compatibility](../versions/).
 
 There is no authentication. Every response carries an `X-Request-Id` header; the same value appears as `correlationId` in the backend log. Responses that contain conversation data, and every error response, carry `Cache-Control: no-store`.
 
@@ -80,7 +80,7 @@ For a spoken turn, `text` is the transcription. All times are ISO 8601 in UTC.
 
 ## Error responses
 
-Every error response of the backend, except those of the [previous version](#previous-version-without-a-version-in-the-path), is a Problem Details object ([RFC 9457](https://www.rfc-editor.org/rfc/rfc9457)) with `Content-Type: application/problem+json`:
+Every error response of the backend is a Problem Details object ([RFC 9457](https://www.rfc-editor.org/rfc/rfc9457)) with `Content-Type: application/problem+json`:
 
 ```json
 { "type": "/problems/conversation-not-found", "title": "Conversation not found", "status": 404 }
@@ -122,20 +122,6 @@ No endpoint accepts a body today: the backend reads a body before it chooses the
 | `pointer` | A JSON Pointer to the value inside that part, such as `/limit`. |
 | `code` | `unknown-field` for a parameter the endpoint does not have, `invalid-value` for any other violation. |
 | `detail` | "The field is not allowed." or "The value is not valid." |
-
-## Previous version, without a version in the path
-
-`GET /api/conversations` and `GET /api/conversations/{conversationId}` are the first version of the API. The backend keeps them, unchanged, while a client release still uses them; [Versions and compatibility](../versions/) lists which. They take the same parameters and return the same `200` bodies as `v1`. Their errors are JSON objects with a single `error` member, in the language of `AMBROGIO_LANGUAGE` (both languages are in [Messages](../messages/#http-errors-of-the-previous-version)), instead of Problem Details:
-
-| Endpoint | Status | Body |
-|---|---|---|
-| `/api/conversations` | 400 | `{ "error": "Invalid pagination request." }` for a bad `cursor` or `limit` or an unknown parameter. |
-| `/api/conversations` | 500 | `{ "error": "I can't complete the response." }` |
-| `/api/conversations/{conversationId}` | 404 | `{ "error": "Conversation not found." }` |
-| `/api/conversations/{conversationId}` | 400 | `{ "error": "Invalid HTTP request." }` for an empty identifier. |
-| `/api/conversations/{conversationId}` | 500 | `{ "error": "I can't complete the response." }` |
-
-Other methods and unknown paths under `/api/` get the `404` Problem Details.
 
 ## Browsers
 
