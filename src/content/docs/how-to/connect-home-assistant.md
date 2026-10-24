@@ -9,7 +9,7 @@ Home Assistant can act as an [MCP](https://modelcontextprotocol.io/) server. You
 
 ## Before you start
 
-- Home Assistant is reachable from the machine that runs the Ambrogio backend.
+- Home Assistant 2025.11 or later, reachable from the machine that runs the Ambrogio backend. Earlier releases do not serve the `/api/mcp` endpoint. See [External services and models](../../reference/versions/#external-services-and-models).
 - You can log in to Home Assistant as an administrator.
 - The backend running with the Compose example, and a checkout of the backend repository at the same version.
 

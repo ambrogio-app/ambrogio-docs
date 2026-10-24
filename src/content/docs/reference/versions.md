@@ -56,6 +56,18 @@ To upgrade, back up first ([Back up and upgrade](../../how-to/back-up-and-upgrad
 - An image is published only if the repository's checks (checks of the whole engineering model, type check, tests, build) and the secret scan pass on the tagged commit.
 - Backend images are built for `linux/amd64`. Satellite and web chat images are built for `linux/amd64` and `linux/arm64`.
 
+## External services and models
+
+Ambrogio depends on these versions of services, protocols and models it does not own:
+
+| Dependency | Version | Used by |
+|---|---|---|
+| Home Assistant, **Model Context Protocol Server** integration | 2025.11 or later: the first release that serves the Streamable HTTP endpoint `/api/mcp`. Earlier releases offer only the SSE endpoint, which Ambrogio does not use. | Backend, [Home Assistant connector](../../how-to/connect-home-assistant/) |
+| Model Context Protocol | revision `2025-03-26` or later. The backend's client proposes `2025-11-25` and accepts `2025-06-18` and `2025-03-26` from the server. | Backend, MCP connectors |
+| LLM provider APIs | Mistral AI `v1`, OpenAI `v1` (Responses), Anthropic Messages with `anthropic-version: 2023-06-01`, Gemini API `v1beta`, or a Chat Completions API compatible with OpenAI | Backend, see [Agent configuration](../agent-configuration/) |
+| Speech models | the archives listed in [Bundled models and licenses](../bundled-models/), fixed by SHA-256 | Backend image |
+| openWakeWord models | release v0.5.1 | Satellite |
+
 ## Language
 
 The backend adds the language selected by `AMBROGIO_LANGUAGE` to each answering agent's instructions. The orchestrator only selects an agent. The backend image includes Italian and English Vosk models, Piper voices and a multilingual Kokoro model; see [Change the voice](../../how-to/change-voice/). You can still use external models and voices.
