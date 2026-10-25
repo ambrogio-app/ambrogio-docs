@@ -5,7 +5,7 @@ sidebar:
   label: Enable voice
 ---
 
-Voice is active when `AMBROGIO_VOICE_LANGUAGES` lists at least one language. The backend Compose example already enables English and Italian with the Piper voices and Vosk models included in the image.
+Voice is active when `AMBROGIO_VOICE_LANGUAGES` lists at least one language. The backend Compose example already enables English and Italian with the Piper voices and the Whisper speech recognition model included in the image.
 
 ## 1. Check the voice variables
 
@@ -13,15 +13,17 @@ In `ambrogio-backend/compose.example.yaml`, keep these entries in the backend se
 
 ```yaml
 AMBROGIO_VOICE_LANGUAGES: en,it
-AMBROGIO_VOICE_EN_VOSK_MODEL_PATH: /opt/ambrogio/models/vosk-model-small-en-us-0.15
+AMBROGIO_VOICE_EN_STT_ENGINE: whisper
+AMBROGIO_VOICE_EN_STT_MODEL_DIR: /opt/ambrogio/models/sherpa-onnx-whisper-base
 AMBROGIO_VOICE_EN_ENGINE: piper
 AMBROGIO_VOICE_EN_MODEL_DIR: /opt/ambrogio/voices/vits-piper-en_US-kristin-medium
-AMBROGIO_VOICE_IT_VOSK_MODEL_PATH: /opt/ambrogio/models/vosk-model-small-it-0.22
+AMBROGIO_VOICE_IT_STT_ENGINE: whisper
+AMBROGIO_VOICE_IT_STT_MODEL_DIR: /opt/ambrogio/models/sherpa-onnx-whisper-base
 AMBROGIO_VOICE_IT_ENGINE: piper
 AMBROGIO_VOICE_IT_MODEL_DIR: /opt/ambrogio/voices/vits-piper-it_IT-paola-medium
 ```
 
-The backend uses the profile of `AMBROGIO_LANGUAGE`, `en` unless you set it, so that language must be in the list. To speak Italian, add `AMBROGIO_LANGUAGE: it`. [Backend configuration](../../reference/backend-configuration/#voice) describes every variable and its validation.
+The backend uses the profile of `AMBROGIO_LANGUAGE`, `en` unless you set it, so that language must be in the list. Both languages use the same multilingual Whisper model; it transcribes in the language of the profile. To speak Italian, add `AMBROGIO_LANGUAGE: it`. [Backend configuration](../../reference/backend-configuration/#voice) describes every variable and its validation.
 
 ## 2. Recreate the backend
 

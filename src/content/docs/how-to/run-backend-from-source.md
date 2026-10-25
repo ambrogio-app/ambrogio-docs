@@ -10,7 +10,6 @@ Use this when you want to run the backend directly on a Linux host, for example 
 ## Before you start
 
 - Linux with Node.js 24 or later and `pnpm`.
-- `libgomp1` if you plan to enable voice (`sudo apt install libgomp1` on Debian and Ubuntu).
 
 ## Build
 
@@ -50,7 +49,7 @@ export MISTRAL_API_KEY=<your-api-key>
 node apps/server/dist/main.js
 ```
 
-To enable voice, set `AMBROGIO_VOICE_LANGUAGES` and the profile variables of each listed language. Without Docker there are no bundled models: provide Vosk and sherpa-onnx Piper or Kokoro directories yourself and set their host paths. See [Change the voice](../change-voice/#use-a-different-voice).
+To enable voice, set `AMBROGIO_VOICE_LANGUAGES` and the profile variables of each listed language. Without Docker there are no bundled models: provide a [sherpa-onnx Whisper model](https://k2-fsa.github.io/sherpa/onnx/pretrained_models/whisper/index.html) and a sherpa-onnx Piper or Kokoro directory yourself and set their host paths. See [Change the voice](../change-voice/#use-a-different-voice).
 
 ## Develop with a local `.env`
 

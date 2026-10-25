@@ -5,7 +5,7 @@ sidebar:
   label: Satellite configuration
 ---
 
-The satellite reads its configuration once, at startup, from environment variables. The configuration code is part of the satellite: you set variables, you do not write code. Every value and the chosen wake word model are checked before the microphone is opened.
+The satellite reads its configuration once, at startup, from environment variables. The configuration code is part of the satellite: you set variables, you do not write code. Every value, the wake word included, is checked before the microphone is opened.
 
 ## Command line
 
@@ -41,12 +41,23 @@ An invalid configuration produces one log line with `event: "invalid_configurati
 | `AMBROGIO_MICROPHONE` | Microphone selector, see [Audio devices](#audio-devices). | unset: the system's default microphone |
 | `AMBROGIO_SPEAKER` | Speaker selector, see [Audio devices](#audio-devices). | unset: the system's default speaker |
 | `AMBROGIO_ATTENUATION_DEVICE`, `AMBROGIO_ATTENUATION_CONTROL`, `AMBROGIO_ATTENUATION_LEVEL` | See [Attenuation of other audio](#attenuation-of-other-audio). | unset: nothing is lowered |
-| `AMBROGIO_WAKE_WORD_MODEL` | Wake word model. Bundled: `hey_jarvis`, `hey_mycroft`, `alexa`. A custom model `<id>.onnx` in the models folder is selected with its `<id>`. | `hey_jarvis` |
-| `AMBROGIO_WAKE_WORD_THRESHOLD` | Number above 0 and at most 1. Detection threshold: higher means fewer false wake-ups and more missed ones. | `0.5` |
-| `AMBROGIO_WAKE_WORD_PATIENCE` | Whole number, 1 to 10. Consecutive 80 ms audio blocks whose score must reach the threshold before the satellite wakes up. Higher means fewer false wake-ups from short sounds such as a cough, about 80 ms more delay per block, and possibly more missed ones. `1` wakes up on a single block. | `2` |
+| `AMBROGIO_WAKE_WORD` | The wake word as text, see [Wake word](#wake-word). | `Alexa` |
+| `AMBROGIO_WAKE_WORD_THRESHOLD` | Number above 0 and below 1, written with digits and an optional decimal point. Detection threshold of the keyword spotter: higher means fewer false wake-ups and more missed ones. | `0.25` |
 | `AMBROGIO_REPLY_TIMEOUT_MS` | Positive integer. After an answer that expects a reply, how long the satellite waits for you to start speaking before it goes back to the wake word, in milliseconds. | `15000` |
 
-A custom wake word `<id>` must match `^[a-z0-9][a-z0-9_-]*$` and may not be `melspectrogram` or `embedding_model`. The models folder is `models/wakeword/` in the repository and `/app/models/wakeword/` in the image; it must contain `melspectrogram.onnx` and `embedding_model.onnx`.
+Numbers are written in decimal digits, without a sign or a unit. Other environment variables are not read.
+
+### Wake word
+
+`AMBROGIO_WAKE_WORD` is one or more words separated by a single space. Each word is made of ASCII letters (`A`–`Z`, `a`–`z`) and may contain apostrophes between letters, as in `Ambrogio's`. The whole text is at most 64 characters. Letter case does not matter: the satellite converts the text to upper case.
+
+The satellite splits the text into the tokens of the keyword spotting model, using the model's SentencePiece vocabulary (`bpe.model`). A text that breaks these rules, or that the vocabulary cannot represent, is refused with `invalid_configuration` before the microphone is opened.
+
+The bundled model is trained on English speech: a word in another language is recognised only if its English tokens sound close to how you say it. How well a word is recognised, false wake-ups included, depends on the word, the model and the threshold; the satellite does not measure it.
+
+A detection counts only if the satellite's speech detector heard speech in the 1.5 seconds that end with the detection; otherwise it is discarded and logged as `satellite_wake_rejected`. After a confirmed detection, further detections in the next 2 seconds are ignored.
+
+The keyword spotting model is in `models/kws/` in the repository and `/app/models/kws/` in the image. A read-only mount at `/app/models/kws` replaces it with another sherpa-onnx keyword spotting transducer with a SentencePiece vocabulary. The folder must contain exactly one file whose name starts with `encoder` and ends with `.onnx`, one that starts with `decoder` and one that starts with `joiner`, plus `tokens.txt` and `bpe.model`, all readable. Otherwise the satellite does not start: `satellite_startup_failed` with `Wake word model could not be loaded`. See [Change the wake word](../../how-to/change-wake-word/).
 
 ### Audio devices
 
@@ -74,8 +85,8 @@ The satellite repository provides `.env.example`, with every variable and empty 
 
 | Path | Contents |
 |---|---|
-| `/app/models/wakeword/` | Wake word models. A mount here replaces the bundled ones. |
-| `/app/assets/` | Recorded warning messages. |
+| `/app/models/kws/` | Keyword spotting model for the wake word. A read-only mount here replaces it. |
+| `/app/models/vad/` | Silero VAD speech detection model. |
 
 The image command is `node dist/main.js`; pass the configuration with environment variables. The container needs access to the sound devices (`--device /dev/snd`) and to the network of the backend (`--network host` is the simplest).
 

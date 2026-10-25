@@ -24,9 +24,9 @@ Look at `err.message` and find it in this table.
 | `err.message` | What to check |
 |---|---|
 | `Missing environment variable <NAME>` | A required variable is not set, or is set to an empty string. In production `AMBROGIO_ENV`, `AMBROGIO_HTTP_HOST`, `AMBROGIO_HTTP_PORT`, `AMBROGIO_PUBLIC_HTTPS` and `AMBROGIO_ARCHIVE_PATH` are required; with voice, each listed language needs its profile variables. In Docker, `docker inspect ambrogio` shows the variables of the container. |
-| `Invalid environment variable <NAME>: <condition>` | The variable has a value the backend does not accept; the condition says what it expects. Common cases: `AMBROGIO_ENV` other than `development`, `test` or `production`; a port outside 1–65535; `AMBROGIO_PUBLIC_HTTPS` other than `true` or `false`; `AMBROGIO_HSTS_MAX_AGE_SECONDS` missing with `AMBROGIO_PUBLIC_HTTPS=true`; an origin with a path, a trailing slash or `*`; `AMBROGIO_LANGUAGE` other than `en` or `it`; a time zone that is not an IANA name such as `Europe/Rome`; `AMBROGIO_LIST_PAGE_SIZE` above `AMBROGIO_MAX_LIST_PAGE_SIZE`; `AMBROGIO_VOICE_LANGUAGES` without `AMBROGIO_LANGUAGE` or with an unknown or repeated language; a `SPEAKER` or `LANGUAGE` voice variable with the `piper` engine. |
+| `Invalid environment variable <NAME>: <condition>` | The variable has a value the backend does not accept; the condition says what it expects. Common cases: `AMBROGIO_ENV` other than `development`, `test` or `production`; a port outside 1–65535; `AMBROGIO_PUBLIC_HTTPS` other than `true` or `false`; `AMBROGIO_HSTS_MAX_AGE_SECONDS` missing with `AMBROGIO_PUBLIC_HTTPS=true`; an origin with a path, a trailing slash or `*`; `AMBROGIO_LANGUAGE` other than `en` or `it`; a time zone that is not an IANA name such as `Europe/Rome`; `AMBROGIO_LIST_PAGE_SIZE` above `AMBROGIO_MAX_LIST_PAGE_SIZE`; `AMBROGIO_VOICE_LANGUAGES` without `AMBROGIO_LANGUAGE` or with an unknown or repeated language; an `STT_ENGINE` voice variable other than `whisper`; a `SPEAKER` or `LANGUAGE` voice variable with the `piper` engine. |
 | `Conversation archive could not be prepared` | The folder of `AMBROGIO_ARCHIVE_PATH` does not exist or is not writable, or the database could not be updated. |
-| `Voice resources are unavailable` | `AMBROGIO_VOICE_<L>_VOSK_MODEL_PATH` of the active language is not a readable folder, or `AMBROGIO_VOICE_<L>_MODEL_DIR` lacks the files of its engine: with `piper` exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`; with `kokoro` exactly one `.onnx` file, `voices.bin`, `tokens.txt` and `espeak-ng-data/`. |
+| `Voice resources are unavailable` | `AMBROGIO_VOICE_<L>_STT_MODEL_DIR` of the active language lacks the files of a Whisper model: exactly one file whose name contains `encoder` and ends with `.onnx`, exactly one that contains `decoder` and ends with `.onnx`, and exactly one that ends with `tokens.txt`. Or `AMBROGIO_VOICE_<L>_MODEL_DIR` lacks the files of its engine: with `piper` exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`; with `kokoro` exactly one `.onnx` file, `voices.bin`, `tokens.txt` and `espeak-ng-data/`. |
 | `Voice speaker is not in the model` | `AMBROGIO_VOICE_<L>_SPEAKER` is not lower than the number of voices of the Kokoro model. See [Voices of `kokoro-multi-lang-v1_0`](../../reference/backend-configuration/#voices-of-kokoro-multi-lang-v1_0). |
 | `Voice components could not be loaded` | The files are there but a model failed to load. Download it again. |
 | `Agent configuration directory unavailable` | The agents folder, `AMBROGIO_AGENTS_DIR` or `/etc/ambrogio/agents` by default, does not exist. In Docker, check the mounts of the agent files. |
@@ -76,11 +76,11 @@ The backend log has a `conversation_reply_failed` event for each of these.
 The satellite checks its environment variables before it starts and stops at the first problem. The log line names the variable and the problem, never its value:
 
 ```
-{"level":"info","time":...,"event":"invalid_configuration","variable":"AMBROGIO_WAKE_WORD_MODEL","condition":"invalid"}
+{"level":"info","time":...,"event":"invalid_configuration","variable":"AMBROGIO_WAKE_WORD","condition":"invalid"}
 ```
 
 - `"condition":"missing"`: the variable is not set, or is empty. `AMBROGIO_ENV` and `AMBROGIO_BACKEND_URL` are always required; the three `AMBROGIO_ATTENUATION_*` variables go together. In Docker, check the service's `environment` section.
-- `"condition":"invalid"`: the value is wrong. [Satellite configuration](../../reference/satellite-configuration/) lists the rules for each variable. The usual suspects are an `AMBROGIO_ENV` other than `development`, `test` or `production`, an `AMBROGIO_BACKEND_URL` with spaces or a query string, an `AMBROGIO_WAKE_WORD_MODEL` that is not in the models folder, a threshold outside 0–1, a patience that is not a whole number from 1 to 10, a reply timeout that is not a whole number, and audio selectors with spaces around them.
+- `"condition":"invalid"`: the value is wrong. [Satellite configuration](../../reference/satellite-configuration/) lists the rules for each variable. The usual suspects are an `AMBROGIO_ENV` other than `development`, `test` or `production`, an `AMBROGIO_BACKEND_URL` with spaces or a query string, an `AMBROGIO_WAKE_WORD` with characters other than ASCII letters, single spaces and inner apostrophes, or longer than 64 characters, a threshold that is not above 0 and below 1, a reply timeout that is not a whole number, and audio selectors with spaces around them.
 
 `invalid_arguments` means the command line had arguments: the satellite takes none.
 
@@ -90,9 +90,11 @@ When the satellite cannot start, it prints `Unable to start Ambrogio satellite.`
 
 | `err.message` | What to check |
 |---|---|
-| `Wake word model could not be loaded` | The model file of `AMBROGIO_WAKE_WORD_MODEL` or the shared files of the models folder are damaged. Copy the folder again; see [Change the wake word](../change-wake-word/). |
+| `Wake word model could not be loaded` | The keyword spotting model is missing or damaged. If you mount your own model at `/app/models/kws`, the folder must contain exactly one `encoder*.onnx`, one `decoder*.onnx` and one `joiner*.onnx` file, plus `tokens.txt` and `bpe.model`; see [Change the wake word](../change-wake-word/#replace-the-keyword-spotting-model). Otherwise reinstall the satellite or pull the image again. |
 | `Voice activity model could not be loaded` | The bundled speech detection model is damaged. Reinstall the satellite or pull the image again. |
 | `Microphone could not be started` | The selected microphone does not exist or is busy. See [Choose audio devices](../choose-audio-devices/). |
+
+Lines on standard error that start with `/shared/sherpa-onnx/` come from the speech library, not from the satellite.
 
 When two things fail, for example the microphone and then the release of a model, `err.type` is `LifecycleError` and `err.faults` lists both.
 
@@ -107,16 +109,17 @@ The satellite plays this error tone in two cases. Its log tells you which:
 
 - Check that the microphone works: `arecord -d 5 test.wav && aplay test.wav`.
 - Make sure the satellite uses the right microphone; see [Choose audio devices](../choose-audio-devices/).
-- With the `alexa` model, say only "Alexa".
-- Lower `AMBROGIO_WAKE_WORD_THRESHOLD` a little, for example to `0.4`.
-- Lower `AMBROGIO_WAKE_WORD_PATIENCE` to `1`.
+- Say the word set in `AMBROGIO_WAKE_WORD`, `Alexa` unless you changed it.
+- If the log shows `satellite_wake_rejected` when you say it, the word was spotted but the speech detector heard no speech around it. Check the microphone level and speak towards the device.
+- If the log shows nothing, lower `AMBROGIO_WAKE_WORD_THRESHOLD` a little, for example to `0.2`.
+- The bundled model is trained on English speech. If your word does not sound English, try another one; see [Change the wake word](../change-wake-word/).
 
 ## The satellite wakes up by itself
 
-Every wake-up writes a `satellite_wake_detected` line with its `score` and `chunks`. Compare the lines of the false wake-ups with those of your real requests to choose the values below.
+Every wake-up writes a `satellite_wake_detected` line. A detection without speech around it, for example from a noise, is discarded and writes `satellite_wake_rejected` instead, without waking the satellite. So a false wake-up happens when the keyword spotter reacts while someone, or a TV, is speaking.
 
-- If a cough, a clap or another short sound wakes it up, raise `AMBROGIO_WAKE_WORD_PATIENCE`, for example to `3`.
-- Otherwise raise `AMBROGIO_WAKE_WORD_THRESHOLD` a little, for example to `0.6`.
+- Raise `AMBROGIO_WAKE_WORD_THRESHOLD` a little, for example to `0.3`.
+- Try another wake word: how well a word is recognised, false wake-ups included, depends on the word. See [Change the wake word](../change-wake-word/).
 - Move the device away from the TV.
 
 ## No beep after the wake word

@@ -23,7 +23,7 @@ You can run the satellite directly on the host or in Docker. Both read the same 
 Install Node.js 24 or later and the runtime libraries:
 
 ```bash
-sudo apt install libasound2 libgomp1    # libasound2t64 on recent Ubuntu
+sudo apt install libasound2    # libasound2t64 on recent Ubuntu
 ```
 
 Then build the satellite:
@@ -103,7 +103,7 @@ Watch the log. On the host it is printed to the terminal; with Compose, run `doc
 {"level":"info","time":...,"event":"satellite_ready"}
 ```
 
-Say "Hey Jarvis", wait for the beep and ask something.
+Say "Alexa", or the word you set in `AMBROGIO_WAKE_WORD`, wait for the beep and ask something. To choose another word, see [Change the wake word](../change-wake-word/).
 
 - If you hear two descending tones and the log shows `satellite_failure`, the satellite cannot reach the backend. From the device, run `curl http://192.168.1.20:3000/api/v1/conversations` with your address.
 - If the satellite exits at once with `"event":"invalid_configuration"`, the `variable` in the same line names the variable it refused and `condition` says whether it is `missing` or `invalid`. See [Troubleshooting](../troubleshoot/#the-satellite-exits-with-invalid_configuration).

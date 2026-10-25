@@ -7,7 +7,7 @@ This repository contains only the user documentation of Ambrogio: an Astro Starl
 - Every statement about behaviour, configuration fields, defaults, limits, messages and versions must be traceable to a contract or requirement of the model, or to the code that implements it. Read the model with `ambrogio-model/scripts/rv` from the workspace folder (see `ambrogio-model/AGENTS.md`) or directly in the `system-model/` folders.
 - Do not document behaviour that the model does not record. If the code and the model disagree, report it instead of choosing one.
 - The backend owns the protocol and the HTTP API. Each release declares the interface versions it offers (backend) or uses (clients); an incompatible change of an interface is made in the backend and in the clients that use it together, and they are released together, without keeping the previous version. Keep `reference/versions.md` in line with those declarations and with the published tags and images, and state which releases work together.
-- External facts (Home Assistant, Vosk, sherpa-onnx, openWakeWord) need a check against their official documentation.
+- External facts (Home Assistant, sherpa-onnx and the models it runs, such as Whisper, Piper, Kokoro and Silero VAD) need a check against their official documentation.
 
 ## Diátaxis
 

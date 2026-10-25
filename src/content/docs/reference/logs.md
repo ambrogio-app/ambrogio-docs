@@ -51,10 +51,11 @@ If the backend cannot start, it writes one `server_startup_failed` event (level 
 | Event | Level | Meaning |
 |---|---|---|
 | `satellite_ready` | info | Started and listening for the wake word. |
-| `satellite_wake_detected` | info | The wake word was detected. `score` is the classifier score of the block that confirmed it, rounded to three decimals; `chunks` is the number of consecutive 80 ms blocks that reached the threshold (`AMBROGIO_WAKE_WORD_THRESHOLD`). A detection ignored because it came too soon after the previous one is not logged. |
+| `satellite_wake_detected` | info | The wake word was detected and the speech detector confirmed speech in the 1.5 seconds that end with the detection. The line has only `level`, `time` and `event`. A detection ignored because it came less than 2 seconds after the previous one is not logged. |
+| `satellite_wake_rejected` | info | The keyword spotter detected the wake word, but the speech detector heard no speech in the 1.5 seconds that end with the detection, so the detection was discarded. The line has only `level`, `time` and `event`. |
 | `satellite_session_unavailable` | info | The session to the backend could not be opened at startup. The satellite tries again at the next wake word. |
 | `invalid_arguments` | info | The command line has arguments; the satellite takes none. The satellite exits. |
-| `invalid_configuration` | info | The configuration was refused and the satellite exits with code `2`. `variable` names the environment variable and `condition` is `missing` (unset or empty) or `invalid` (a value the satellite does not accept, such as a wake word model that is not in the models folder). Values are never logged. |
+| `invalid_configuration` | info | The configuration was refused and the satellite exits with code `2`. `variable` names the environment variable and `condition` is `missing` (unset or empty) or `invalid` (a value the satellite does not accept, such as a wake word that the keyword spotting model's vocabulary cannot represent). Values are never logged. |
 | `satellite_voice_unavailable` | info | The backend answered a voice turn in text, because voice is disabled. The satellite plays the error tone instead and goes back to the wake word. |
 | `satellite_failure` | error | An interaction failed. The satellite plays the error tone and goes back to the wake word. |
 | `satellite_error_tone_failed` | error | The error tone could not be played. The satellite goes back to the wake word anyway. |
@@ -63,3 +64,5 @@ If the backend cannot start, it writes one `server_startup_failed` event (level 
 | `satellite_startup_failed` | error | The satellite could not start. `err.message` names the step: `Wake word model could not be loaded`, `Voice activity model could not be loaded` or `Microphone could not be started`. The satellite also prints `Unable to start Ambrogio satellite.` to standard error and exits with code `1`. |
 | `satellite_process_failed` | error | After `SIGINT` or `SIGTERM`, a resource could not be released. `err` names it. The satellite exits with code `1`. |
 | `satellite_shutdown_timeout` | error | After `SIGINT` or `SIGTERM`, the orderly shutdown did not finish within `timeoutMs` (5000) milliseconds, for example because an audio device did not close. `err` lists the failures seen so far, if any. The satellite exits with code `1`. A second signal does not restart the wait. |
+
+The speech library of the satellite, sherpa-onnx, can write its own lines to standard error. They are not JSON and start with the path of one of its source files, such as `/shared/sherpa-onnx/`. They are not events of the satellite.
