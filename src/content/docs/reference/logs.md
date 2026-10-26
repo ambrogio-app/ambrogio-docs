@@ -28,10 +28,11 @@ An error that escapes every check stops the program at once. It writes only `Amb
 
 ## Backend
 
-The backend logs warnings and errors only. It does not log ordinary requests.
+The backend logs from level `info`: the timing of each answered voice turn, warnings and errors. It does not log ordinary requests.
 
 | Event | Meaning |
 |---|---|
+| `conversation_voice_turn_timing` | Level `info`. A turn with spoken input was answered. Durations in milliseconds, all counted from the moment the backend received `input.end`: `transcriptionMs` until the transcription was complete, `firstTextMs` until the agents produced the first piece of the answer, `firstAudioMs` until the first audio of the spoken answer was sent (only when the answer is spoken), and `completedMs` until the turn was completed. Text turns and rejected, failed or interrupted turns write no line. |
 | `server_startup_failed` | The backend could not start. See below. |
 | `http.unexpected_failure` | An HTTP request failed with a server error, including a failed read of the conversation list or of a conversation through HTTP API `v1`. |
 | `conversation_turn_admission_failed` | A turn could not be stored when it arrived. |
@@ -53,6 +54,7 @@ If the backend cannot start, it writes one `server_startup_failed` event (level 
 | `satellite_ready` | info | Started and listening for the wake word. |
 | `satellite_wake_detected` | info | The wake word was detected and the speech detector confirmed speech in the 1.5 seconds that end with the detection. The line has only `level`, `time` and `event`. A detection ignored because it came less than 2 seconds after the previous one is not logged. |
 | `satellite_wake_rejected` | info | The keyword spotter detected the wake word, but the speech detector heard no speech in the 1.5 seconds that end with the detection, so the detection was discarded. The line has only `level`, `time` and `event`. |
+| `satellite_request_timing` | info | The reply to a request was played to the end. Durations in milliseconds: `speechMs` from the moment the speech detector confirmed your speech until the satellite sent `input.end`, `firstAudioMs` from `input.end` until the first audio of the reply arrived (only when the reply had audio), and `playedMs` from `input.end` until the reply finished playing. The satellite sends `input.end` once the speech detector has heard 0.64 seconds of silence, or when the request reaches 60 seconds. A request abandoned or ended by a failure writes no line. |
 | `satellite_session_unavailable` | info | The session to the backend could not be opened at startup. The satellite tries again at the next wake word. |
 | `invalid_arguments` | info | The command line has arguments; the satellite takes none. The satellite exits. |
 | `invalid_configuration` | info | The configuration was refused and the satellite exits with code `2`. `variable` names the environment variable and `condition` is `missing` (unset or empty) or `invalid` (a value the satellite does not accept, such as a wake word that the keyword spotting model's vocabulary cannot represent). Values are never logged. |
