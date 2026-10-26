@@ -24,7 +24,7 @@ Release list checked on 26 October 2026. Ambrogio is in preview, and configurati
 
 | Program | Latest release | Images | Interfaces |
 |---|---|---|---|
-| Backend | `v0.12.1` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.12.1` (amd64) | offers `ambrogio.v1` and HTTP API `v1` |
+| Backend | `v0.12.2` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.12.2` (amd64) | offers `ambrogio.v1` and HTTP API `v1` |
 | Terminal client | `v0.3.0` | none, run from a checkout of the tag | uses `ambrogio.v1` and HTTP API `v1` |
 | Web chat | `v0.3.0` | `ghcr.io/ambrogio-app/ambrogio-web:v0.3.0` (amd64, arm64) | uses `ambrogio.v1` and HTTP API `v1` |
 | Satellite | `v0.8.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.8.0` (amd64, arm64) | uses `ambrogio.v1` |
