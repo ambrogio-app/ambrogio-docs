@@ -90,7 +90,7 @@ Each agent, the orchestrator included, has its own `llm`, so agents can use diff
 
 Ambrogio talks to each one through its official [Vercel AI SDK](https://ai-sdk.dev/) package. Providers that need credentials other than an API key, such as Amazon Bedrock, Google Vertex AI or Azure OpenAI, are not supported.
 
-The model must support tool calling and structured output with a JSON schema; an agent with `mcp` needs both in the same request. Gemini models, for example, combine them only from the 3 series. With `openai-compatible`, the request carries the JSON schema of the answer as a `response_format` of type `json_schema`, so the server must accept it. If the provider refuses a request because the model lacks a feature, the turn fails with the standard error message.
+The orchestrator's model must support structured output with a JSON schema. The model of every specialised agent must support tool calling with a required tool call, writing text in the same response: every answer ends with a call to the tool `finish`, whose only argument is `expectsReply`. With `openai-compatible`, the orchestrator's request carries the JSON schema of its choice as a `response_format` of type `json_schema`, and the specialised agents' requests set `tool_choice` to `required`, so the server must accept both. If the provider refuses a request because the model lacks a feature, the turn fails with the standard error message.
 
 `options` may contain only:
 
@@ -122,8 +122,8 @@ The backend connects to the server and lists its tools at startup. If the server
 | Server prompts | Read again at every turn handled by the agent, before the model is called. Their text is added after the agent's `instructions`, under the heading `Instructions and context from the connected MCP server:`. |
 | Prompt read fails during a turn | The turn fails with the standard error message; the log cause is `MCP prompt retrieval failed`. |
 | Prompt reads and `maxToolCalls` | Not counted. |
-| Announcement | At every turn handled by the agent, a second short call to the agent's model runs beside the answer, without tools, and returns one sentence that announces the action, or nothing for a request for information. When it arrives before the first part of the answer, it is sent first and spoken at once; otherwise it is dropped. An announcement longer than 200 characters, or a failed call, is dropped without changing the turn. It is not counted in `maxToolCalls`. |
-| Rules added to `instructions` | After a successful action the agent leaves its answer empty, since the announcement was spoken; when an action fails it says what did not work; a request for information gets its answer. A turn with an empty answer completes normally. |
+| Rules added to `instructions` | Before calling a tool to carry out an action, the agent writes one short sentence that says what it is about to do, and none for a request for information. The sentence is sent at once, before the tool runs. After an announced action succeeds the agent adds nothing; an action that succeeds without an announcement gets a short confirmation; when an action fails it says what did not work. A turn whose answer is only the announcement completes normally. |
+| `finish` | The final tool of every answer, offered to every specialised agent and never sent to the MCP server. Its call ends the answer and carries `expectsReply`. It is not counted in `maxToolCalls`. An MCP tool named `finish` is shown to the model with its positional name. |
 | Positional names with `tools` | Unchanged: the index is the position in the server's full list. |
 
 ### `auth` with a static token
