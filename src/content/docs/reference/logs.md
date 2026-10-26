@@ -32,7 +32,7 @@ The backend logs from level `info`: the timing of each answered voice turn, warn
 
 | Event | Meaning |
 |---|---|
-| `conversation_voice_turn_timing` | Level `info`. A turn with spoken input was answered. Durations in milliseconds, all counted from the moment the backend received `input.end`: `transcriptionMs` until the transcription was complete, `firstTextMs` until the agents produced the first piece of the answer, `firstAudioMs` until the first audio of the spoken answer was sent (only when the answer is spoken), and `completedMs` until the turn was completed. Text turns and rejected, failed or interrupted turns write no line. |
+| `conversation_voice_turn_timing` | Level `info`. A turn with spoken input was answered. `audioMs` is the length of the audio received for the request. The other durations, in milliseconds, are counted from the moment the backend received `input.end`: `transcriptionMs` until the transcription was complete, `firstTextMs` until the agents produced the first piece of the answer, `firstAudioMs` until the first audio of the spoken answer was sent (only when the answer is spoken), and `completedMs` until the turn was completed. Text turns and rejected, failed or interrupted turns write no line. |
 | `server_startup_failed` | The backend could not start. See below. |
 | `http.unexpected_failure` | An HTTP request failed with a server error, including a failed read of the conversation list or of a conversation through HTTP API `v1`. |
 | `conversation_turn_admission_failed` | A turn could not be stored when it arrived. |
