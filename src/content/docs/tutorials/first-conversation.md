@@ -91,7 +91,7 @@ The answer appears a few words at a time. When it stops, the turn is complete an
 Can you make it shorter?
 ```
 
-Ambrogio knows what "it" refers to, because the backend sends the whole conversation to the agent with every new turn.
+Ambrogio knows what "it" refers to, because the backend sends the latest turns of the conversation to the agent with every new turn.
 
 ## Come back to the conversation
 

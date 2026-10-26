@@ -37,7 +37,7 @@ A conversation can only work on one turn at a time. If you type in the terminal 
 
 Different conversations do not wait for each other. Two satellites in two rooms each start their own conversation, and their turns run in parallel.
 
-The rule exists because each answer depends on the whole history. If two turns of the same conversation ran together, each would be answered without knowing about the other.
+The rule exists because each answer depends on the earlier turns. If two turns of the same conversation ran together, each would be answered without knowing about the other.
 
 ## The answer streams, the outcome confirms
 

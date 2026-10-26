@@ -45,6 +45,7 @@ The backend reads its configuration once, at startup, from environment variables
 | `AMBROGIO_TIME_ZONE` | IANA time zone of the family, such as `Europe/Rome`. The agents get the current date and time in this zone; see [Current date and time](../agent-configuration/#current-date-and-time). | `UTC`, every environment | no |
 | `AMBROGIO_LIST_PAGE_SIZE` | Positive integer: conversations per page when a client does not ask for a size. | `20`, every environment | no |
 | `AMBROGIO_MAX_LIST_PAGE_SIZE` | Positive integer: largest page a client may ask for. Must be at least `AMBROGIO_LIST_PAGE_SIZE`. | `100`, every environment | no |
+| `AMBROGIO_HISTORY_TURNS` | Positive integer: how many of the latest turns of a conversation, the new one included, the orchestrator and the agent receive. Older turns stay stored and visible in the clients. | `20`, every environment | no |
 
 ## Agents
 
