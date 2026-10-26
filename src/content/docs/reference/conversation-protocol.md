@@ -87,6 +87,6 @@ Every turn ends with exactly one of these, after its last stream:
 | `session_not_ready` | Sent before `session.ready`. |
 | `audio_busy` | A second incoming audio stream while one is open. |
 
-## Server requests
+## Messages of the server
 
-Future revisions may add server messages outside turns. If such a message has an `id`, the client must answer `client.result` with the same `id` and either `ok: true`, or `ok: false` with `reason: "unsupported"`. Messages without `id` can be ignored. Version 1 defines none yet.
+The server sends only `session.*`, `output.*` and `turn.*` messages. A client ignores a server message of a type it does not know, without closing the session. The protocol defines no messages the client sends in answer to the server.
