@@ -21,9 +21,10 @@ sidebar:
 | Conversations per list page | `AMBROGIO_LIST_PAGE_SIZE` (20), at most `AMBROGIO_MAX_LIST_PAGE_SIZE` (100) | yes | See [Backend configuration](../backend-configuration/#conversations). |
 | Speech synthesis threads | 4, or fewer if the CPU has fewer | no | |
 | Speech recognition threads | 2, or fewer if the CPU has fewer | no | |
-| Audio decoded at a time | with `nemo-transducer`, the whole request; with `whisper`, windows of at most 30 seconds | no | With `whisper` only, the request is split into windows and the texts are joined with a space. A word spoken across a window boundary is split between the two. |
+| Silence added at the start of a voice request | 1 second | no | Keeps the first word, which the bundled model loses when speech starts at once. |
+| Silence added at the end of a voice request | 0.8 seconds | no | Lets the recognizer finish the last words before the transcription is returned. |
 
-Speech recognition runs when the client ends the request with `input.end`, so each voice turn includes the time the speech recognition model needs to decode the whole request. There is one recognizer: requests that end at the same time are decoded one after another, in the order they ended.
+Speech recognition runs while the request is open: each audio frame goes to the recognizer as it arrives, and at `input.end` only the last part remains to decode. The recognizer runs in one worker thread shared by all voice requests, which processes frames in the order they arrive. If the CPU cannot keep up with the audio, frames wait and the text arrives later; no audio is lost. Real-time recognition needs an x86_64 CPU with AVX2. If the worker stops because of a fault, the transcriptions in progress fail, their turns are refused with `transcription_failed` ("I didn't understand the request."), and the next voice request starts a new worker.
 
 Turns are never queued and never retried automatically.
 

@@ -17,7 +17,7 @@ The Docker image contains these Piper voices:
 | Italian | Riccardo, lighter | `/opt/ambrogio/voices/vits-piper-it_IT-riccardo-x_low` |
 | English | Kristin, medium | `/opt/ambrogio/voices/vits-piper-en_US-kristin-medium` |
 
-For the chosen language, set `AMBROGIO_VOICE_<L>_ENGINE` to `piper` and `AMBROGIO_VOICE_<L>_MODEL_DIR` to the desired folder. Speech recognition is set separately by `AMBROGIO_VOICE_<L>_STT_ENGINE` and `AMBROGIO_VOICE_<L>_STT_MODEL_DIR`; the bundled `nemo-transducer` model `/opt/ambrogio/models/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8` serves both languages. You can choose different engines for Italian and English.
+For the chosen language, set `AMBROGIO_VOICE_<L>_ENGINE` to `piper` and `AMBROGIO_VOICE_<L>_MODEL_DIR` to the desired folder. Speech recognition is set separately by `AMBROGIO_VOICE_<L>_STT_MODEL_DIR`; the bundled model `/opt/ambrogio/models/sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11` serves both languages. You can choose different voices and engines for Italian and English.
 
 ## Use Kokoro
 
@@ -49,22 +49,21 @@ services:
 
 If a custom Piper voice is in `/srv/ambrogio/custom-models/voices/my-voice`, set `AMBROGIO_VOICE_EN_MODEL_DIR: /custom-models/voices/my-voice` for English. The names are yours to choose: Ambrogio uses the paths you set and has no fixed catalogue of voice IDs.
 
-Recreate the container after changing mounts or configuration. A mount over `/opt/ambrogio/voices` replaces the included voices, and a mount over `/opt/ambrogio/models` replaces the included Parakeet model; mounting under `/custom-models` keeps them available.
+Recreate the container after changing mounts or configuration. A mount over `/opt/ambrogio/voices` replaces the included voices, and a mount over `/opt/ambrogio/models` replaces the included Nemotron speech recognition model; mounting under `/custom-models` keeps them available.
 
 ## Use a different speech recognition model
 
-The backend runs two families of sherpa-onnx speech recognition models. `AMBROGIO_VOICE_<L>_STT_ENGINE` names the family and `AMBROGIO_VOICE_<L>_STT_MODEL_DIR` chooses the model:
+The backend runs one family of speech recognition models: sherpa-onnx streaming transducers, which recognise speech while you talk. `AMBROGIO_VOICE_<L>_STT_MODEL_DIR` chooses the model. Its folder must contain:
 
-| Family | `AMBROGIO_VOICE_<L>_STT_ENGINE` | Files the model folder must contain |
-|---|---|---|
-| NeMo transducer, such as Parakeet TDT | `nemo-transducer` | Exactly one file whose name contains `encoder` and ends with `.onnx`, one that contains `decoder` and ends with `.onnx`, one that contains `joiner` and ends with `.onnx`, and one whose name ends with `tokens.txt`. |
-| [Whisper](https://k2-fsa.github.io/sherpa/onnx/pretrained_models/whisper/index.html) | `whisper` | Exactly one file whose name contains `encoder` and ends with `.onnx`, one that contains `decoder` and ends with `.onnx`, and one whose name ends with `tokens.txt`. |
+- exactly one file whose name contains `encoder` and ends with `.onnx`;
+- exactly one file whose name contains `decoder` and ends with `.onnx`;
+- exactly one file whose name contains `joiner` and ends with `.onnx`;
+- exactly one file whose name ends with `tokens.txt`.
 
-The image includes only Parakeet. To use another model, get it from the [sherpa-onnx pretrained models](https://k2-fsa.github.io/sherpa/onnx/pretrained_models/index.html), place its folder under the mounted directory and set both variables. For a Whisper model in `/srv/ambrogio/custom-models/whisper/my-model`:
+The image includes only Nemotron 3.5 ASR streaming 0.6B. To use another streaming transducer, get it from the [sherpa-onnx pretrained models](https://k2-fsa.github.io/sherpa/onnx/pretrained_models/index.html), place its folder under the mounted directory and set the variable. For a model in `/srv/ambrogio/custom-models/stt/my-model`:
 
 ```yaml
-AMBROGIO_VOICE_EN_STT_ENGINE: whisper
-AMBROGIO_VOICE_EN_STT_MODEL_DIR: /custom-models/whisper/my-model
+AMBROGIO_VOICE_EN_STT_MODEL_DIR: /custom-models/stt/my-model
 ```
 
-A NeMo transducer model recognises the spoken language by itself. Whisper transcribes in the language of the profile and decodes long requests in windows of at most 30 seconds; see [Backend configuration](../../reference/backend-configuration/#voice). Check the license of any model you mount.
+Offline models, such as Parakeet TDT or Whisper, and other model families are not supported. The backend does not pass the language of the profile to the model, so pick a model that recognises the language you speak. Check the license of any model you mount. See [Backend configuration](../../reference/backend-configuration/#voice).

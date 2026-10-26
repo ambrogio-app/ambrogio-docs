@@ -66,8 +66,7 @@ Each listed language `<L>` (`EN` or `IT`) has a profile:
 
 | Variable | Values | Required |
 |---|---|---|
-| `AMBROGIO_VOICE_<L>_STT_ENGINE` | Speech recognition engine, the family of the model: `nemo-transducer` for a sherpa-onnx NeMo transducer model such as Parakeet TDT, `whisper` for a [sherpa-onnx Whisper model](https://k2-fsa.github.io/sherpa/onnx/pretrained_models/whisper/index.html). | yes |
-| `AMBROGIO_VOICE_<L>_STT_MODEL_DIR` | Folder of the speech recognition model. With `nemo-transducer`: exactly one file whose name contains `encoder` and ends with `.onnx`, exactly one whose name contains `decoder` and ends with `.onnx`, exactly one whose name contains `joiner` and ends with `.onnx`, and exactly one whose name ends with `tokens.txt`. With `whisper`: exactly one file whose name contains `encoder` and ends with `.onnx`, exactly one whose name contains `decoder` and ends with `.onnx`, and exactly one whose name ends with `tokens.txt`. All readable. | yes |
+| `AMBROGIO_VOICE_<L>_STT_MODEL_DIR` | Folder of a sherpa-onnx streaming transducer speech recognition model: exactly one file whose name contains `encoder` and ends with `.onnx`, exactly one whose name contains `decoder` and ends with `.onnx`, exactly one whose name contains `joiner` and ends with `.onnx`, and exactly one whose name ends with `tokens.txt`. All readable. | yes |
 | `AMBROGIO_VOICE_<L>_ENGINE` | `piper` for a sherpa-onnx Piper voice, `kokoro` for a sherpa-onnx Kokoro model. | yes |
 | `AMBROGIO_VOICE_<L>_MODEL_DIR` | Folder of the voice or model. With `piper`: exactly one `.onnx` file, a `tokens.txt` file and an `espeak-ng-data/` folder. With `kokoro`: exactly one `.onnx` file (such as `model.onnx` or `model.int8.onnx`), `voices.bin`, `tokens.txt` and an `espeak-ng-data/` folder. All readable. | yes |
 | `AMBROGIO_VOICE_<L>_SPEAKER` | Integer ≥ 0: the number of the voice in the Kokoro model. It must be lower than the number of voices the model declares, or the backend does not start. Voice names such as `if_sara` are not accepted. | with `kokoro`; not allowed with `piper` |
@@ -75,7 +74,7 @@ Each listed language `<L>` (`EN` or `IT`) has a profile:
 
 The profile of `AMBROGIO_LANGUAGE` is the active one: its models are loaded before the server starts listening. The variables of the other listed profile are checked but its models are not loaded. Paths are inside the container and may refer to [bundled models](../bundled-models/) or to models mounted into the container. No voice variable has a default.
 
-Speech recognition decodes a request after the client ends it, using up to two CPU threads; see [Limits and timeouts](../limits-and-timeouts/#backend). With `nemo-transducer` the model recognises the spoken language by itself and decodes the whole request at once; the language of the profile is not passed to it. With `whisper` the model transcribes in the language of the profile (`it` or `en`), in windows of at most 30 seconds. Speech synthesis uses up to four CPU threads. Audio has the sample rate of the loaded model; the multilingual Kokoro models produce 24 kHz. Ambrogio passes no lexicon files to Kokoro, so languages that sherpa-onnx pronounces only through a lexicon, such as Chinese, are not supported.
+Speech recognition runs while the client sends the audio: a worker thread decodes each frame as it arrives, using up to two CPU threads, and at `input.end` only the last part remains; see [Limits and timeouts](../limits-and-timeouts/#backend). The model recognises the spoken language by itself; the language of the profile is not passed to it. Real-time recognition needs an x86_64 CPU with AVX2: without AVX2, for example on a low-end Celeron, recognition falls behind and the text arrives after the end of the sentence, with a delay that grows with the length of the turn. Speech synthesis uses up to four CPU threads. Audio has the sample rate of the loaded model; the multilingual Kokoro models produce 24 kHz. Ambrogio passes no lexicon files to Kokoro, so languages that sherpa-onnx pronounces only through a lexicon, such as Chinese, are not supported.
 
 ### Voices of `kokoro-multi-lang-v1_0`
 
@@ -101,7 +100,7 @@ Pick the voice for `AMBROGIO_VOICE_<L>_SPEAKER` and a matching `AMBROGIO_VOICE_<
 |---|---|
 | `/etc/ambrogio/agents/` | Default folder of agent files, empty in the image. |
 | `/data/` | Empty folder for the conversation archive, meant to be a mounted volume. |
-| `/opt/ambrogio/models/` | Bundled multilingual Parakeet TDT 0.6B v3 model, `sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8`, for Italian and English, used with `nemo-transducer`. |
+| `/opt/ambrogio/models/` | Bundled multilingual Nemotron 3.5 ASR streaming 0.6B model, `sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11`, for Italian and English speech recognition. |
 | `/opt/ambrogio/voices/` | Bundled Italian and English Piper voices. A mount at this path replaces them. |
 | `/opt/ambrogio/kokoro/` | Bundled multilingual Kokoro model. |
 

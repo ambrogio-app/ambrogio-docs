@@ -24,9 +24,9 @@ Look at `err.message` and find it in this table.
 | `err.message` | What to check |
 |---|---|
 | `Missing environment variable <NAME>` | A required variable is not set, or is set to an empty string. In production `AMBROGIO_ENV`, `AMBROGIO_HTTP_HOST`, `AMBROGIO_HTTP_PORT`, `AMBROGIO_PUBLIC_HTTPS` and `AMBROGIO_ARCHIVE_PATH` are required; with voice, each listed language needs its profile variables. In Docker, `docker inspect ambrogio` shows the variables of the container. |
-| `Invalid environment variable <NAME>: <condition>` | The variable has a value the backend does not accept; the condition says what it expects. Common cases: `AMBROGIO_ENV` other than `development`, `test` or `production`; a port outside 1–65535; `AMBROGIO_PUBLIC_HTTPS` other than `true` or `false`; `AMBROGIO_HSTS_MAX_AGE_SECONDS` missing with `AMBROGIO_PUBLIC_HTTPS=true`; an origin with a path, a trailing slash or `*`; `AMBROGIO_LANGUAGE` other than `en` or `it`; a time zone that is not an IANA name such as `Europe/Rome`; `AMBROGIO_LIST_PAGE_SIZE` above `AMBROGIO_MAX_LIST_PAGE_SIZE`; `AMBROGIO_VOICE_LANGUAGES` without `AMBROGIO_LANGUAGE` or with an unknown or repeated language; an `STT_ENGINE` voice variable other than `nemo-transducer` or `whisper`; a `SPEAKER` or `LANGUAGE` voice variable with the `piper` engine. |
+| `Invalid environment variable <NAME>: <condition>` | The variable has a value the backend does not accept; the condition says what it expects. Common cases: `AMBROGIO_ENV` other than `development`, `test` or `production`; a port outside 1–65535; `AMBROGIO_PUBLIC_HTTPS` other than `true` or `false`; `AMBROGIO_HSTS_MAX_AGE_SECONDS` missing with `AMBROGIO_PUBLIC_HTTPS=true`; an origin with a path, a trailing slash or `*`; `AMBROGIO_LANGUAGE` other than `en` or `it`; a time zone that is not an IANA name such as `Europe/Rome`; `AMBROGIO_LIST_PAGE_SIZE` above `AMBROGIO_MAX_LIST_PAGE_SIZE`; `AMBROGIO_VOICE_LANGUAGES` without `AMBROGIO_LANGUAGE` or with an unknown or repeated language; an `ENGINE` voice variable other than `piper` or `kokoro`; a `SPEAKER` or `LANGUAGE` voice variable with the `piper` engine. |
 | `Conversation archive could not be prepared` | The folder of `AMBROGIO_ARCHIVE_PATH` does not exist or is not writable, or the database could not be updated. |
-| `Voice resources are unavailable` | `AMBROGIO_VOICE_<L>_STT_MODEL_DIR` of the active language lacks the files of its engine: exactly one file whose name contains `encoder` and ends with `.onnx`, exactly one that contains `decoder` and ends with `.onnx`, exactly one that ends with `tokens.txt` and, with `nemo-transducer`, exactly one that contains `joiner` and ends with `.onnx`. Or `AMBROGIO_VOICE_<L>_MODEL_DIR` lacks the files of its engine: with `piper` exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`; with `kokoro` exactly one `.onnx` file, `voices.bin`, `tokens.txt` and `espeak-ng-data/`. |
+| `Voice resources are unavailable` | `AMBROGIO_VOICE_<L>_STT_MODEL_DIR` of the active language lacks the files of a streaming transducer: exactly one file whose name contains `encoder` and ends with `.onnx`, exactly one that contains `decoder` and ends with `.onnx`, exactly one that contains `joiner` and ends with `.onnx`, and exactly one that ends with `tokens.txt`. Or `AMBROGIO_VOICE_<L>_MODEL_DIR` lacks the files of its engine: with `piper` exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`; with `kokoro` exactly one `.onnx` file, `voices.bin`, `tokens.txt` and `espeak-ng-data/`. |
 | `Voice speaker is not in the model` | `AMBROGIO_VOICE_<L>_SPEAKER` is not lower than the number of voices of the Kokoro model. See [Voices of `kokoro-multi-lang-v1_0`](../../reference/backend-configuration/#voices-of-kokoro-multi-lang-v1_0). |
 | `Voice components could not be loaded` | The files are there but a model failed to load. Download it again. |
 | `Agent configuration directory unavailable` | The agents folder, `AMBROGIO_AGENTS_DIR` or `/etc/ambrogio/agents` by default, does not exist. In Docker, check the mounts of the agent files. |
@@ -129,3 +129,15 @@ The satellite plays the beep once the backend session is ready. If the speaker c
 ## My question is cut short
 
 The satellite decides you have finished after about two-thirds of a second of silence. Speak without long pauses. A request may last at most 60 seconds.
+
+## Voice answers start long after I stop speaking
+
+The backend recognises speech while you talk, so after the end of a sentence only the last part remains to decode. If the delay grows with the length of what you say, the backend CPU cannot recognise speech in real time: audio waits and the text arrives late, but nothing is lost.
+
+1. Check that the backend host has an x86_64 CPU with AVX2. This prints `avx2` when it does:
+
+   ```bash
+   grep -o -m1 avx2 /proc/cpuinfo
+   ```
+
+2. Without AVX2, for example on a low-end Celeron, recognition falls behind. Run the backend on a CPU with AVX2.

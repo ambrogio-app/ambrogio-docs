@@ -24,7 +24,7 @@ It takes about 20 minutes.
 
 ## Check voice in the backend
 
-The backend Compose example from the first tutorial already enables voice with `AMBROGIO_VOICE_LANGUAGES`. Its English profile uses a Piper voice and the Parakeet speech recognition model included in the image. Check that the backend still answers:
+The backend Compose example from the first tutorial already enables voice with `AMBROGIO_VOICE_LANGUAGES`. Its English profile uses a Piper voice and the Nemotron speech recognition model included in the image. Check that the backend still answers:
 
 ```bash
 curl -s http://localhost:3000/api/v1/conversations

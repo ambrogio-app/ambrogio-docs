@@ -7,7 +7,7 @@ sidebar:
 
 ## Before you start
 
-- A Linux host with Docker Compose.
+- A Linux x86_64 host with Docker Compose. For voice, its CPU needs AVX2: without it, speech recognition falls behind and the text of a voice turn arrives late.
 - A Mistral API key, or credentials for another [supported provider](../../reference/agent-configuration/#providers).
 - The backend release checkout for the Compose file and the example agent files.
 

@@ -15,11 +15,11 @@ flowchart LR
         SPK[Speaker]
     end
     subgraph back[Backend]
-        STT[Parakeet or Whisper<br/>speech to text]
+        STT[Nemotron streaming<br/>speech to text]
         AG[Agents]
         TTS[Piper or Kokoro voice<br/>text to speech]
     end
-    VAD -- "audio of your request" --> STT
+    VAD -- "audio of your request, while you speak" --> STT
     STT --> AG --> TTS
     TTS -- "audio of the answer" --> SPK
 ```
@@ -40,13 +40,17 @@ The wake word is plain text, not a model trained for one word. The satellite spl
 
 ## On the backend
 
-**Recognition after you stop.** The backend keeps your audio in memory as it arrives and passes it to the speech recognition model once the satellite says you have finished. The model reads the whole request, so the time it takes is added to every voice turn. The bundled model, Parakeet, reads it in one go and recognises by itself whether you spoke Italian or English, so one model serves both languages. A Whisper model, which you can mount instead, transcribes in the language of the profile and reads the request in pieces of at most 30 seconds. Parakeet was chosen over Whisper base and Whisper small because, in comparison tests on Italian speech, it was more accurate than both and faster than Whisper base. Which model suits your hardware is your choice. The transcription becomes the text of the turn, exactly as if you had typed it. If it comes out empty, the turn is refused with "I didn't understand the request."
+**Recognition while you speak.** The backend passes each piece of your audio to the speech recognition model as soon as it arrives, so the text is built up while you are still talking. When the satellite says you have finished, the backend adds 0.8 seconds of silence, which lets the model finish your last words, and decodes only that final part. The wait after you stop is therefore about the same for a short question and a long one. Recognition runs in a separate worker thread with up to two CPU threads, so it does not hold up the rest of the backend; requests from several satellites share it and their audio is processed in the order it arrives. The transcription becomes the text of the turn, exactly as if you had typed it. If it comes out empty, or recognition fails, the turn is refused with "I didn't understand the request." If the worker itself stops because of a fault, the next voice request starts a new one.
+
+**Why a streaming model.** The bundled model, Nemotron 3.5 ASR streaming 0.6B by NVIDIA, reads audio in chunks of 560 ms and recognises by itself whether you spoke Italian or English, so one model serves both languages. Offline models such as Parakeet TDT and Whisper, which reached a similar accuracy on Italian, decode only after you stop, so the wait would grow with the length of the request. Ambrogio supports one family, sherpa-onnx streaming transducers, to keep a single code path: another model of the same family is a matter of pointing to a different folder, another family needs a change to the code.
+
+**The hardware it needs.** Recognising speech as fast as you speak needs an x86_64 CPU with AVX2 instructions. On a CPU without AVX2, such as a low-end Celeron, recognition falls behind: the audio waits, nothing is lost, but the text arrives after the end of the sentence, and the longer you speak the longer the wait.
 
 **Speaking while it thinks.** The answer is spoken a sentence at a time, as soon as each sentence is complete, instead of waiting for the whole text. Before speaking, the backend strips Markdown symbols such as asterisks, link addresses and table bars, so the voice does not read them out. The stored text keeps its formatting.
 
 **One voice for the house.** The backend loads one voice at startup. All satellites speak with it. When several satellites are answering at once, their sentences are synthesised one after another, because the voice engine handles one sentence at a time.
 
-**Two kinds of voice.** The backend speaks with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx), which runs either a Piper voice or a Kokoro model inside the backend process. The image includes Italian and English Piper voices and one multilingual Kokoro model. It also includes one multilingual Parakeet model for recognition in both languages. `AMBROGIO_LANGUAGE` selects the matching voice profile, whose paths can point to bundled or mounted models. The example configuration chooses Piper because it runs fast enough on a low-power mini PC. Kokoro sounds more natural but needs several times more computing power: on a 4-core Celeron N5095 it is slower than speech itself, so answers would start late and stop between sentences. Both use espeak-ng to turn text into sounds in the language of the voice.
+**Two kinds of voice.** The backend speaks with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx), which runs either a Piper voice or a Kokoro model inside the backend process. The image includes Italian and English Piper voices and one multilingual Kokoro model. It also includes one multilingual Nemotron model for recognition in both languages. `AMBROGIO_LANGUAGE` selects the matching voice profile, whose paths can point to bundled or mounted models. The example configuration chooses Piper because it runs fast enough on a low-power mini PC. Kokoro sounds more natural but needs several times more computing power: on a 4-core Celeron N5095 it is slower than speech itself, so answers would start late and stop between sentences. Both use espeak-ng to turn text into sounds in the language of the voice.
 
 **One speech engine.** The satellite and the backend run all their speech models with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx): wake word, speech detection, recognition and synthesis. One engine means fewer native libraries, smaller images and fewer combinations to test. A model of a family that Ambrogio supports can be swapped with files and configuration alone; a new family needs a change to the code.
 

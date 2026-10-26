@@ -16,7 +16,7 @@ sequenceDiagram
     participant O as Orchestrator
     participant A as Agent
     C->>B: input.start, text or audio, input.end
-    Note over B: transcribe if audio,<br/>check limits,<br/>store the turn as pending
+    Note over B: finish transcribing if audio,<br/>check limits,<br/>store the turn as pending
     B-->>C: turn.accepted
     B->>O: which agent should answer?
     O-->>B: agent id
