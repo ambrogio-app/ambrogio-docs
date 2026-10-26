@@ -11,12 +11,14 @@ Ambrogio does not send every request to one big assistant. It has a team: an *or
 
 For each turn the backend:
 
-1. gives the orchestrator the conversation so far, plus the list of agents with their descriptions, and asks it to name the agent that should answer the last message;
-2. gives that agent the same conversation and lets it write the whole answer.
+1. gives the orchestrator the latest turns of the conversation, plus the list of agents with their descriptions, and asks it to name the agent that should answer the last message;
+2. gives that agent the same turns and lets it write the whole answer.
 
 The choice is made again at every turn. A conversation can move from the cooking agent to the Home Assistant agent and back, as the family's questions change.
 
 The orchestrator sees which agent gave each earlier answer, marked `[agent: cooking]` and so on, which helps it keep a follow-up question with the agent that handled the topic. The agents themselves see the plain conversation.
+
+Both receive only the latest turns, 20 unless you change [`AMBROGIO_HISTORY_TURNS`](../../reference/backend-configuration/#conversations). The agent frameworks we compared, such as Home Assistant, LiveKit Agents, Pipecat and the OpenAI Agents SDK, all limit what they send to the model, because a long conversation makes each answer slower and more expensive and buries the recent turns. A limit by number of turns keeps the recent context of a chat you come back to hours later; a limit by time would start that chat from nothing while the client still shows it. The stored conversation is never cut.
 
 ## Why the orchestrator never answers
 
@@ -40,7 +42,11 @@ An agent with an `mcp` section is connected to one MCP server and can call that 
 
 An agent with tools answers only after its tool calls, when it knows how the action went: *"I turned off the bedroom light."* An earlier version had the agent say a short sentence before calling its tools, as voice assistants do with a *preamble*. It was removed: the model wrote that sentence before knowing the outcome, and what has been spoken cannot be taken back. It announced *"I cannot find a player called Ambrogio"* before looking for the player, which it then found, and *"I am about to turn off the light"* when Home Assistant had already turned it off. On a fast server the answer comes about two seconds after a light command and three or four after a request to play a song.
 
-The answer always names the action and what it acted on, never just *"Done"*: the agent sees only the text of its earlier answers, and after a bare *"Done"* it tended to confirm the next request without carrying it out.
+An agent with tools also sees what it did in earlier turns: its own tool calls, with their arguments and results, come before its answer in the history it receives. When you say *"turn it off"* after *"turn on the living room light"*, the agent knows which light it switched on. The same frameworks keep tool calls in the history in the same way. The tool calls stay with the agent that made them: the orchestrator and the other agents see only the answers, so no agent sees calls to tools it does not have, and clients never see them.
+
+The answer still always names the action and what it acted on, never just *"Done"*. Answers of other agents carry no tool calls, and after a bare *"Done"* in the history a model tended to confirm the next request without carrying it out.
+
+Sometimes a model calls `finish` straight after an action without writing anything. The backend then asks the same agent once more, without tools, to write its answer from the results of the calls it made. If the answer is still empty, the turn fails with the standard message rather than leaving you without any confirmation. An empty answer is never stored: some providers refuse a conversation that contains one.
 
 Each agent answers in plain text and ends its answer by calling a final tool, `finish`, whose only argument says whether the answer expects a reply.
 

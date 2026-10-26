@@ -16,6 +16,8 @@ sidebar:
 | Turns per conversation at a time | 1 | no | Further turns on that conversation are refused with `occupied`. Turns on other conversations run in parallel. |
 | Incoming audio streams per session | 1 | no | `session.error` with `audio_busy`. |
 | Model request retries | 0 | no | A model error fails the turn. |
+| Second generation after an answer without words | 1 | no | The agent is asked once more to write its answer, without tools. If that is empty too, the turn fails with the standard message. |
+| Turns the models receive | `AMBROGIO_HISTORY_TURNS` (20), the new turn included | yes | Earlier turns stay stored and visible in the clients, but the orchestrator and the agents do not see them. |
 | Session ping interval | 30 seconds | no | A session that does not answer by the next ping is closed. |
 | Shutdown after `SIGTERM` or `SIGINT` | 10 seconds | no | The backend logs `server_shutdown_timeout` and exits with code `1`. Give the container at least 15 seconds to stop. |
 | Conversations per list page | `AMBROGIO_LIST_PAGE_SIZE` (20), at most `AMBROGIO_MAX_LIST_PAGE_SIZE` (100) | yes | See [Backend configuration](../backend-configuration/#conversations). |
