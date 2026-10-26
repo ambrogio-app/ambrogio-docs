@@ -122,6 +122,8 @@ The backend connects to the server and lists its tools at startup. If the server
 | Server prompts | Read again at every turn handled by the agent, before the model is called. Their text is added after the agent's `instructions`, under the heading `Instructions and context from the connected MCP server:`. |
 | Prompt read fails during a turn | The turn fails with the standard error message; the log cause is `MCP prompt retrieval failed`. |
 | Prompt reads and `maxToolCalls` | Not counted. |
+| Announcement | At every turn handled by the agent, a second short call to the agent's model runs beside the answer, without tools, and returns one sentence that announces the action, or nothing for a request for information. When it arrives before the first part of the answer, it is sent first and spoken at once; otherwise it is dropped. An announcement longer than 200 characters, or a failed call, is dropped without changing the turn. It is not counted in `maxToolCalls`. |
+| Rules added to `instructions` | After a successful action the agent leaves its answer empty, since the announcement was spoken; when an action fails it says what did not work; a request for information gets its answer. A turn with an empty answer completes normally. |
 | Positional names with `tools` | Unchanged: the index is the position in the server's full list. |
 
 ### `auth` with a static token

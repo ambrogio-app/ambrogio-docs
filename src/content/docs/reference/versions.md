@@ -45,7 +45,8 @@ The backend and the satellite are released together. Because the protocol is the
 | Backend from source: `libgomp1` needed for voice | Not needed. |
 | Backend: `AMBROGIO_VOICE_<L>_ENGINE`, `piper` or `kokoro`, and with `kokoro` `AMBROGIO_VOICE_<L>_SPEAKER` and `AMBROGIO_VOICE_<L>_LANGUAGE` | No longer read: `AMBROGIO_VOICE_<L>_MODEL_DIR` is always a Piper voice. A profile that used Kokoro must point `MODEL_DIR` to a Piper voice. |
 | Backend image: Kokoro model in `/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0` | Removed. |
-| Backend: logs from level `warn` only | Logs from level `info`, with the new `conversation_voice_turn_timing` line for every answered voice turn. The satellite writes the new `satellite_request_timing` line. See [Logs](../logs/). |
+| Backend: agents with tools speak only when their work is done | The agent first announces the action in one sentence, from a second short call to its model, and stays silent after a successful action. See [Agent configuration](../agent-configuration/#mcp). |
+| Backend: logs from level `warn` only | Logs from level `info`, with the new `conversation_voice_turn_timing` line for every answered voice turn and `conversation_reply_timing` for every answer. The satellite writes the new `satellite_request_timing` line. See [Logs](../logs/). |
 | Satellite: `AMBROGIO_WAKE_WORD_MODEL` chose a bundled or custom openWakeWord model, `hey_jarvis` by default | `AMBROGIO_WAKE_WORD` is the wake word as text, `Alexa` by default. `AMBROGIO_WAKE_WORD_MODEL` is no longer read. |
 | Satellite: `AMBROGIO_WAKE_WORD_THRESHOLD`, above 0 and up to 1, default `0.5` | `AMBROGIO_WAKE_WORD_THRESHOLD`, above 0 and below 1, default `0.25`: the keyword spotting threshold of sherpa-onnx. |
 | Satellite: `AMBROGIO_WAKE_WORD_PATIENCE` | Removed and no longer read. A detection counts only if the speech detector heard speech in the 1.5 seconds that end with it. |
