@@ -63,7 +63,7 @@ The backend accepted the turn and has not saved an outcome yet. Press `Ctrl+R` l
 This is the standard message for a turn that failed after it was accepted. Common causes:
 
 - the provider's API key is wrong, out of credit, or rate-limited;
-- the orchestrator's model does not support structured JSON output, or a specialised agent's model does not support a required tool call; see [Providers](../../reference/agent-configuration/#providers);
+- the orchestrator's model does not support structured JSON output, or the model of an agent with tools does not support tool calling; see [Providers](../../reference/agent-configuration/#providers);
 - the answer took longer than 30 seconds;
 - an agent with tools needed more than its `maxToolCalls`;
 - the orchestrator chose no valid agent.

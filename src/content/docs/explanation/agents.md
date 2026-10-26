@@ -46,9 +46,9 @@ An agent with tools also sees what it did in earlier turns: its own tool calls, 
 
 The answer still always names the action and what it acted on, never just *"Done"*. Answers of other agents carry no tool calls, and after a bare *"Done"* in the history a model tended to confirm the next request without carrying it out.
 
-Sometimes a model calls `finish` straight after an action without writing anything. The backend then asks the same agent once more, without tools, to write its answer from the results of the calls it made. If the answer is still empty, the turn fails with the standard message rather than leaving you without any confirmation. An empty answer is never stored: some providers refuse a conversation that contains one.
+Sometimes a model stops straight after an action without writing anything. The backend then asks the same agent once more, without tools, to write its answer from the results of the calls it made. If the answer is still empty, the turn fails with the standard message rather than leaving you without any confirmation. An empty answer is never stored: some providers refuse a conversation that contains one.
 
-Each agent answers in plain text and ends its answer by calling a final tool, `finish`, whose only argument says whether the answer expects a reply.
+Each agent answers in plain text and calls its tools only when it needs them. The answer ends when the model stops calling tools, as in AI SDK and Home Assistant.
 
 The model sees each tool under the name the server gives it, such as `homeassistant__GetLiveContext`, which helps it pick the right one. Some servers also offer prompts: instructions on how to use their tools and context about what they manage. Home Assistant's prompt lists the areas and devices exposed to Assist. The backend reads these prompts at every turn and adds them after the agent's own `instructions`, so your instructions can stay about tone and behaviour while the server describes its own devices.
 
@@ -56,11 +56,15 @@ The model reads the description of every tool it is offered at every step of a t
 
 Models do not know today's date, and they are poor at working out a weekday from a date. So Ambrogio tells each specialised agent the current date, weekday and time at every turn, in the family's time zone. Without it, a question about "the weekend" or "Thursday" can get the forecast of the wrong days.
 
-Each agent has its own provider and model, so you can spend money where it matters: a capable model for the orchestrator and for agents that act on your home, a cheaper one, or a local one, for chit-chat. Whatever you choose must support tool calling and structured output, because the orchestrator's choice and the reply flag come back as structured data.
+Each agent has its own provider and model, so you can spend money where it matters: a capable model for the orchestrator and for agents that act on your home, a cheaper one, or a local one, for chit-chat. Agents with tools need a model that supports tool calling, and the orchestrator needs one with structured output, because its choice and the reply flag come back as structured data.
 
 ## Answers and replies
 
-Agents produce two things together: the text of the answer and a yes/no flag saying whether the answer expects a reply. The flag comes from the same model call as the answer, not from guessing at question marks afterwards. The satellite uses it to listen again without the wake word.
+Every answer comes with a yes/no flag saying whether it expects a reply. The satellite uses it to listen again without the wake word.
+
+The flag is decided after the answer. An answer without a question mark does not expect a reply, and costs nothing more. An answer with a question is checked by the orchestrator's model, which gets your last message and the answer and says whether the question really waits for you: *"Which room?"* does, a polite *"Anything else?"* does not. The check takes about half a second at the end of the turn; you do not hear it, because the answer has already been spoken while it was written. If the check fails, a question mark at the very end decides, and the backend logs `conversation_reply_check_failed`.
+
+Home Assistant decides only from the final question mark, which would keep the satellite listening after every polite offer. An earlier design had each agent end its answer with a tool, `finish`, carrying the flag, and required a tool call at every step. With long web search results, a model wrote that tool call into its answer as text and went on with its own reasoning, which was then spoken.
 
 ## What this means for your configuration
 
