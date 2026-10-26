@@ -50,7 +50,7 @@ export MISTRAL_API_KEY=<your-api-key>
 node apps/server/dist/main.js
 ```
 
-To enable voice, set `AMBROGIO_VOICE_LANGUAGES` and the profile variables of each listed language. Without Docker there are no bundled models: provide a sherpa-onnx streaming transducer speech recognition model, such as [Nemotron 3.5 ASR streaming](https://k2-fsa.github.io/sherpa/onnx/pretrained_models/index.html), and a sherpa-onnx Piper or Kokoro directory yourself and set their host paths. See [Change the voice](../change-voice/#use-a-different-voice) and [Use a different speech recognition model](../change-voice/#use-a-different-speech-recognition-model).
+To enable voice, set `AMBROGIO_VOICE_LANGUAGES` and the profile variables of each listed language. Without Docker there are no bundled models: provide a sherpa-onnx streaming transducer speech recognition model, such as [Nemotron 3.5 ASR streaming](https://k2-fsa.github.io/sherpa/onnx/pretrained_models/index.html), and a sherpa-onnx Piper voice directory yourself and set their host paths. See [Change the voice](../change-voice/#use-a-different-voice) and [Use a different speech recognition model](../change-voice/#use-a-different-speech-recognition-model).
 
 ## Develop with a local `.env`
 

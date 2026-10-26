@@ -17,7 +17,7 @@ flowchart LR
     subgraph back[Backend]
         STT[Nemotron streaming<br/>speech to text]
         AG[Agents]
-        TTS[Piper or Kokoro voice<br/>text to speech]
+        TTS[Piper voice<br/>text to speech]
     end
     VAD -- "audio of your request, while you speak" --> STT
     STT --> AG --> TTS
@@ -50,7 +50,7 @@ The wake word is plain text, not a model trained for one word. The satellite spl
 
 **One voice for the house.** The backend loads one voice at startup. All satellites speak with it. When several satellites are answering at once, their sentences are synthesised one after another, because the voice engine handles one sentence at a time.
 
-**Two kinds of voice.** The backend speaks with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx), which runs either a Piper voice or a Kokoro model inside the backend process. The image includes Italian and English Piper voices and one multilingual Kokoro model. It also includes one multilingual Nemotron model for recognition in both languages. `AMBROGIO_LANGUAGE` selects the matching voice profile, whose paths can point to bundled or mounted models. The example configuration chooses Piper because it runs fast enough on a low-power mini PC. Kokoro sounds more natural but needs several times more computing power: on a 4-core Celeron N5095 it is slower than speech itself, so answers would start late and stop between sentences. Both use espeak-ng to turn text into sounds in the language of the voice.
+**Piper voices only.** The backend speaks with Piper voices, which [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) runs inside the backend process and which use espeak-ng to turn text into sounds in the language of the voice. The image includes Italian and English Piper voices and one multilingual Nemotron model for recognition in both languages. `AMBROGIO_LANGUAGE` selects the matching voice profile, whose paths can point to bundled or mounted models. Kokoro, a voice model that sounds more natural, is not supported. The backend speaks a sentence only once it is fully synthesised, and Kokoro takes a few seconds per sentence even on a 4-core desktop CPU, where Piper takes less than half a second; on a low-power mini PC it is slower than speech itself. Answers would start seconds later and lose what streaming recognition gains, and a single kind of voice keeps the configuration and the image simpler.
 
 **One speech engine.** The satellite and the backend run all their speech models with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx): wake word, speech detection, recognition and synthesis. One engine means fewer native libraries, smaller images and fewer combinations to test. A model of a family that Ambrogio supports can be swapped with files and configuration alone; a new family needs a change to the code.
 

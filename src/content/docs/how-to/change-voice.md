@@ -1,6 +1,6 @@
 ---
 title: Change the voice
-description: Choose bundled Piper or Kokoro voices, or mount your own voice and speech recognition models.
+description: Choose a bundled Piper voice, or mount your own voice and speech recognition models.
 sidebar:
   label: Change the voice
 ---
@@ -17,26 +17,11 @@ The Docker image contains these Piper voices:
 | Italian | Riccardo, lighter | `/opt/ambrogio/voices/vits-piper-it_IT-riccardo-x_low` |
 | English | Kristin, medium | `/opt/ambrogio/voices/vits-piper-en_US-kristin-medium` |
 
-For the chosen language, set `AMBROGIO_VOICE_<L>_ENGINE` to `piper` and `AMBROGIO_VOICE_<L>_MODEL_DIR` to the desired folder. Speech recognition is set separately by `AMBROGIO_VOICE_<L>_STT_MODEL_DIR`; the bundled model `/opt/ambrogio/models/sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11` serves both languages. You can choose different voices and engines for Italian and English.
-
-## Use Kokoro
-
-The image also includes `kokoro-multi-lang-v1_0`. For each language that should use it, set the engine to `kokoro`, the model folder to `/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0`, and a matching numeric speaker and espeak-ng language. For English:
-
-```yaml
-AMBROGIO_VOICE_EN_ENGINE: kokoro
-AMBROGIO_VOICE_EN_MODEL_DIR: /opt/ambrogio/kokoro/kokoro-multi-lang-v1_0
-AMBROGIO_VOICE_EN_SPEAKER: "3"
-AMBROGIO_VOICE_EN_LANGUAGE: en
-```
-
-For Italian, set the `AMBROGIO_VOICE_IT_*` variables the same way, for example with speaker `35` and language `it`. With `piper`, leave `SPEAKER` and `LANGUAGE` unset: they are refused.
-
-Speaker 35 is `if_sara`; speaker 3 is `af_heart`. [The model's voice list](../../reference/backend-configuration/#voices-of-kokoro-multi-lang-v1_0) shows other speakers. Kokoro needs considerably more CPU than Piper; on a low-power mini PC it may generate audio more slowly than playback.
+For the chosen language, set `AMBROGIO_VOICE_<L>_MODEL_DIR` to the desired folder. Speech recognition is set separately by `AMBROGIO_VOICE_<L>_STT_MODEL_DIR`; the bundled model `/opt/ambrogio/models/sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11` serves both languages. You can choose different voices for Italian and English.
 
 ## Use a different voice
 
-You can mount any compatible sherpa-onnx Piper or Kokoro model and set `AMBROGIO_VOICE_<L>_MODEL_DIR` to its path inside the container. For Piper, the directory must contain exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`. For Kokoro it must also contain `voices.bin`.
+You can mount any Piper voice converted for sherpa-onnx and set `AMBROGIO_VOICE_<L>_MODEL_DIR` to its path inside the container. The directory must contain exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`. Other kinds of voice models, such as Kokoro, are not supported.
 
 For example, place models under `/srv/ambrogio/custom-models` on the host and add this read-only mount to the backend service in `compose.yaml`:
 

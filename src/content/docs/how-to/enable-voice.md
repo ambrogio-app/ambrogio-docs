@@ -14,10 +14,8 @@ In `ambrogio-backend/compose.example.yaml`, keep these entries in the backend se
 ```yaml
 AMBROGIO_VOICE_LANGUAGES: en,it
 AMBROGIO_VOICE_EN_STT_MODEL_DIR: /opt/ambrogio/models/sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11
-AMBROGIO_VOICE_EN_ENGINE: piper
 AMBROGIO_VOICE_EN_MODEL_DIR: /opt/ambrogio/voices/vits-piper-en_US-kristin-medium
 AMBROGIO_VOICE_IT_STT_MODEL_DIR: /opt/ambrogio/models/sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11
-AMBROGIO_VOICE_IT_ENGINE: piper
 AMBROGIO_VOICE_IT_MODEL_DIR: /opt/ambrogio/voices/vits-piper-it_IT-paola-medium
 ```
 
