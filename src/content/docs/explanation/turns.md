@@ -65,7 +65,7 @@ An answer must be complete within 30 seconds, counting the orchestrator's choice
 
 ## Expecting a reply
 
-Each completed turn carries `expectsReply`: whether the answer asks the family something. The agent decides this together with the answer. The satellite uses it to listen again without the wake word; the terminal client ignores it, because you can always type. Failed, refused and interrupted turns never expect a reply.
+Each completed turn carries `expectsReply`: whether the answer asks the family something. The orchestrator decides it once the answer is written, asking its model only when the answer contains a question; see [Agents and the orchestrator](../agents/#answers-and-replies). The satellite uses it to listen again without the wake word; the terminal client ignores it, because you can always type. Failed, refused and interrupted turns never expect a reply.
 
 ## One identity for the family
 
