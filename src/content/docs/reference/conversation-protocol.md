@@ -46,7 +46,7 @@ Nothing else is accepted before `session.ready`. A second `session.hello` is an 
 - Leave out `conversationId` to start a new conversation.
 - A session can have one incoming audio stream open at a time.
 
-The server processes the turn after `input.end`, except that it refuses at once when a limit is exceeded. The request does not include earlier messages; the server reads the history itself.
+The server processes the turn after `input.end`, except that it refuses at once when a limit is exceeded. With voice enabled, the server passes audio frames to speech recognition as they arrive, so that at `input.end` only the last part remains to decode; the transcription is used only after `input.end`. If the request does not end, because a limit is exceeded or the session closes first, the transcription in progress is discarded. The request does not include earlier messages; the server reads the history itself.
 
 ## Receiving the answer
 

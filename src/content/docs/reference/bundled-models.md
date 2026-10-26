@@ -1,6 +1,6 @@
 ---
 title: Bundled models and licenses
-description: The speech, voice and wake word models shipped with Ambrogio, where they come from and under which license.
+description: The speech, voice, wake word and speech detection models shipped with Ambrogio, where they come from and under which license.
 sidebar:
   label: Bundled models and licenses
 ---
@@ -14,26 +14,17 @@ Ambrogio's source code is released under the MIT license. The models it ships wi
 | Piper voice *Paola* (medium), sherpa-onnx conversion | Speech synthesis | `/opt/ambrogio/voices/vits-piper-it_IT-paola-medium` in the image | MIT, from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices); converted by k2-fsa |
 | Piper voice *Riccardo* (x_low), sherpa-onnx conversion | Speech synthesis | `/opt/ambrogio/voices/vits-piper-it_IT-riccardo-x_low` in the image | MIT, as above |
 | Piper voice *Kristin* (medium), sherpa-onnx conversion | English speech synthesis | `/opt/ambrogio/voices/vits-piper-en_US-kristin-medium` in the image | MIT, as above |
-| Kokoro multilingual v1.0, sherpa-onnx conversion | Italian and English speech synthesis | `/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0` in the image | Apache-2.0, included `LICENSE` |
-| Vosk small Italian 0.22 | Italian speech recognition | `/opt/ambrogio/models/vosk-model-small-it-0.22` in the image | Apache-2.0, [Vosk catalogue](https://alphacephei.com/vosk/models) |
-| Vosk small English US 0.15 | English speech recognition | `/opt/ambrogio/models/vosk-model-small-en-us-0.15` in the image | Apache-2.0, as above |
+| [Nemotron 3.5 ASR streaming 0.6B](https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b) by NVIDIA, 560 ms chunks, multilingual, sherpa-onnx conversion | Italian and English streaming speech recognition | `/opt/ambrogio/models/sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11` in the image: `encoder.int8.onnx`, `decoder.int8.onnx`, `joiner.int8.onnx`, `tokens.txt`, `LICENSE` | [OpenMDW 1.1](https://openmdw.ai/license/1-1/), included `LICENSE` |
 
-The voices and Kokoro model come from the [sherpa-onnx `tts-models` release](https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models); Vosk models come from the [Vosk catalogue](https://alphacephei.com/vosk/models). The build verifies every archive's SHA-256 checksum before extraction. The backend repository's `voices/README.md` lists all six checksums. You may still mount other models; check their licenses separately. See [Change the voice](../../how-to/change-voice/).
+The voices come from the [sherpa-onnx `tts-models` release](https://github.com/k2-fsa/sherpa-onnx/releases/tag/tts-models); the Nemotron model comes from the archive `sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11.tar.bz2` of the [sherpa-onnx `asr-models` release](https://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models). The image keeps only the int8 encoder, decoder and joiner of Nemotron and its `tokens.txt`, and leaves out the archive's `README.md` and test recordings. OpenMDW 1.1 requires a distribution to keep a copy of the license and the notices of origin: the image adds the license text as `LICENSE` in the model folder, and the backend repository's `voices/README.md` records the origin. The build verifies every archive's SHA-256 checksum before extraction. The backend repository's `voices/README.md` lists all four checksums, for example `c6bf5e0df765f9d5b43bc9e0536d4b4b3e7d40bdf5ecf13e45f134c51c05ae3a` for the Nemotron archive. You may still mount other models; check their licenses separately. See [Change the voice](../../how-to/change-voice/).
 
 ## Satellite
 
 | Model | Use | Location | License |
 |---|---|---|---|
-| openWakeWord `hey_jarvis_v0.1.onnx` | Wake word "Hey Jarvis" | `models/wakeword/` | CC BY-NC-SA 4.0 |
-| openWakeWord `hey_mycroft_v0.1.onnx` | Wake word "Hey Mycroft" | `models/wakeword/` | CC BY-NC-SA 4.0 |
-| openWakeWord `alexa_v0.1.onnx` | Wake word "Alexa" | `models/wakeword/` | CC BY-NC-SA 4.0 |
-| openWakeWord `melspectrogram.onnx`, `embedding_model.onnx` | Shared by all wake words | `models/wakeword/` | CC BY-NC-SA 4.0 |
-| Silero VAD | Detecting when you speak | inside the Decibri package | MIT, see `models/SILERO-LICENSE.txt` |
+| sherpa-onnx keyword spotting zipformer GigaSpeech 3.3M (int8 encoder, decoder and joiner, `tokens.txt`, `bpe.model`) | Wake word | `models/kws/`, `/app/models/kws/` in the image | Apache-2.0, `models/kws/LICENSE` |
+| Silero VAD `silero_vad.onnx` | Detecting when you speak | `models/vad/`, `/app/models/vad/` in the image | MIT, `models/vad/LICENSE`, from [snakers4/silero-vad](https://github.com/snakers4/silero-vad) |
 
-The wake word models come from the [openWakeWord v0.5.1 release](https://github.com/dscripka/openWakeWord/releases/tag/v0.5.1).
-
-:::caution[Non-commercial use]
-The bundled wake word models are licensed **CC BY-NC-SA 4.0**: you may use them only for non-commercial purposes. If that does not fit your situation, replace them with models whose license does; see [Change the wake word](../../how-to/change-wake-word/#add-your-own-wake-word).
-:::
+The keyword spotting model comes from the archive `sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01.tar.bz2` of the [sherpa-onnx `kws-models` release](https://github.com/k2-fsa/sherpa-onnx/releases/tag/kws-models). It has about 3.3 million parameters and was trained on GigaSpeech, a collection of English speech; only its int8 files are shipped. Silero VAD comes from the [sherpa-onnx `asr-models` release](https://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models). The files are copied unchanged, and the satellite repository's `models/README.md` lists their SHA-256 checksums. Both licenses allow redistribution, commercial use included. A keyword spotting model you mount yourself has its own license; see [Change the wake word](../../how-to/change-wake-word/#replace-the-keyword-spotting-model).
 
 The satellite ships no recordings: its beep and its error tone are generated by the program.

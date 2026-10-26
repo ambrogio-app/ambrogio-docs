@@ -39,14 +39,14 @@ flowchart LR
 
 - the *conversation archive*, a SQLite file with every conversation;
 - the *agents*: an orchestrator that picks who answers, and specialised agents that answer, each with its own instructions and model;
-- *speech recognition* with Vosk and *speech synthesis* with Piper voices or a Kokoro model, both running inside the backend process, without any cloud speech service;
+- *speech recognition* while you speak, with a streaming transducer model such as Nemotron, and *speech synthesis* with Piper voices, both run by sherpa-onnx inside the backend process, without any cloud speech service;
 - the *public interface*: two HTTP endpoints for reading conversations and a WebSocket session for talking.
 
 **The terminal client** (`ambrogio-cli`) is a chat window for a terminal. It sends and receives text.
 
 **The web chat** (`ambrogio-web`) is the same kind of chat in a browser. An optional container serves the page; the page then talks to the backend directly, so the backend must list the page's address in `allowedOrigins`. Answers are shown as Markdown, and the interface is in Italian or English.
 
-**The voice satellite** (`ambrogio-satellite`) is a program for a small device with a microphone and a speaker. It listens for a wake word on the device, records your request, sends the audio to the backend and plays the answer. It does not recognise speech or generate voices itself.
+**The voice satellite** (`ambrogio-satellite`) is a program for a small device with a microphone and a speaker. It listens for a wake word on the device, with sherpa-onnx keyword spotting and speech detection, records your request, sends the audio to the backend and plays the answer. It does not recognise speech or generate voices itself.
 
 The only part outside your home is the language model. Agents send the conversation to their provider's API, such as Mistral, OpenAI, Anthropic or Google, to get answers. With an OpenAI-compatible model server on your own network, nothing leaves it. Everything else, including the audio, stays on your network.
 

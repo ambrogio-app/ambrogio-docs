@@ -28,10 +28,12 @@ An error that escapes every check stops the program at once. It writes only `Amb
 
 ## Backend
 
-The backend logs warnings and errors only. It does not log ordinary requests.
+The backend logs from level `info`: the timing of each answered voice turn, warnings and errors. It does not log ordinary requests.
 
 | Event | Meaning |
 |---|---|
+| `conversation_voice_turn_timing` | Level `info`. A turn with spoken input was answered. `audioMs` is the length of the audio received for the request. The other durations, in milliseconds, are counted from the moment the backend received `input.end`: `transcriptionMs` until the transcription was complete, `firstTextMs` until the agents produced the first piece of the answer, `firstAudioMs` until the first audio of the spoken answer was sent (only when the answer is spoken), and `completedMs` until the turn was completed. Text turns and rejected, failed or interrupted turns write no line. |
+| `conversation_reply_timing` | Level `info`. The answer to a turn was produced. `agent` is the chosen agent; `routerMs` the time the orchestrator took to choose it; `agentMs` the time the agent took; `modelSteps` the calls the agent made to its model. For an agent with tools, `toolCalls` and `toolMs` are the MCP tool calls and the time spent in them, and `announcementMs`, when the agent wrote text before its first tool call, the time from the agent's start to that text. The line has no `correlationId`: match it to `conversation_voice_turn_timing` by its time. A failed answer writes no line. |
 | `server_startup_failed` | The backend could not start. See below. |
 | `http.unexpected_failure` | An HTTP request failed with a server error, including a failed read of the conversation list or of a conversation through HTTP API `v1`. |
 | `conversation_turn_admission_failed` | A turn could not be stored when it arrived. |
@@ -51,10 +53,12 @@ If the backend cannot start, it writes one `server_startup_failed` event (level 
 | Event | Level | Meaning |
 |---|---|---|
 | `satellite_ready` | info | Started and listening for the wake word. |
-| `satellite_wake_detected` | info | The wake word was detected. `score` is the classifier score of the block that confirmed it, rounded to three decimals; `chunks` is the number of consecutive 80 ms blocks that reached the threshold (`AMBROGIO_WAKE_WORD_THRESHOLD`). A detection ignored because it came too soon after the previous one is not logged. |
+| `satellite_wake_detected` | info | The wake word was detected and the speech detector confirmed speech in the 1.5 seconds that end with the detection. The line has only `level`, `time` and `event`. A detection ignored because it came less than 2 seconds after the previous one is not logged. |
+| `satellite_wake_rejected` | info | The keyword spotter detected the wake word, but the speech detector heard no speech in the 1.5 seconds that end with the detection, so the detection was discarded. The line has only `level`, `time` and `event`. |
+| `satellite_request_timing` | info | The reply to a request was played to the end. Durations in milliseconds: `speechMs` from the moment the speech detector confirmed your speech until the satellite sent `input.end`, `firstAudioMs` from `input.end` until the first audio of the reply arrived (only when the reply had audio), and `playedMs` from `input.end` until the reply finished playing. The satellite sends `input.end` once the speech detector has heard 0.64 seconds of silence, or when the request reaches 60 seconds. A request abandoned or ended by a failure writes no line. |
 | `satellite_session_unavailable` | info | The session to the backend could not be opened at startup. The satellite tries again at the next wake word. |
 | `invalid_arguments` | info | The command line has arguments; the satellite takes none. The satellite exits. |
-| `invalid_configuration` | info | The configuration was refused and the satellite exits with code `2`. `variable` names the environment variable and `condition` is `missing` (unset or empty) or `invalid` (a value the satellite does not accept, such as a wake word model that is not in the models folder). Values are never logged. |
+| `invalid_configuration` | info | The configuration was refused and the satellite exits with code `2`. `variable` names the environment variable and `condition` is `missing` (unset or empty) or `invalid` (a value the satellite does not accept, such as a wake word that the keyword spotting model's vocabulary cannot represent). Values are never logged. |
 | `satellite_voice_unavailable` | info | The backend answered a voice turn in text, because voice is disabled. The satellite plays the error tone instead and goes back to the wake word. |
 | `satellite_failure` | error | An interaction failed. The satellite plays the error tone and goes back to the wake word. |
 | `satellite_error_tone_failed` | error | The error tone could not be played. The satellite goes back to the wake word anyway. |
@@ -63,3 +67,5 @@ If the backend cannot start, it writes one `server_startup_failed` event (level 
 | `satellite_startup_failed` | error | The satellite could not start. `err.message` names the step: `Wake word model could not be loaded`, `Voice activity model could not be loaded` or `Microphone could not be started`. The satellite also prints `Unable to start Ambrogio satellite.` to standard error and exits with code `1`. |
 | `satellite_process_failed` | error | After `SIGINT` or `SIGTERM`, a resource could not be released. `err` names it. The satellite exits with code `1`. |
 | `satellite_shutdown_timeout` | error | After `SIGINT` or `SIGTERM`, the orderly shutdown did not finish within `timeoutMs` (5000) milliseconds, for example because an audio device did not close. `err` lists the failures seen so far, if any. The satellite exits with code `1`. A second signal does not restart the wait. |
+
+The speech library of the satellite, sherpa-onnx, can write its own lines to standard error. They are not JSON and start with the path of one of its source files, such as `/shared/sherpa-onnx/`. They are not events of the satellite.

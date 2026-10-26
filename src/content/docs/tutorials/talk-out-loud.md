@@ -14,17 +14,17 @@ It takes about 20 minutes.
 - The backend from the first tutorial, running with `compose.example.yaml`.
 - A microphone and a speaker (or headphones) connected to the computer.
 - Node.js 24 or later.
-- The ALSA and OpenMP runtime libraries. On Debian and Ubuntu:
+- The ALSA runtime library. On Debian and Ubuntu:
 
   ```bash
-  sudo apt install libasound2 libgomp1
+  sudo apt install libasound2
   ```
 
-  On recent Ubuntu releases the first package is called `libasound2t64`.
+  On recent Ubuntu releases the package is called `libasound2t64`.
 
 ## Check voice in the backend
 
-The backend Compose example from the first tutorial already enables voice with `AMBROGIO_VOICE_LANGUAGES`. Its English profile uses a Piper voice and a Vosk model included in the image. Check that the backend still answers:
+The backend Compose example from the first tutorial already enables voice with `AMBROGIO_VOICE_LANGUAGES`. Its English profile uses a Piper voice and the Nemotron speech recognition model included in the image. Check that the backend still answers:
 
 ```bash
 curl -s http://localhost:3000/api/v1/conversations
@@ -65,12 +65,12 @@ It is now listening for the wake word, and nothing you say leaves the computer u
 
 ## Ask a question
 
-1. Say **"Hey Jarvis"**.
+1. Say **"Alexa"**.
 2. Wait for the short beep. It means the backend is ready to listen.
 3. Ask: *"Tell me a fun fact about cats."*
 4. Stop talking. After a short pause, well under a second, the satellite treats your question as finished.
 
-A moment later Ambrogio answers out loud. When it has finished, the satellite goes back to waiting for "Hey Jarvis".
+A moment later Ambrogio answers out loud. When it has finished, the satellite goes back to waiting for "Alexa".
 
 Now ask something that invites a question back, such as *"Help me choose a film for tonight."* If the answer ends with a question for you, the beep sounds again. Answer straight away, without the wake word. If you stay silent for 15 seconds, the satellite stops waiting and goes back to the wake word.
 

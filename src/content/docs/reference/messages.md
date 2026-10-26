@@ -18,7 +18,7 @@ Sent with `turn.rejected` when a turn is not accepted. The turn is not stored.
 | `occupied` | Un altro turno è in corso. | Another turn is in progress. | That conversation is already answering another turn. |
 | `unavailable` | Servizio temporaneamente non disponibile. | Service temporarily unavailable. | The server is stopping, the database refused the turn, or input is disabled after a storage fault (until restart). |
 | `too_large` | Richiesta troppo grande. | Request too large. | Text over 64 KiB or audio over 60 seconds. |
-| `transcription_failed` | Non ho capito la richiesta. | I didn't understand the request. | Speech recognition returned nothing usable. |
+| `transcription_failed` | Non ho capito la richiesta. | I didn't understand the request. | Speech recognition failed or returned nothing usable. |
 | `audio_unavailable` | La voce non è disponibile. | Voice is not available. | The turn uses audio but voice is disabled. Always sent as text. |
 | `failure` | Non riesco a completare la risposta. | I can't complete the response. | Unexpected fault before the turn was accepted. |
 
