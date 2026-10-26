@@ -21,7 +21,7 @@ If people open the chat over HTTPS, the backend address must be HTTPS too: brows
 The image is published for `amd64` and `arm64`:
 
 ```bash
-docker pull ghcr.io/ambrogio-app/ambrogio-web:v0.3.0
+docker pull ghcr.io/ambrogio-app/ambrogio-web:v0.3.1
 ```
 
 ## 2. Write `config.json`
@@ -53,7 +53,7 @@ The entry is needed even when the chat and the backend share the same address be
 docker run -d --name ambrogio-web --restart unless-stopped \
   -p 8080:8080 \
   -v /srv/ambrogio-web/config.json:/usr/share/nginx/html/config.json:ro \
-  ghcr.io/ambrogio-app/ambrogio-web:v0.3.0
+  ghcr.io/ambrogio-app/ambrogio-web:v0.3.1
 ```
 
 The container listens on port 8080 as an unprivileged user. With Docker Compose, add a service next to the backend:
@@ -61,7 +61,7 @@ The container listens on port 8080 as an unprivileged user. With Docker Compose,
 ```yaml title="compose.yaml"
 services:
   ambrogio-web:
-    image: ghcr.io/ambrogio-app/ambrogio-web:v0.3.0
+    image: ghcr.io/ambrogio-app/ambrogio-web:v0.3.1
     restart: unless-stopped
     ports:
       - "8080:8080"
