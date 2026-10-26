@@ -39,7 +39,7 @@ flowchart LR
 
 - the *conversation archive*, a SQLite file with every conversation;
 - the *agents*: an orchestrator that picks who answers, and specialised agents that answer, each with its own instructions and model;
-- *speech recognition* with a Whisper model and *speech synthesis* with Piper voices or a Kokoro model, both run by sherpa-onnx inside the backend process, without any cloud speech service;
+- *speech recognition* with a NeMo transducer model such as Parakeet, or a Whisper model, and *speech synthesis* with Piper voices or a Kokoro model, both run by sherpa-onnx inside the backend process, without any cloud speech service;
 - the *public interface*: two HTTP endpoints for reading conversations and a WebSocket session for talking.
 
 **The terminal client** (`ambrogio-cli`) is a chat window for a terminal. It sends and receives text.

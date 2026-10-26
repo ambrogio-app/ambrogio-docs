@@ -21,9 +21,9 @@ sidebar:
 | Conversations per list page | `AMBROGIO_LIST_PAGE_SIZE` (20), at most `AMBROGIO_MAX_LIST_PAGE_SIZE` (100) | yes | See [Backend configuration](../backend-configuration/#conversations). |
 | Speech synthesis threads | 4, or fewer if the CPU has fewer | no | |
 | Speech recognition threads | 2, or fewer if the CPU has fewer | no | |
-| Audio decoded by Whisper at a time | windows of at most 30 seconds | no | The request is split into windows and the texts are joined with a space. A word spoken across a window boundary is split between the two. |
+| Audio decoded at a time | with `nemo-transducer`, the whole request; with `whisper`, windows of at most 30 seconds | no | With `whisper` only, the request is split into windows and the texts are joined with a space. A word spoken across a window boundary is split between the two. |
 
-Speech recognition runs when the client ends the request with `input.end`, so each voice turn includes the time Whisper needs to decode the whole request. There is one recognizer: requests that end at the same time are decoded one after another, in the order they ended.
+Speech recognition runs when the client ends the request with `input.end`, so each voice turn includes the time the speech recognition model needs to decode the whole request. There is one recognizer: requests that end at the same time are decoded one after another, in the order they ended.
 
 Turns are never queued and never retried automatically.
 

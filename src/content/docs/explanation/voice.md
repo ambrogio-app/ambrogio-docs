@@ -15,7 +15,7 @@ flowchart LR
         SPK[Speaker]
     end
     subgraph back[Backend]
-        STT[Whisper<br/>speech to text]
+        STT[Parakeet or Whisper<br/>speech to text]
         AG[Agents]
         TTS[Piper or Kokoro voice<br/>text to speech]
     end
@@ -40,13 +40,13 @@ The wake word is plain text, not a model trained for one word. The satellite spl
 
 ## On the backend
 
-**Recognition after you stop.** The backend keeps your audio in memory as it arrives and passes it to Whisper once the satellite says you have finished. Whisper reads the whole request, in pieces of at most 30 seconds, so the time it takes is added to every voice turn. One multilingual model serves both Italian and English. The transcription becomes the text of the turn, exactly as if you had typed it. If it comes out empty, the turn is refused with "I didn't understand the request."
+**Recognition after you stop.** The backend keeps your audio in memory as it arrives and passes it to the speech recognition model once the satellite says you have finished. The model reads the whole request, so the time it takes is added to every voice turn. The bundled model, Parakeet, reads it in one go and recognises by itself whether you spoke Italian or English, so one model serves both languages. A Whisper model, which you can mount instead, transcribes in the language of the profile and reads the request in pieces of at most 30 seconds. Parakeet was chosen over Whisper base and Whisper small because, in comparison tests on Italian speech, it was more accurate than both and faster than Whisper base. Which model suits your hardware is your choice. The transcription becomes the text of the turn, exactly as if you had typed it. If it comes out empty, the turn is refused with "I didn't understand the request."
 
 **Speaking while it thinks.** The answer is spoken a sentence at a time, as soon as each sentence is complete, instead of waiting for the whole text. Before speaking, the backend strips Markdown symbols such as asterisks, link addresses and table bars, so the voice does not read them out. The stored text keeps its formatting.
 
 **One voice for the house.** The backend loads one voice at startup. All satellites speak with it. When several satellites are answering at once, their sentences are synthesised one after another, because the voice engine handles one sentence at a time.
 
-**Two kinds of voice.** The backend speaks with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx), which runs either a Piper voice or a Kokoro model inside the backend process. The image includes Italian and English Piper voices and one multilingual Kokoro model. It also includes one multilingual Whisper model for recognition in both languages. `AMBROGIO_LANGUAGE` selects the matching voice profile, whose paths can point to bundled or mounted models. The example configuration chooses Piper because it runs fast enough on a low-power mini PC. Kokoro sounds more natural but needs several times more computing power: on a 4-core Celeron N5095 it is slower than speech itself, so answers would start late and stop between sentences. Both use espeak-ng to turn text into sounds in the language of the voice.
+**Two kinds of voice.** The backend speaks with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx), which runs either a Piper voice or a Kokoro model inside the backend process. The image includes Italian and English Piper voices and one multilingual Kokoro model. It also includes one multilingual Parakeet model for recognition in both languages. `AMBROGIO_LANGUAGE` selects the matching voice profile, whose paths can point to bundled or mounted models. The example configuration chooses Piper because it runs fast enough on a low-power mini PC. Kokoro sounds more natural but needs several times more computing power: on a 4-core Celeron N5095 it is slower than speech itself, so answers would start late and stop between sentences. Both use espeak-ng to turn text into sounds in the language of the voice.
 
 **One speech engine.** The satellite and the backend run all their speech models with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx): wake word, speech detection, recognition and synthesis. One engine means fewer native libraries, smaller images and fewer combinations to test. A model of a family that Ambrogio supports can be swapped with files and configuration alone; a new family needs a change to the code.
 
