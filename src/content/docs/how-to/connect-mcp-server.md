@@ -76,10 +76,10 @@ Some servers offer many tools, and the description of every tool is sent to the 
 }
 ```
 
-Take the names from the server's documentation. If one is wrong, the backend does not start and says which agent to check.
+Take the names from the server's documentation. If one is wrong, the agent stays unavailable and the log says which agent and which tool to check.
 
 ## Restart and check
 
-Recreate the backend with `docker compose -f compose.example.yaml up -d`. It connects to every MCP server at startup and refuses to start if one of them fails. If it does not start, the log contains `Agent MCP connection failed: <name>`: test the URL and credentials from the backend host. `Missing environment variable <NAME> for agent <name>` means that a variable named in the file is not set in the backend container. `Agent MCP tool unavailable: <name>` means that a name in `mcp.tools` is not one of the server's tools: check its spelling.
+Recreate the backend with `docker compose -f compose.example.yaml up -d`. Once it is listening, it connects once to every MCP server. If the backend does not start, `Missing environment variable <NAME> for agent <name>` means that a variable named in the file is not set in the backend container. If an agent does not answer, look for `agent_mcp_unavailable` in the log: with `reason` `connection_failed`, test the URL and credentials from the backend host; with `tool_unavailable`, the name in `tool` is not one of the server's tools, so check its spelling. Restart the backend after the fix.
 
 [Agent configuration](../../reference/agent-configuration/) lists every field.

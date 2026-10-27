@@ -50,6 +50,7 @@ export default defineConfig({
 								{ slug: 'how-to/add-agent' },
 								{ slug: 'how-to/connect-home-assistant' },
 								{ slug: 'how-to/connect-mcp-server' },
+								{ slug: 'how-to/search-past-conversations' },
 							],
 						},
 						{

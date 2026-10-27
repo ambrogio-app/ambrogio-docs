@@ -35,13 +35,24 @@ Look at `err.message` and find it in this table.
 | `Missing environment variable <NAME> for agent <id>` | The variable named by `apiKeyEnv`, `tokenEnv` or `clientSecretEnv` in that agent's file is not set in the backend environment. In Docker, add it to the service's `environment` section. |
 | `Invalid agent configuration: <id>` | That agent's file. Common mistakes: invalid JSON, a field the backend does not know (a literal `apiKey`, `token` or `clientSecret` included: name the variable with `apiKeyEnv`, `tokenEnv` or `clientSecretEnv` instead), a variable name that is not uppercase letters, digits and underscores, `description` missing (or present in `orchestrator.json`), `maxToolCalls` missing with `mcp` or present without it, `provider` not among `mistral`, `openai`, `anthropic`, `google` and `openai-compatible`, `baseURL` missing or not an `http(s)://` address with `openai-compatible` or present with another provider, an `mcp.url` that is not `http(s)://`, an `mcp.tools` that is empty, not an array or with a repeated name. |
 | `Invalid agent options: <id>` | `llm.options` may contain only `temperature` (0 or more) and `max_tokens` (1 or more). |
-| `Agent MCP connection failed: <id>` | The backend could not connect to that agent's MCP server or list its tools. Test `mcp.url` from the backend host (in Docker, `localhost` is the container), and check the token or OAuth settings. |
-| `Agent MCP tool unavailable: <id>` | A name in that agent's `mcp.tools` is not among the tools of its MCP server. Names are case-sensitive and must be written as the server declares them. They can change when the server is updated: Home Assistant 2025.12.5 declared `HassTurnOn` and `GetLiveContext`, Home Assistant 2026.10.4 declares `intent__HassTurnOn` and `homeassistant__GetLiveContext`. |
 | `HTTP listener could not start` | The port is already in use, or `AMBROGIO_HTTP_HOST` is not an address of this machine. |
 
 For errors that come from outside Ambrogio (a library, the network, the operating system), the line shows only the step that failed, not the original message, so no secret can end up in the log.
 
 [Backend configuration](../../reference/backend-configuration/) and [Agent configuration](../../reference/agent-configuration/) list every rule.
+
+## An agent with an MCP server does not work
+
+The backend starts without waiting for MCP servers. Right after it starts listening, it connects once to the MCP server of each agent that has one. If that attempt fails, the agent stays unavailable until the backend restarts, and the log has one `agent_mcp_unavailable` line for it. The other agents keep working. A request that the orchestrator gives to an unavailable agent gets the standard error answer, "I can't complete the response.", and the log has `conversation_reply_failed` with the cause `Agent unavailable: <id>`.
+
+The `reason` field of `agent_mcp_unavailable` says what went wrong:
+
+| `reason` | Cause |
+|---|---|
+| `connection_failed` | The backend could not connect to the agent's MCP server or list its tools or prompts. Test `mcp.url` from the backend host (in Docker, `localhost` is the container), and check the token or OAuth settings. |
+| `tool_unavailable` | The name in the `tool` field is in the agent's `mcp.tools` but not among the tools of its MCP server. Names are case-sensitive and must be written as the server declares them. They can change when the server is updated: Home Assistant 2025.12.5 declared `HassTurnOn` and `GetLiveContext`, Home Assistant 2026.10.4 declares `intent__HassTurnOn` and `homeassistant__GetLiveContext`. |
+
+The backend does not try again. After fixing the cause, or once the MCP server is reachable again, restart the backend.
 
 ## The terminal client cannot connect
 

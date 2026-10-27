@@ -113,7 +113,7 @@ Requests to the model are not retried. For the orchestrator, `mistral-medium-lat
 
 No other field is allowed in `mcp`, `transport` included. Local (stdio) servers and the older HTTP+SSE transport are not supported.
 
-The backend connects to the server and lists its tools at startup. If the server declares prompts, it also lists the prompts that have no required arguments. If the connection or either list fails, the backend does not start. If a name in `tools` is not among the server's tools, the backend does not start either, with `Agent MCP tool unavailable: <id>`.
+The backend connects to the server once, right after it starts listening, without delaying the conversations, and lists its tools. If the server declares prompts, it also lists the prompts that have no required arguments. If the connection or either list fails, or a name in `tools` is not among the server's tools, the agent stays unavailable until the backend restarts and the log has an `agent_mcp_unavailable` line; the backend and the other agents keep working, and a request given to that agent gets the standard error answer. A request given to the agent while it is still connecting waits for the connection.
 
 | Behaviour | Value |
 |---|---|

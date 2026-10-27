@@ -55,7 +55,7 @@ docker compose -f compose.example.yaml up -d
 
 ## 5. Try it
 
-The backend connects to Home Assistant at startup and asks which tools and prompts it offers. At every request it reads Home Assistant's prompt again: it tells the model how to use the tools and lists the areas and devices exposed to Assist. A device you expose or rename in Home Assistant works from the next request, without restarting the backend. If Home Assistant cannot be reached, or the token is wrong, the backend does not start, and its log shows `"event":"server_startup_failed"` with the message `Agent MCP connection failed: home-assistant`.
+Once the backend is listening, it connects to Home Assistant and asks which tools and prompts it offers. At every request it reads Home Assistant's prompt again: it tells the model how to use the tools and lists the areas and devices exposed to Assist. A device you expose or rename in Home Assistant works from the next request, without restarting the backend. If Home Assistant cannot be reached at that moment, or the token is wrong, the backend still starts but the `home-assistant` agent stays unavailable until the backend restarts: its log shows `"event":"agent_mcp_unavailable"` with `"agent":"home-assistant"`, and requests for the home get the standard error answer. Start Home Assistant before the backend, or restart the backend once Home Assistant is up.
 
 Then ask: *"Which lights are on?"*, followed by *"Turn off the kitchen one."* and *"Turn off all the lights."*. A question such as *"Is the bedroom light on?"* only reads the state; it does not change any device.
 

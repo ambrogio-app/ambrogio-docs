@@ -38,9 +38,11 @@ The backend logs from level `info`: the timing of each answered voice turn, warn
 | `http.unexpected_failure` | An HTTP request failed with a server error, including a failed read of the conversation list or of a conversation through HTTP API `v1`. |
 | `conversation_turn_admission_failed` | A turn could not be stored when it arrived. |
 | `conversation_reply_check_failed` | Level `warn`. Deciding whether an answer with a question expects a reply failed; a question mark at the end of the answer decided instead. `err` has the type and message of the failure, without conversation texts. |
-| `conversation_reply_failed` | Producing an answer failed: model error, 30-second limit, tool limit or invalid agent choice. |
+| `conversation_reply_failed` | Producing an answer failed: model error, 30-second limit, tool limit, invalid agent choice, or a chosen agent whose MCP server is unavailable (cause `Agent unavailable: <id>`). |
 | `conversation_turn_completion_failed` | The outcome of a turn could not be stored. |
 | `conversation_archive_connection_failed` | An idle connection to the database of the archive failed, for example because PostgreSQL restarted. The message is `Conversation archive connection failed`. The backend keeps running and opens new connections when it needs them; an operation that fails because the database does not answer is reported by its own event. |
+| `agent_mcp_unavailable` | Level `error`. The single connection attempt to the MCP server of an agent failed, after the backend started listening. `agent` is the agent; `reason` is `connection_failed` when the connection or the list of tools or prompts failed, or `tool_unavailable` when a name of `mcp.tools` is not among the server's tools, named in `tool`. The message is `Agent MCP unavailable`. The agent stays unavailable until the backend restarts; the other agents keep working. See [Troubleshooting](../../how-to/troubleshoot/#an-agent-with-an-mcp-server-does-not-work). |
+| `conversation_memory_search_failed` | Level `error`. A search of the Memory agent in the past conversations failed in the archive; the agent receives `Conversation search failed`. The words searched are not logged. |
 | `conversation_session_delivery_failed` | A message could not be delivered to a client. |
 | `conversation_speech_synthesis_failed` | Speech synthesis failed. |
 | `server_shutdown_failed` | After `SIGTERM` or `SIGINT`, a resource could not be closed. `err` names it. The backend exits with code `1`. |
