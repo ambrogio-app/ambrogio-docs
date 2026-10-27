@@ -10,6 +10,7 @@ Use this when you want to run the backend directly on a Linux host, for example 
 ## Before you start
 
 - Linux with Node.js 24 or later and `pnpm`.
+- A PostgreSQL 18 database for the conversations, with a user that can create tables in it.
 - For voice, an x86_64 CPU with AVX2: without it, speech recognition falls behind and the text of a voice turn arrives late.
 
 ## Build
@@ -23,11 +24,11 @@ pnpm build
 
 ## Configure
 
-Create a folder for the agent files and one for the archive, and copy the example agents:
+Create a folder for the agent files and copy the example agents:
 
 ```bash
-sudo mkdir -p /etc/ambrogio/agents /var/lib/ambrogio
-sudo chown -R "$USER" /etc/ambrogio /var/lib/ambrogio
+sudo mkdir -p /etc/ambrogio/agents
+sudo chown -R "$USER" /etc/ambrogio
 cp examples/agents/orchestrator.json examples/agents/generic.json /etc/ambrogio/agents/
 ```
 
@@ -38,11 +39,11 @@ export AMBROGIO_ENV=production
 export AMBROGIO_HTTP_HOST=127.0.0.1
 export AMBROGIO_HTTP_PORT=3000
 export AMBROGIO_PUBLIC_HTTPS=false
-export AMBROGIO_ARCHIVE_PATH=/var/lib/ambrogio/conversations.sqlite
+export AMBROGIO_DATABASE_URL=postgres://ambrogio:<database-password>@127.0.0.1:5432/ambrogio
 export MISTRAL_API_KEY=<your-api-key>
 ```
 
-`AMBROGIO_HTTP_HOST=127.0.0.1` accepts connections only from the same machine. Use `0.0.0.0` or the host LAN address for other devices. To keep the agent files elsewhere, set `AMBROGIO_AGENTS_DIR`. [Backend configuration](../../reference/backend-configuration/) lists every variable and its default.
+`AMBROGIO_DATABASE_URL` points to a PostgreSQL 18 database that the backend can create tables in; the backend connects without TLS, so run the database on the same machine or on your internal network. `AMBROGIO_HTTP_HOST=127.0.0.1` accepts connections only from the same machine. Use `0.0.0.0` or the host LAN address for other devices. To keep the agent files elsewhere, set `AMBROGIO_AGENTS_DIR`. [Backend configuration](../../reference/backend-configuration/) lists every variable and its default.
 
 ## Start
 

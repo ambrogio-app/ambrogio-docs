@@ -40,6 +40,7 @@ The backend logs from level `info`: the timing of each answered voice turn, warn
 | `conversation_reply_check_failed` | Level `warn`. Deciding whether an answer with a question expects a reply failed; a question mark at the end of the answer decided instead. `err` has the type and message of the failure, without conversation texts. |
 | `conversation_reply_failed` | Producing an answer failed: model error, 30-second limit, tool limit or invalid agent choice. |
 | `conversation_turn_completion_failed` | The outcome of a turn could not be stored. |
+| `conversation_archive_connection_failed` | An idle connection to the database of the archive failed, for example because PostgreSQL restarted. The message is `Conversation archive connection failed`. The backend keeps running and opens new connections when it needs them; an operation that fails because the database does not answer is reported by its own event. |
 | `conversation_session_delivery_failed` | A message could not be delivered to a client. |
 | `conversation_speech_synthesis_failed` | Speech synthesis failed. |
 | `server_shutdown_failed` | After `SIGTERM` or `SIGINT`, a resource could not be closed. `err` names it. The backend exits with code `1`. |

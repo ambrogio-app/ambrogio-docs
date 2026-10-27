@@ -31,6 +31,24 @@ Release list checked on 26 October 2026. Ambrogio is in preview, and configurati
 
 All four current releases work together, and the backend works with every satellite release, since `ambrogio.v1` has not changed. Backend `v0.12.0` and satellite `v0.8.0` change their own voice configuration: see [Upgrading to backend `v0.12.0` and satellite `v0.8.0`](#upgrading-to-backend-v0120-and-satellite-v080). Backend `v0.12.1` and `v0.12.2` change only the rules added to the instructions of agents with tools: every requested action is carried out, and from `v0.12.2` the agent answers only after its tool calls. Their configuration is the same as `v0.12.0`. Backend `v0.13.0` keeps the tool calls of each agent in the conversation archive, with a migration applied at startup, and shows them only to that agent in later turns; it sends the models only the latest [`AMBROGIO_HISTORY_TURNS`](../backend-configuration/#conversations) turns, a new optional variable, and asks an agent once more when its answer has no words instead of storing an empty answer. Its configuration is otherwise the same as `v0.12.0`; back up the archive before upgrading, as for every release with a migration. Backend `v0.14.0` removes the final tool `finish`: agents call tools only when they need them, and the orchestrator's model decides whether an answer with a question expects a reply. Its configuration is the same as `v0.13.0`, but an agent with tools no longer needs a model that accepts a required tool call. Backend `v0.15.0` shortens the rules added to agents with tools, drops `announcementMs` from `conversation_reply_timing`, and no longer accepts the client message `client.result`, which no release of the backend ever asked for; terminal client `v0.3.1`, web chat `v0.3.1` and satellite `v0.8.1` no longer send it, and earlier clients only sent it in answer to server messages that no backend sends, so every client release still works with it. These three releases change nothing else. The terminal client `v0.2.0` and the web chat `v0.2.0` read conversations through endpoints without a version in the path, `/api/conversations`, which only backend `v0.10.1` and earlier answer: backend `v0.11.0` no longer serves them, so upgrade those clients to `v0.3.0` or later before you upgrade the backend to `v0.11.0`. Backend `v0.10.0` was tagged but not published: use `v0.10.1`. The terminal client `v0.3.0` and the web chat `v0.3.0` need a backend that offers HTTP API `v1`, that is `v0.10.1` or later. Each client release is tested in CI against the backend under development, through the backend's test entry point.
 
+## Upgrading to backend `v0.16.0`
+
+The backend release after `v0.15.0`, `v0.16.0`, not yet published, keeps the conversation archive in a PostgreSQL 18 database that runs as a separate service, instead of a SQLite file. The conversation protocol `ambrogio.v1` and HTTP API `v1` do not change, so every client release that works with `v0.15.0` works with it.
+
+| Before | From backend `v0.16.0` |
+|---|---|
+| `AMBROGIO_ARCHIVE_PATH`, the path of the SQLite file | `AMBROGIO_DATABASE_URL`, the URL of a PostgreSQL database, required in every environment. `AMBROGIO_ARCHIVE_PATH` is no longer read. See [Backend configuration](../backend-configuration/#conversations). |
+| One backend container with a volume for the SQLite file | `compose.example.yaml` adds a `database` service with the image `pgvector/pgvector:pg18` and its own volume, and needs `AMBROGIO_DATABASE_PASSWORD`. |
+| Back up by copying the SQLite file | Back up with `pg_dump`. See [Back up and upgrade](../../how-to/back-up-and-upgrade/). |
+| No archive connection event | `conversation_archive_connection_failed` when an idle connection to the database fails. See [Logs](../logs/). |
+
+The SQLite archive is not imported: the new backend starts with an empty archive, and earlier conversations stay only in the old file. To upgrade:
+
+1. Keep a copy of the old SQLite file if you want to keep the earlier conversations outside Ambrogio.
+2. Take the new `compose.example.yaml`, or add a PostgreSQL 18 service to your own deployment, and set `AMBROGIO_DATABASE_PASSWORD` in `.env`.
+3. Replace `AMBROGIO_ARCHIVE_PATH` with `AMBROGIO_DATABASE_URL` in the backend environment and remove the volume of the SQLite file.
+4. Set `AMBROGIO_VERSION` to `v0.16.0` and start with `docker compose -f compose.example.yaml up -d`.
+
 ## Upgrading to backend `v0.12.0` and satellite `v0.8.0`
 
 Backend `v0.12.0` and satellite `v0.8.0` replace their speech engines with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx): a streaming transducer model, Nemotron 3.5 ASR streaming 0.6B, instead of Vosk for speech recognition in the backend, Piper as the only kind of voice, and sherpa-onnx keyword spotting and Silero VAD instead of openWakeWord in the satellite. The voice configuration of both changes in a way that is not compatible with earlier releases. The conversation protocol `ambrogio.v1` and HTTP API `v1` do not change.
@@ -96,6 +114,7 @@ Ambrogio depends on these versions of services, protocols and models it does not
 |---|---|---|
 | Home Assistant, **Model Context Protocol Server** integration | 2025.11 or later: the first release that serves the Streamable HTTP endpoint `/api/mcp`. Earlier releases offer only the SSE endpoint, which Ambrogio does not use. | Backend, [Home Assistant connector](../../how-to/connect-home-assistant/) |
 | Model Context Protocol | revision `2025-03-26` or later. The backend's client proposes `2025-11-25` and accepts `2025-06-18` and `2025-03-26` from the server. | Backend, MCP connectors |
+| PostgreSQL | 18. The examples use the image `pgvector/pgvector:pg18`, which adds the pgvector extension; the archive uses no extension. | Backend, from `v0.16.0` |
 | LLM provider APIs | Mistral AI `v1`, OpenAI `v1` (Responses), Anthropic Messages with `anthropic-version: 2023-06-01`, Gemini API `v1beta`, or a Chat Completions API compatible with OpenAI | Backend, see [Agent configuration](../agent-configuration/) |
 | Speech recognition and synthesis models: Nemotron 3.5 ASR streaming 0.6B from the sherpa-onnx `asr-models` release, Piper voices from the `tts-models` release | the archives listed in [Bundled models and licenses](../bundled-models/#backend), fixed by SHA-256 | Backend image |
 | Keyword spotting model zipformer GigaSpeech 3.3M, from the sherpa-onnx `kws-models` release, and Silero VAD, from the `asr-models` release | the files listed in [Bundled models and licenses](../bundled-models/#satellite), fixed by SHA-256 | Satellite |

@@ -19,7 +19,7 @@ cd ambrogio-backend
 git checkout <version>
 ```
 
-`compose.example.yaml` sets the variables production requires, mounts the agent files `examples/agents/orchestrator.json` and `examples/agents/generic.json` in `/etc/ambrogio/agents/` and stores the conversation archive in a Docker volume. Every other variable keeps the default the backend applies. The backend reads its configuration once at startup. See [Backend configuration](../../reference/backend-configuration/) and [Agent configuration](../../reference/agent-configuration/).
+`compose.example.yaml` sets the variables production requires, mounts the agent files `examples/agents/orchestrator.json` and `examples/agents/generic.json` in `/etc/ambrogio/agents/` and starts a `database` service with PostgreSQL 18 (image `pgvector/pgvector:pg18`), which keeps the conversation archive in a Docker volume. The backend starts after the database accepts connections. Every other variable keeps the default the backend applies. The backend reads its configuration once at startup. See [Backend configuration](../../reference/backend-configuration/) and [Agent configuration](../../reference/agent-configuration/).
 
 ## 2. Set the environment
 
@@ -27,10 +27,13 @@ Create a local `.env` beside `compose.example.yaml`:
 
 ```dotenv
 AMBROGIO_VERSION=<version>
+AMBROGIO_DATABASE_PASSWORD=<database-password>
 MISTRAL_API_KEY=<your-api-key>
 ```
 
-Compose reads `.env` only to fill in `${AMBROGIO_VERSION}` and `${MISTRAL_API_KEY}` in the Compose file; the backend itself never reads `.env`. Keep `.env` private. To change a setting, add its variable to the `environment` section of the service, for example `AMBROGIO_LANGUAGE: it` or `AMBROGIO_TIME_ZONE: Europe/Rome`. To use another provider, change `llm` in the agent files and pass the variable named by their `apiKeyEnv`.
+Use only letters and digits in the database password, for example the output of `openssl rand -hex 24`: it is part of the `AMBROGIO_DATABASE_URL` that Compose builds for the backend.
+
+Compose reads `.env` only to fill in `${AMBROGIO_VERSION}`, `${AMBROGIO_DATABASE_PASSWORD}` and `${MISTRAL_API_KEY}` in the Compose file; the backend itself never reads `.env`. Keep `.env` private. To change a setting, add its variable to the `environment` section of the service, for example `AMBROGIO_LANGUAGE: it` or `AMBROGIO_TIME_ZONE: Europe/Rome`. To use another provider, change `llm` in the agent files and pass the variable named by their `apiKeyEnv`.
 
 ## 3. Start and check
 

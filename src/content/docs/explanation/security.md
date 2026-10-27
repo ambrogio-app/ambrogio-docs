@@ -45,7 +45,7 @@ If you configure an MCP server outside your network, the agent's requests to it 
 
 ## What is stored
 
-The backend stores conversations as text, indefinitely, in one SQLite file. It does not store audio. There is no built-in way to delete a conversation yet; the archive is yours to manage.
+The backend stores conversations as text, indefinitely, in its PostgreSQL database. The connection to the database has no TLS, so keep the database on the backend machine or on your internal network, and never publish its port. It does not store audio. There is no built-in way to delete a conversation yet; the archive is yours to manage.
 
 Logs record that something happened, never what was said: no conversation text, no audio, no credentials. See [Logs](../../reference/logs/).
 

@@ -12,7 +12,7 @@ The backend reads its configuration once, at startup, from environment variables
 - `AMBROGIO_ENV` is required in every environment: `development`, `test` or `production`. There is no default.
 - A variable set to an empty string counts as unset.
 - A default applies either in every environment or only in `development`. In `test` and `production`, a variable whose default is development-only is required.
-- Configuration errors name the variable and the condition, for example `Missing environment variable AMBROGIO_ARCHIVE_PATH` or `Invalid environment variable AMBROGIO_HTTP_PORT: expected an integer from 1 to 65535`.
+- Configuration errors name the variable and the condition, for example `Missing environment variable AMBROGIO_DATABASE_URL` or `Invalid environment variable AMBROGIO_HTTP_PORT: expected an integer from 1 to 65535`.
 - A local `.env` file is read only by the development command `pnpm dev`, which runs `node --env-file=.env apps/server/dist/main.js`. Variables already set in the shell take precedence over the file. The backend never reads `.env` by itself, and the Docker image contains no `.env`. See [Run the backend from source](../../how-to/run-backend-from-source/).
 
 ## Runtime environment
@@ -40,7 +40,7 @@ The backend reads its configuration once, at startup, from environment variables
 
 | Variable | Values | Default | Required in production |
 |---|---|---|---|
-| `AMBROGIO_ARCHIVE_PATH` | Path of the SQLite file that stores conversations. The file is created if it does not exist; its folder must exist and be writable. | none | yes, in every environment |
+| `AMBROGIO_DATABASE_URL` | URL of the PostgreSQL 18 database that stores conversations: `postgres://<user>:<password>@<host>:<port>/<database>`, or `postgresql://`. It needs a host and a database name and accepts no query parameters, such as `?sslmode=`. The backend connects without TLS, so the database belongs on the same machine or on your internal network. The user must be able to create tables: the backend creates and updates them at startup. Error messages and logs never show the URL or the password. Any other form stops the backend with `Invalid environment variable AMBROGIO_DATABASE_URL: expected a PostgreSQL URL without parameters`. | none | yes, in every environment |
 | `AMBROGIO_LANGUAGE` | `en` or `it`: language of the backend's own messages, agent answers and speech models. Any other value stops the backend from starting. | `en`, every environment | no |
 | `AMBROGIO_TIME_ZONE` | IANA time zone of the family, such as `Europe/Rome`. The agents get the current date and time in this zone; see [Current date and time](../agent-configuration/#current-date-and-time). | `UTC`, every environment | no |
 | `AMBROGIO_LIST_PAGE_SIZE` | Positive integer: conversations per page when a client does not ask for a size. | `20`, every environment | no |
@@ -79,7 +79,6 @@ Speech recognition runs while the client sends the audio: a worker thread decode
 | Path | Meaning |
 |---|---|
 | `/etc/ambrogio/agents/` | Default folder of agent files, empty in the image. |
-| `/data/` | Empty folder for the conversation archive, meant to be a mounted volume. |
 | `/opt/ambrogio/models/` | Bundled multilingual Nemotron 3.5 ASR streaming 0.6B model, `sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11`, for Italian and English speech recognition. |
 | `/opt/ambrogio/voices/` | Bundled Italian and English Piper voices. A mount at this path replaces them. |
 
@@ -90,7 +89,7 @@ The backend repository provides:
 | File | Purpose |
 |---|---|
 | `.env.example` | Every variable the backend reads, with empty values except `AMBROGIO_ENV=development`. Copy it to `.env` for development. It repeats no default. |
-| `compose.example.yaml` | A production deployment that sets only the variables production requires, plus the bundled voices for English and Italian. |
+| `compose.example.yaml` | A production deployment that sets only the variables production requires, plus the bundled voices for English and Italian, and a `database` service with PostgreSQL 18 (image `pgvector/pgvector:pg18`, data in a volume on `/var/lib/postgresql`). It needs `AMBROGIO_VERSION`, `AMBROGIO_DATABASE_PASSWORD` and `MISTRAL_API_KEY`. |
 | `examples/agents/*.json` | Example agent files. See [Agent configuration](../agent-configuration/#examples). |
 
 ## Signals

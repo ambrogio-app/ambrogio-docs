@@ -17,7 +17,7 @@ flowchart LR
         subgraph server[Home server]
             B["Backend"]
             W["Web chat<br/>container"]
-            DB[("Conversation<br/>archive")]
+            DB[("Conversation archive<br/>PostgreSQL")]
         end
         HA["Home Assistant<br/>and other MCP servers"]
     end
@@ -37,7 +37,7 @@ flowchart LR
 
 **The backend** (`ambrogio-backend`) runs on a machine that is always on, such as a home server or a NAS with Docker. Inside it:
 
-- the *conversation archive*, a SQLite file with every conversation;
+- the *conversation archive*, with every conversation, kept in a PostgreSQL database that runs beside the backend as a separate service;
 - the *agents*: an orchestrator that picks who answers, and specialised agents that answer, each with its own instructions and model;
 - *speech recognition* while you speak, with a streaming transducer model such as Nemotron, and *speech synthesis* with Piper voices, both run by sherpa-onnx inside the backend process, without any cloud speech service;
 - the *public interface*: two HTTP endpoints for reading conversations and a WebSocket session for talking.
@@ -62,6 +62,10 @@ The programs run on different machines, have different dependencies and change a
 
 What holds them together is the protocol. The backend owns it and the HTTP API; clients use only those public interfaces, and an incompatible change gets a new interface version. [Versions and compatibility](../../reference/versions/) explains how to read that.
 
+## Why PostgreSQL for the archive
+
+The backend keeps conversations in PostgreSQL, a database server that runs beside it, rather than in a file inside the backend. A file would need only one container and could be backed up by copying it, but only one process could use the archive, it has no text search that understands each language, and searching by meaning would need a native extension loaded into the backend. PostgreSQL is an investment in the services that will use the conversation history, such as searching the memory of past conversations with pgvector. The price is a second container in your installation. The example uses the `pgvector/pgvector:pg18` image so that the vector extension is already there when it is needed; the archive does not use it yet.
+
 ## How configuration works
 
 The backend and the satellite are configured the way containers usually are: with environment variables. The code that reads and checks them is part of each program, one module per configurable part, so you set values and never run code of your own. Each program reads its configuration once, when it starts, and refuses to start if a value is missing or wrong, naming the variable but never its value, so a mistake cannot pass silently and a secret cannot end up in a log.
@@ -74,7 +78,7 @@ Every process also declares its environment, `development`, `test` or `productio
 
 Ambrogio is built model-first with [Reqvire](https://reqvire.org/): capabilities, requirements, contracts and verifications are written before the code changes. They form one model spread over the repositories: each repository keeps its part in `system-model/`, and [`ambrogio-model`](https://github.com/ambrogio-app/ambrogio-model) holds the product capabilities, the shared vocabulary and the rules common to all repositories. When this documentation states a limit or a default, it comes from those contracts. If you want to know *why* something behaves as it does, the decisions and their reasons are recorded there; their history is in Git.
 
-Inside, the code follows a ports-and-adapters design: the rules of conversations and turns do not depend on Node.js, SQLite, the model providers or the audio libraries, which are plugged in at the edges. The web chat is organised by feature instead, and each feature keeps its logic apart from its React components, so the protocol handling is tested without a browser.
+Inside, the code follows a ports-and-adapters design: the rules of conversations and turns do not depend on Node.js, PostgreSQL, the model providers or the audio libraries, which are plugged in at the edges. The web chat is organised by feature instead, and each feature keeps its logic apart from its React components, so the protocol handling is tested without a browser.
 
 ## Further reading
 
