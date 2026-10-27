@@ -45,3 +45,7 @@ curl -s http://localhost:3000/api/v1/conversations
 A JSON response with `items` and `nextCursor` shows that the backend is running. Read failures with `docker compose -f compose.example.yaml logs backend` and [Troubleshooting](../troubleshoot/).
 
 The example enables voice in English and Italian with the bundled models. To disable it, remove `AMBROGIO_VOICE_LANGUAGES` and the `AMBROGIO_VOICE_*` variables from the service environment; [Enable voice](../enable-voice/) covers its settings. To add a specialist agent, mount its `.json` file in `/etc/ambrogio/agents/`; see [Add an agent](../add-agent/).
+
+## A complete home installation
+
+The [`ambrogio-homelab-example`](https://github.com/ambrogio-app/ambrogio-homelab-example) repository puts the backend together with a reverse proxy, the web chat, Home Assistant, a weather MCP server, a voice satellite and agents that use them, one Compose file per service. It is an example: it is not updated with every release, and its README names the releases it was written for.
