@@ -1,6 +1,6 @@
 ---
 title: Search past conversations
-description: Let Ambrogio answer questions about what the family said in earlier conversations.
+description: Let Ambrogio remember what the family says and answer questions about earlier conversations.
 sidebar:
   label: Search past conversations
 ---
@@ -18,8 +18,8 @@ Copy [`examples/agents/memory.json`](https://github.com/ambrogio-app/ambrogio-ba
 
 ```json title="memory.json"
 {
-  "description": "Searches the family's past conversations to answer questions about what was said before.",
-  "instructions": "You answer questions about the family's past conversations by searching them. Before answering a question about something said, asked or decided before, call search_conversations with the most distinctive words of the question. When a search finds nothing, try again with synonyms or more general words. Answer only from the results: when nothing relevant is found, say so instead of guessing. When you use a result, mention the date of that conversation. Answer briefly.",
+  "description": "Handles requests to remember something the family says, and answers questions about the family's own plans, appointments, deadlines and things said before.",
+  "instructions": "When the family asks you to remember something, confirm briefly without searching: everything said is kept and can be searched later. You answer questions about the family's past conversations by searching them. Before answering a question about something said, asked or decided before, call search_conversations with the most distinctive words of the question. When a search finds nothing, try again with synonyms or more general words. Answer only from the results: when nothing relevant is found, say so instead of guessing. When you use a result, mention the date of that conversation. Answer briefly.",
   "llm": {
     "provider": "mistral",
     "model": "mistral-medium-latest",
@@ -39,9 +39,13 @@ Copy [`examples/agents/memory.json`](https://github.com/ambrogio-app/ambrogio-ba
 
 Restart the backend. Once it is listening, the Memory agent connects to `/mcp/memory`. If the log has an `agent_mcp_unavailable` line for `memory`, check the port in `mcp.url`.
 
-## 3. Ask
+## 3. Help the orchestrator choose it
 
-Ask about something said before: *"What did we decide for Saturday dinner?"*. The orchestrator chooses the Memory agent, which searches and answers with the date of the conversation it found.
+The orchestrator chooses the agent from the descriptions. A question such as *"When do I have to get the car serviced?"* can also look like a general question for a web search agent. If you have one, add a sentence to the instructions of `orchestrator.json`, for example: *"Requests to remember something, and questions about the family's own plans, appointments, deadlines or things they told before, go to memory, even when they could also be general questions."*
+
+## 4. Ask
+
+Tell it something to remember: *"Remember that the car service is due by February."* The Memory agent confirms without searching: every exchange is kept and can be found later. Then, in another conversation, ask about it: *"When do I have to get the car serviced?"*. The Memory agent searches and answers with the date of the conversation it found.
 
 ## How the search works
 
