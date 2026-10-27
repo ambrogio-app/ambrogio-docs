@@ -44,17 +44,18 @@ The repository includes a Compose example and two example agent files. The Compo
 
 ```dotenv
 AMBROGIO_VERSION=local
+AMBROGIO_DATABASE_PASSWORD=<database-password>
 MISTRAL_API_KEY=<your-api-key>
 ```
 
-Keep `.env` private. Compose uses it to fill in the image version and your API key. Start the backend:
+For the database password, use letters and digits only, for example the output of `openssl rand -hex 24`. Keep `.env` private. Compose uses it to fill in the image version, the database password and your API key. Start the backend and its database:
 
 ```bash
 docker compose -f compose.example.yaml up -d
 curl -s http://localhost:3000/api/v1/conversations
 ```
 
-The response has empty `items` and a `nextCursor`. If it does not, check `docker compose -f compose.example.yaml logs backend` and [Troubleshooting](../../how-to/troubleshoot/). The example also enables voice, using models included in the image.
+The response has empty `items` and a `nextCursor`. If it does not, check `docker compose -f compose.example.yaml logs backend` and [Troubleshooting](../../how-to/troubleshoot/). The example also starts PostgreSQL, where the backend stores conversations, and enables voice, using models included in the image.
 
 ## Install the terminal client
 
@@ -105,7 +106,7 @@ You have:
 
 - built and started the Ambrogio backend with one orchestrator and one agent;
 - talked to it from the terminal client;
-- reopened a conversation that the backend stored in the `conversations` Docker volume.
+- reopened a conversation that the backend stored in PostgreSQL, in the `database` Docker volume.
 
 The backend keeps running in the background. Stop it with `docker compose -f compose.example.yaml stop` and start it again with `docker compose -f compose.example.yaml start`; your conversations survive both.
 

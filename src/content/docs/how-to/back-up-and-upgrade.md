@@ -11,28 +11,30 @@ Everything that matters lives on the backend host:
 
 | What | Where (Docker layout from these guides) |
 |---|---|
-| Conversations | The SQLite file named in `AMBROGIO_ARCHIVE_PATH`, for example `/srv/ambrogio/data/conversations.sqlite` on the host |
+| Conversations | The PostgreSQL database named in `AMBROGIO_DATABASE_URL`; with `compose.example.yaml`, the database `ambrogio` of the `database` service |
 | Agent JSON files, Compose file and private `.env` | Your backend repository checkout |
 | Your own voices or models, if any | `/srv/ambrogio/models/`, `/srv/ambrogio/voices/` |
 
 Satellites and terminal clients store nothing apart from their own configuration.
 
-The `.env` contains API keys or tokens; agent files contain none. Keep backups somewhere private.
+The `.env` contains API keys, tokens and the database password; agent files contain none. Keep backups somewhere private.
 
 ## Back up the conversations
 
-The simplest safe copy is taken with the backend stopped:
+Use `pg_dump`, which produces a consistent copy while the backend runs. With `compose.example.yaml`, from the backend repository:
 
 ```bash
-docker stop --time 15 ambrogio
-cp /srv/ambrogio/data/conversations.sqlite /backup/conversations-$(date +%F).sqlite
-docker start ambrogio
+docker compose -f compose.example.yaml exec -T database \
+  pg_dump --username ambrogio --format custom ambrogio > /backup/conversations-$(date +%F).dump
 ```
 
-To copy without stopping, use SQLite's own backup command, which produces a consistent file while the server runs:
+To restore a copy, stop the backend, then load it into the database and start the backend again:
 
 ```bash
-sqlite3 /srv/ambrogio/data/conversations.sqlite ".backup '/backup/conversations-$(date +%F).sqlite'"
+docker compose -f compose.example.yaml stop backend
+docker compose -f compose.example.yaml exec -T database \
+  pg_restore --username ambrogio --dbname ambrogio --clean --if-exists < /backup/conversations-<date>.dump
+docker compose -f compose.example.yaml start backend
 ```
 
 Audio is never stored, so there are no recordings to back up.
