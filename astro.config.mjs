@@ -88,10 +88,6 @@ export default defineConfig({
 							],
 						},
 						{
-							label: 'Interfaces',
-							items: ['reference/conversation-protocol', 'reference/http-api'],
-						},
-						{
 							label: 'Diagnostics',
 							items: [
 								'reference/messages',
