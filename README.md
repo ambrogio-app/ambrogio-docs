@@ -19,12 +19,12 @@ Pages follow [Diátaxis](https://diataxis.fr/). Each page is one of four kinds, 
 
 | Folder | Kind | Answers |
 |---|---|---|
-| `src/content/docs/tutorials/` | Tutorial | "Teach me": a guided first experience that always works. |
+| `src/content/docs/tutorials/` | Tutorial | "Teach me": a guided path that produces the installation you keep. |
 | `src/content/docs/how-to/` | How-to guide | "Help me do X": steps for someone who already knows the basics. |
 | `src/content/docs/reference/` | Reference | "What exactly is X": fields, defaults, limits, messages. No instructions, no opinions. |
 | `src/content/docs/explanation/` | Explanation | "Why is it like this": architecture, design decisions, trade-offs. |
 
-The sidebar is defined in `astro.config.mjs`.
+The folders name the kind of each page; the sidebar, defined in `astro.config.mjs`, is organised by topic in the order a person installs Ambrogio. Each fact lives in one page and the others link to it. `AGENTS.md` has the full rules.
 
 ## Commands
 

@@ -1,76 +1,89 @@
 ---
 title: Agents and the orchestrator
-description: How Ambrogio decides who answers a request, and why the orchestrator is not allowed to answer itself.
+description: What an agent is, the difference between an agent with and without tools, and how the orchestrator chooses who answers.
 sidebar:
   label: Agents and the orchestrator
 ---
 
-Ambrogio does not send every request to one big assistant. It has a team: an *orchestrator* that decides who should answer, and *specialised agents* that write the answers. You define the team with one JSON file per member.
+An **agent** is a JSON file in the `agents/` folder. It has:
 
-## Two steps for every turn
+- a **description**: what the agent is for;
+- **instructions**: how it answers;
+- an **LLM**: the model that writes its answers;
+- optionally, **tools**: a connection to one service of your home through [MCP](https://modelcontextprotocol.io/).
 
-For each turn the backend:
+The **orchestrator** is a special agent that never answers: for every message it chooses which agent answers. See [The orchestrator](#the-orchestrator).
 
-1. gives the orchestrator the latest turns of the conversation, plus the list of agents with their descriptions, and asks it to name the agent that should answer the last message;
-2. gives that agent the same turns and lets it write the whole answer.
+## An agent without tools
 
-The choice is made again at every turn. A conversation can move from the cooking agent to the Home Assistant agent and back, as the family's questions change.
+It answers from what its LLM knows. Use it for conversation, explanations and advice.
 
-The orchestrator sees which agent gave each earlier answer, marked `[agent: cooking]` and so on, which helps it keep a follow-up question with the agent that handled the topic. The agents themselves see the plain conversation.
+```json title="agents/cooking.json"
+{
+  "description": "Recipes, cooking times and ingredient substitutions.",
+  "instructions": "Give quantities in grams and times in minutes. Keep recipes brief.",
+  "llm": { "provider": "mistral", "model": "mistral-small-latest", "apiKeyEnv": "MISTRAL_API_KEY" }
+}
+```
 
-Both receive only the latest turns, 20 unless you change [`AMBROGIO_HISTORY_TURNS`](../../reference/backend-configuration/#conversations). The agent frameworks we compared, such as Home Assistant, LiveKit Agents, Pipecat and the OpenAI Agents SDK, all limit what they send to the model, because a long conversation makes each answer slower and more expensive and buries the recent turns. A limit by number of turns keeps the recent context of a chat you come back to hours later; a limit by time would start that chat from nothing while the client still shows it. The stored conversation is never cut.
+*"How long do I boil an egg?"* goes to `cooking`, which answers on its own.
 
-## Why the orchestrator never answers
+## An agent with tools
 
-An earlier design let the orchestrator answer simple questions itself and hand over the rest. In tests on a real installation it went wrong in a telling way: asked to "turn it off" after a question about a light, the orchestrator replied "I turned off the bedroom light" without calling Home Assistant. It announced an action that never happened, three times out of three.
+It also has an `mcp` section: the address of a service, here Home Assistant, the variable that holds its token, and the `tools` of that service the agent may use. While answering, it calls those tools to read and change things in your home. `maxToolCalls` limits how many calls it can make for one request.
 
-Now the orchestrator can only pick a name from a closed list. It cannot write text, so it cannot claim to have done anything. If its output is not exactly one of the agent names, the turn fails rather than guessing. The cost is that you always need at least one agent besides the orchestrator, even for small talk.
+```json title="agents/home-assistant.json"
+{
+  "description": "Reads the state of the home's lights, switches and sensors through Home Assistant and turns devices on or off.",
+  "instructions": "Answer briefly. Change a device only when the family asks for a change.",
+  "llm": { "provider": "mistral", "model": "mistral-medium-latest", "apiKeyEnv": "MISTRAL_API_KEY" },
+  "maxToolCalls": 5,
+  "mcp": {
+    "url": "http://homeassistant.local:8123/api/mcp",
+    "auth": { "type": "bearer", "tokenEnv": "HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN" },
+    "tools": ["homeassistant__GetLiveContext", "intent__HassTurnOn"]
+  }
+}
+```
 
-## What makes a good description
+*"Turn on the kitchen light"* goes to `home-assistant`, which reads the devices with `homeassistant__GetLiveContext`, switches the light on with `intent__HassTurnOn`, and only then answers *"I turned on the kitchen light."*
 
-The orchestrator never sees an agent's instructions, only its `description`. The description is a promise to the orchestrator about what the agent can do. Good descriptions:
+Without `tools`, the agent may use every tool the service offers. Listing only the ones it needs makes answers faster and limits what it can do. Tool names are the ones the service declares, and can change with its version: these are those of Home Assistant 2026.10.
 
-- say what the agent is *for*: "Reads and changes the state of lights, switches and sensors";
-- do not overlap with each other: if both the general and the home agent claim "questions about the house", the choice becomes a coin toss;
-- are short. The orchestrator reads all of them at every turn.
+## The difference
 
-## Agents with and without tools
+| | Without tools | With tools |
+|---|---|---|
+| Knows | What its LLM learned | Also the live state of a service |
+| Can act | No | Yes, through the service's tools |
+| Extra fields | none | `mcp`, with its optional `tools`, and `maxToolCalls` |
+| LLM | Any | One that supports tool calling |
 
-An agent without an `mcp` section answers from its model's own knowledge. It is the right choice for conversation, explanations and anything that needs no live data.
+## The orchestrator
 
-An agent with an `mcp` section is connected to one MCP server and can call that server's tools: read a sensor, switch a light, look up a calendar. The backend counts the tool calls in each turn and stops at `maxToolCalls`, so a confused model cannot loop forever. The agent can still write a final answer after its last allowed call.
+The orchestrator is the file `agents/orchestrator.json`, and every installation needs one. It has only instructions and an LLM: no description, because nobody chooses it, and no tools, because it never acts.
 
-An agent with tools answers only after its tool calls, when it knows how the action went: *"I turned off the bedroom light."* An earlier version had the agent say a short sentence before calling its tools, as voice assistants do with a *preamble*. It was removed: the model wrote that sentence before knowing the outcome, and what has been spoken cannot be taken back. It announced *"I cannot find a player called Ambrogio"* before looking for the player, which it then found, and *"I am about to turn off the light"* when Home Assistant had already turned it off. On a fast server the answer comes about two seconds after a light command and three or four after a request to play a song.
+```json title="agents/orchestrator.json"
+{
+  "instructions": "Choose the agent that should answer the family's latest message. Route general questions, conversation and unclear requests to generic. If the message answers a question from an agent, choose the same agent. Return only the selected agent identifier.",
+  "llm": { "provider": "mistral", "model": "mistral-medium-latest", "apiKeyEnv": "MISTRAL_API_KEY" }
+}
+```
 
-An agent with tools also sees what it did in earlier turns: its own tool calls, with their arguments and results, come before its answer in the history it receives. When you say *"turn it off"* after *"turn on the living room light"*, the agent knows which light it switched on. The same frameworks keep tool calls in the history in the same way. The tool calls stay with the agent that made them: the orchestrator and the other agents see only the answers, so no agent sees calls to tools it does not have, and clients never see them.
+For every message, Ambrogio gives the orchestrator the latest messages of the conversation and the name and description of every agent. The orchestrator replies with one name, and that agent answers. With `generic`, `cooking` and `home-assistant` installed:
 
-The rules the backend adds to an agent with tools are few: answer after the last tool call, never claim an action that no tool carried out, say briefly what happened. Earlier versions also required a tool call for every request and banned a bare *"Done"*, because after *"Done"* in the history a model tended to confirm the next request without carrying it out. Now that the agent sees its own tool calls, tests with the Home Assistant agent carried out every request, also *"turn it off"* after a *"Done"*, read the state without acting for a question, and called no tool for a thank-you.
+| Message | Chosen agent |
+|---|---|
+| *"How long do I boil an egg?"* | `cooking` |
+| *"Turn on the kitchen light"* | `home-assistant` |
+| *"Tell me a joke"* | `generic` |
 
-Sometimes a model stops straight after an action without writing anything. The backend then asks the same agent once more, without tools, to write its answer from the results of the calls it made. If the answer is still empty, the turn fails with the standard message rather than leaving you without any confirmation. An empty answer is never stored: some providers refuse a conversation that contains one.
+The choice is made again at every message, so one conversation can move from one agent to another. Use the orchestrator's instructions to say how to choose in borderline cases. Its LLM must support structured output.
 
-Each agent answers in plain text and calls its tools only when it needs them. The answer ends when the model stops calling tools, as in AI SDK and Home Assistant.
+## Writing good agents
 
-The model sees each tool under the name the server gives it, such as `homeassistant__GetLiveContext`, which helps it pick the right one. Some servers also offer prompts: instructions on how to use their tools and context about what they manage. Home Assistant's prompt lists the areas and devices exposed to Assist. The backend reads these prompts at every turn and adds them after the agent's own `instructions`, so your instructions can stay about tone and behaviour while the server describes its own devices.
+- Write descriptions that do not overlap, or the orchestrator has to guess.
+- Put tone and rules in each agent's instructions.
+- To give Ambrogio a new skill, add an agent.
 
-The model reads the description of every tool it is offered at every step of a turn. A server with dozens of tools, such as a weather server that also covers air quality, marine and climate data, can make each answer several times slower than one with only the tools needed. `mcp.tools` restricts an agent to the tools you list, which also limits what it can do: an agent for the lights does not need to start the vacuum cleaner.
-
-Models do not know today's date, and they are poor at working out a weekday from a date. So Ambrogio tells each specialised agent the current date, weekday and time at every turn, in the family's time zone. Without it, a question about "the weekend" or "Thursday" can get the forecast of the wrong days.
-
-Each agent has its own provider and model, so you can spend money where it matters: a capable model for the orchestrator and for agents that act on your home, a cheaper one, or a local one, for chit-chat. Agents with tools need a model that supports tool calling, and the orchestrator needs one with structured output, because its choice and the reply flag come back as structured data.
-
-## Answers and replies
-
-Every answer comes with a yes/no flag saying whether it expects a reply. The satellite uses it to listen again without the wake word.
-
-The flag is decided after the answer. An answer without a question mark does not expect a reply, and costs nothing more. An answer with a question is checked by the orchestrator's model, which gets your last message and the answer and says whether the question really waits for you: *"Which room?"* does, a polite *"Anything else?"* does not. The check takes about half a second at the end of the turn; you do not hear it, because the answer has already been spoken while it was written. If the check fails, a question mark at the very end decides, and the backend logs `conversation_reply_check_failed`.
-
-Home Assistant decides only from the final question mark, which would keep the satellite listening after every polite offer. An earlier design had each agent end its answer with a tool, `finish`, carrying the flag, and required a tool call at every step. With long web search results, a model wrote that tool call into its answer as text and went on with its own reasoning, which was then spoken.
-
-## What this means for your configuration
-
-- Keep the orchestrator's instructions about *choosing*. Tell it which agent should handle borderline cases, not how to answer.
-- Put the tone and language of the answers in each agent's `instructions`.
-- When you add a capability, add an agent, rather than stretching an existing one.
-- Remember the 30-second limit per turn: a slow model plus several tool calls can run out of time.
-
-[Agent configuration](../../reference/agent-configuration/) has the exact fields; [Add an agent](../../how-to/add-agent/) walks through an example.
+[Agent configuration](../../reference/agent-configuration/) lists every field. [Add an agent](../../how-to/add-agent/) and [Connect Home Assistant](../../how-to/connect-home-assistant/) show how.

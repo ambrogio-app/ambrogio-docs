@@ -9,16 +9,34 @@ This repository contains only the user documentation of Ambrogio: an Astro Starl
 - The backend owns the protocol and the HTTP API. Each release declares the interface versions it offers (backend) or uses (clients); an incompatible change of an interface is made in the backend and in the clients that use it together, and they are released together, without keeping the previous version. Keep `reference/versions.md` in line with those declarations and with the published tags and images, and state which releases work together.
 - External facts (Home Assistant, sherpa-onnx and the models it runs, such as Nemotron, Piper and Silero VAD) need a check against their official documentation.
 
-## Diátaxis
+## Structure
 
-Decide the kind of a page before writing it, using <https://diataxis.fr/>, and keep it pure:
+### One kind per page
 
-- **Tutorials** (`tutorials/`): learning by doing, one safe path, concrete commands, visible results at every step, no alternatives or explanations beyond a sentence.
+Decide the kind of a page before writing it, using <https://diataxis.fr/>, and keep it pure. The folder of a page names its kind:
+
+- **Tutorials** (`tutorials/`): learning by doing, one safe path, concrete commands, visible results at every step, no alternatives or explanations beyond a sentence. A tutorial produces a real installation, the one the reader keeps: there is no trial setup to throw away.
 - **How-to guides** (`how-to/`): a goal for a competent reader, numbered steps, prerequisites first, link to reference instead of listing every option.
 - **Reference** (`reference/`): structured like the product (files, fields, endpoints), tables, complete and neutral, no instructions.
-- **Explanation** (`explanation/`): context, reasons and trade-offs, linked to the decisions in the models.
+- **Explanation** (`explanation/`, the *Concepts* of the sidebar): what a concept means for the person who uses and installs Ambrogio, such as an agent, a turn or the wake word, and why it behaves as it does from their point of view. Direct and short: what the reader needs to understand to use Ambrogio, and nothing more, in about one screen. Plain words, lists rather than paragraphs. This is a user manual: no implementation choices, rejected alternatives, history of decisions, comparisons with other projects or organisation of the code; those belong to the models.
 
-When a page starts mixing kinds, split it and link the parts.
+When a page starts mixing kinds, move the foreign part to the page of its kind and link it. A how-to guide links to the concept it relies on the first time it uses it, for example *Add an agent* to what an agent is.
+
+### One home per fact
+
+- Each fact lives in one page; every other page links to it instead of repeating it. Rules, defaults, limits and file layouts live in `reference/`; reasons live in `explanation/`; steps live in a tutorial or a how-to guide.
+- System administration, such as backups, upgrades, host setup and Docker itself, is left to the reader: the documentation says only what Ambrogio needs, such as which data to keep.
+- The backend, the web chat and the satellite are documented with Docker only: no guide for running them from source or directly on the host, which belongs to the README of each repository. The terminal client, which has no image, runs from a checkout of its release.
+- Each component has one installation path: either in a tutorial or in a how-to guide, never in both. *Install Ambrogio* installs the backend and the web chat; the terminal client and the voice satellite have their own how-to guides.
+- There is no upgrade guide: with Docker, moving to a new release is changing the image tag. `reference/versions.md` records which releases work together and what changes between them, configuration and database migrations included, without steps.
+
+### Index
+
+The sidebar follows the path of the person who installs Ambrogio, not the four kinds: Introduction, Get started, Clients, Agents and tools, Voice, Operate, Concepts, Reference. The sidebar, set in `astro.config.mjs`, shows no kind: a new page goes in the section of its topic, and its path stays in the folder of its kind, so that existing links stay valid.
+
+### The reader's installation
+
+Tutorials and how-to guides refer to the installation created by *Install Ambrogio*: a folder `~/ambrogio` with `compose.yaml`, the private `.env`, the agent files in `agents/` and the web chat's `web/config.json`. The Compose services are `backend`, `database` and `web`. Commands run from that folder.
 
 ## Style
 

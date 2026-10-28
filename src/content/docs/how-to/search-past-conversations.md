@@ -5,18 +5,23 @@ sidebar:
   label: Search past conversations
 ---
 
-The Memory agent answers questions such as *"When did I say the dentist appointment was?"* by searching the family's past conversations. The backend itself serves the search, as an MCP server at `/mcp/memory`, so you only add the agent file.
+The Memory agent answers questions such as *"When did I say the dentist appointment was?"* by searching the family's past conversations. The backend itself serves the search, as an [MCP server at `/mcp/memory`](../../reference/http-api/#memory-mcp-server-mcpmemory), so you only add the [agent](../../explanation/agents/) file. 
 
-## Prerequisites
+## Before you start
 
-- A backend from release `v0.17.0` on, with the PostgreSQL archive.
-- The credential of the agent's model in the backend environment, `MISTRAL_API_KEY` in the example.
+- The installation from [Install Ambrogio](../../tutorials/install-ambrogio/), with backend `v0.17.0` or later. Run the commands from `~/ambrogio`.
 
 ## 1. Add the agent file
 
-Copy [`examples/agents/memory.json`](https://github.com/ambrogio-app/ambrogio-backend/blob/main/examples/agents/memory.json) into the agents folder of the backend:
+Download the example agent of your backend release, for example `v0.17.0`:
 
-```json title="memory.json"
+```bash
+curl -fsSLo agents/memory.json https://raw.githubusercontent.com/ambrogio-app/ambrogio-backend/v0.17.0/examples/agents/memory.json
+```
+
+It contains:
+
+```json title="~/ambrogio/agents/memory.json"
 {
   "description": "Handles requests to remember something the family says, and answers questions about the family's own plans, appointments, deadlines and things said before.",
   "instructions": "When the family asks you to remember something, confirm briefly without searching: everything said is kept and can be searched later. You answer questions about the family's past conversations by searching them. Before answering a question about something said, asked or decided before, call search_conversations with the most distinctive words of the question. When a search finds nothing, try again with synonyms or more general words. Answer only from the results: when nothing relevant is found, say so instead of guessing. When you use a result, mention the date of that conversation. Answer briefly.",
@@ -37,7 +42,11 @@ Copy [`examples/agents/memory.json`](https://github.com/ambrogio-app/ambrogio-ba
 
 ## 2. Restart the backend
 
-Restart the backend. Once it is listening, the Memory agent connects to `/mcp/memory`. If the log has an `agent_mcp_unavailable` line for `memory`, check the port in `mcp.url`.
+```bash
+docker compose restart backend
+```
+
+If `docker compose logs backend` has an `agent_mcp_unavailable` line for `memory`, check the port in `mcp.url`.
 
 ## 3. Help the orchestrator choose it
 
@@ -45,14 +54,8 @@ The orchestrator chooses the agent from the descriptions. A question such as *"W
 
 ## 4. Ask
 
-Tell it something to remember: *"Remember that the car service is due by February."* The Memory agent confirms without searching: every exchange is kept and can be found later. Then, in another conversation, ask about it: *"When do I have to get the car serviced?"*. The Memory agent searches and answers with the date of the conversation it found.
-
-## How the search works
-
-- It searches the question and the answer of every answered turn, in all conversations. Turns that failed, were interrupted or are still in progress are not searched.
-- It finds the words of the question in any form of the language of the installation, `AMBROGIO_LANGUAGE`: for example *dentista* also finds *dentisti*. It does not find a word written without its accent, or a synonym; the agent's instructions ask it to try synonyms when a search finds nothing.
-- A turn can be found as soon as it ends.
+Tell it something to remember: *"Remember that the car service is due by February."* The Memory agent confirms. Then, in another conversation, ask about it: *"When do I have to get the car serviced?"*. The Memory agent answers with the date of the conversation it found.
 
 ## Keep the server private
 
-The MCP server at `/mcp/memory` has no authentication, like the rest of the backend. It is outside `/api/`, so a reverse proxy that forwards only `/api/*` does not expose it. It refuses any request with an `Origin` header, so a web page cannot use it through a browser.
+`/mcp/memory` has no authentication, like the rest of the backend. If you [put the backend behind a reverse proxy](../reverse-proxy-https/), forward only `/api/*`, so that the proxy does not expose it.

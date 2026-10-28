@@ -5,48 +5,22 @@ template: splash
 hero:
   tagline: A home assistant you run on your own hardware. Your family types to it in a terminal or a browser, or talks to it out loud, and every conversation stays on your server.
   actions:
-    - text: Start the tutorial
-      link: tutorials/first-conversation/
+    - text: Install Ambrogio
+      link: tutorials/install-ambrogio/
       icon: right-arrow
-    - text: How Ambrogio is built
-      link: explanation/architecture/
+    - text: What is Ambrogio
+      link: explanation/what-is-ambrogio/
       variant: minimal
 ---
 
-import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
-
-:::caution[Early development]
-Ambrogio is young software. The configuration format can still change between versions, and voice has not yet been tested on every kind of audio hardware. Read [Versions and compatibility](reference/versions/) before you install.
-:::
-
-## What you install
-
-Ambrogio is split into four programs, each in its own Git repository.
-
-<CardGrid>
-	<Card title="Backend" icon="laptop">
-		The server. It stores conversations, sends each request to an AI agent, and turns speech into text and back. You run one per home. Repository: `ambrogio-backend`.
-	</Card>
-	<Card title="Terminal client" icon="seti:shell">
-		A chat window in your terminal. Use it from any computer that can reach the backend. Repository: `ambrogio-cli`.
-	</Card>
-	<Card title="Web chat" icon="seti:html">
-		The same chat in a browser, served by an optional container next to the backend. Repository: `ambrogio-web`.
-	</Card>
-	<Card title="Voice satellite" icon="comment-alt">
-		A small program for a device with a microphone and a speaker, such as a Raspberry Pi. It waits for its wake word, "Alexa" unless you choose another, and lets you speak to Ambrogio. Repository: `ambrogio-satellite`.
-	</Card>
-</CardGrid>
-
-You always need the backend. The terminal client, the web chat and the satellites are optional, and you can run as many of them as you like.
+import { CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 ## Where to go next
 
-The documentation has four parts. Each one answers a different kind of question.
-
 <CardGrid>
-	<LinkCard title="Tutorials" description="Never used Ambrogio? Set it up on one machine and have your first conversation, then add voice." href="tutorials/first-conversation/" />
-	<LinkCard title="How-to guides" description="Steps for a specific job: install a satellite, connect Home Assistant, put the backend behind HTTPS." href="how-to/run-backend-docker/" />
-	<LinkCard title="Reference" description="Every configuration field, default value, limit, message and endpoint." href="reference/backend-configuration/" />
-	<LinkCard title="Explanation" description="How the pieces fit together, and why Ambrogio works the way it does." href="explanation/architecture/" />
+	<LinkCard title="What is Ambrogio" description="The four programs and what each one does." href="explanation/what-is-ambrogio/" />
+	<LinkCard title="Before you install" description="What the server, the clients and the satellites need." href="reference/requirements/" />
+	<LinkCard title="Install Ambrogio" description="Install the backend and the web chat on your home server, and have your first conversation." href="tutorials/install-ambrogio/" />
+	<LinkCard title="Install a voice satellite" description="Talk to Ambrogio out loud from a device in a room." href="how-to/install-satellite/" />
 </CardGrid>
+

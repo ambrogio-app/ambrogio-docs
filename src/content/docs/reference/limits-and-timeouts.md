@@ -26,7 +26,7 @@ sidebar:
 | Silence added at the start of a voice request | 1 second | no | Keeps the first word, which the bundled model loses when speech starts at once. |
 | Silence added at the end of a voice request | 0.8 seconds | no | Lets the recognizer finish the last words before the transcription is returned. |
 
-Speech recognition runs while the request is open: each audio frame goes to the recognizer as it arrives, and at `input.end` only the last part remains to decode. The recognizer runs in one worker thread shared by all voice requests, which processes frames in the order they arrive. If the CPU cannot keep up with the audio, frames wait and the text arrives later; no audio is lost. Real-time recognition needs an x86_64 CPU with AVX2. If the worker stops because of a fault, the transcriptions in progress fail, their turns are refused with `transcription_failed` ("I didn't understand the request."), and the next voice request starts a new worker.
+Speech recognition runs while the request is open: each audio frame goes to the recognizer as it arrives, and at `input.end` only the last part remains to decode. The recognizer runs in one worker thread shared by all voice requests, which processes frames in the order they arrive. If the CPU cannot keep up with the audio, frames wait and the text arrives later; no audio is lost. Real-time recognition needs an x86_64 CPU with AVX2; see [Before you install](../requirements/#backend). If the worker stops because of a fault, the transcriptions in progress fail, their turns are refused with `transcription_failed` ("I didn't understand the request."), and the next voice request starts a new worker.
 
 Turns are never queued and never retried automatically.
 
