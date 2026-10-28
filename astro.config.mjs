@@ -21,7 +21,7 @@ export default defineConfig({
 				dark: './src/assets/logo-dark.svg',
 				replacesTitle: true,
 			},
-			description: 'Documentation for people who run Ambrogio, a self-hosted home assistant, in their own home.',
+			description: 'Documentation of Ambrogio. Talk to it like Alexa, chat with it like ChatGPT: one self-hosted AI assistant for your whole homelab.',
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/ambrogio-app/ambrogio-backend' },
 			],

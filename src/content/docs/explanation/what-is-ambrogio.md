@@ -1,13 +1,15 @@
 ---
 title: What is Ambrogio
-description: A family assistant for your homelab, the four programs it is made of, and what each one does.
+description: One self-hosted AI assistant for your whole homelab, the four programs it is made of, and what each one does.
 sidebar:
   label: What is Ambrogio
 ---
 
-Ambrogio is a home assistant you run yourself. Your family types to it in a browser or a terminal, or talks to it out loud, and it answers through AI agents that you choose and configure, each with an LLM from a cloud provider or one that runs in your home. Conversations are stored on your server, not on someone else's.
+Talk to it like Alexa, chat with it like ChatGPT: Ambrogio is one self-hosted AI assistant for your whole homelab. Multi-agent by design: each agent you configure handles one job, such as the house, music, weather or your documents, using the services you already host. Each agent uses an LLM from a cloud provider or one that runs in your home, and conversations are stored on your server.
 
-The goal is a complete assistant for the family: one that switches the lights and the other devices of the house, plays a song, tells you the weather, finds what is in your documents, and remembers what you told it. Ambrogio does not do these things by itself. Each agent can be connected to a service that already runs in your home, such as Home Assistant or a file cloud, through the [Model Context Protocol](https://modelcontextprotocol.io/), and the orchestrator chooses the right agent for each request.
+It can take the place of a voice assistant such as Alexa: it listens in every room for its wake word and answers out loud. It also goes further. You can type to it from a browser or a terminal and continue the same conversations, it runs on your server, and it works with the services you choose instead of a vendor's.
+
+Ambrogio does not do these things by itself. Each agent can be connected to a service that already runs in your home, such as Home Assistant or a file cloud, through the [Model Context Protocol](https://modelcontextprotocol.io/), and the orchestrator chooses the right agent for each request.
 
 That is why Ambrogio is designed as the AI part of a homelab: it sits beside the services you already self-host and lets the family use them by talking. The [`ambrogio-homelab-example`](https://github.com/ambrogio-app/ambrogio-homelab-example) repository shows a complete installation of this kind, with Home Assistant, a weather service, a file cloud, web search and a voice satellite.
 

@@ -40,6 +40,7 @@ Tutorials and how-to guides refer to the installation created by *Install Ambrog
 
 ## Style
 
+- Describe Ambrogio with the standard definition, the same in this site and in the README of every repository: "Talk to it like Alexa, chat with it like ChatGPT — one self-hosted AI assistant for your whole homelab." When more is needed, add: "Multi-agent by design: each agent you configure handles one job, such as the house, music, weather or your documents, using the services you already host." Do not call it a "home assistant", which is confused with Home Assistant.
 - English, second person, short sentences, plain words. Say what happens, then why, only where the reader needs it.
 - Use exact names: fields, file paths, log events and messages as they appear in the product.
 - No marketing tone, no filler introductions or summaries, no emoji.
