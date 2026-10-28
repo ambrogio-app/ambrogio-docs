@@ -46,3 +46,7 @@ git config core.hooksPath .githooks
 ## Sources of truth
 
 Facts on these pages come from the engineering models (`system-model/`) and the code of the three repositories. When a contract changes there, update the pages that depend on it. `AGENTS.md` describes how.
+
+## License
+
+[MIT](LICENSE).
