@@ -14,13 +14,13 @@ The backend owns the conversation protocol and the HTTP API. Clients use only th
 | Interface | Version | Offered by | Used by |
 |---|---|---|---|
 | Conversation protocol | `ambrogio.v1` (WebSocket subprotocol) | Backend | Terminal client, web chat, satellite |
-| HTTP API (conversation list and history) | `v1`, under `/api/v1/`, errors as Problem Details | Backend, from `v0.10.1` | Terminal client and web chat, from `v0.3.0` |
+| HTTP API (conversation list and history) | `v1`, under `/api/v1/`, errors as Problem Details | Backend | Terminal client and web chat |
 
 The backend and the clients are updated together. The backend offers one version of each interface and does not keep earlier ones. An incompatible change to a public interface is made in the backend and in the clients that use it at the same time, the version in the interface name changes, such as `ambrogio.v2` or `/api/v2/`, and the backend and those clients are released together. A client release works with the backend releases that offer the interface versions it uses; [Current state](#current-state) says which releases work together. The protocol and the HTTP API have separate version cycles: a new HTTP API version does not change the protocol, and the other way round. A change to [`protocol/ambrogio-v1.schema.json`](https://github.com/ambrogio-app/ambrogio-backend/blob/main/protocol/ambrogio-v1.schema.json) that is not a new version is compatible by rule.
 
 ## Current state
 
-Release list checked on 27 October 2026. Ambrogio is in preview, and configuration may change between releases.
+Release list checked on 27 October 2026. Ambrogio is in preview, and configuration may change between releases. Earlier releases are not covered: use the current ones.
 
 | Program | Latest release | Images | Interfaces |
 |---|---|---|---|
@@ -29,73 +29,7 @@ Release list checked on 27 October 2026. Ambrogio is in preview, and configurati
 | Web chat | `v0.3.1` | `ghcr.io/ambrogio-app/ambrogio-web:v0.3.1` (amd64, arm64) | uses `ambrogio.v1` and HTTP API `v1` |
 | Satellite | `v0.8.1` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.8.1` (amd64, arm64) | uses `ambrogio.v1` |
 
-All four current releases work together. The backend works with every satellite release, since `ambrogio.v1` has not changed. Each client release is tested in CI against the backend under development, through the backend's test entry point.
-
-## Changes by release
-
-Releases not listed change nothing in the configuration or the deployment. A release with a database migration updates the database at startup and cannot be undone: back up the database before you move to it.
-
-| Release | Change | Configuration |
-|---|---|---|
-| Backend `v0.17.0` | Connects to the MCP servers of the agents once, after it starts listening: an MCP server that does not answer leaves its agent unavailable until the next restart, with an `agent_mcp_unavailable` log line, instead of stopping the backend. Adds the Memory agent, see [Search past conversations](../../how-to/search-past-conversations/), and the example agent `memory.json`. Database migration at startup. | Same as `v0.16.0` |
-| Backend `v0.16.0` | Keeps the archive in PostgreSQL instead of a SQLite file. See [Changes in backend `v0.16.0`](#changes-in-backend-v0160). | Changed |
-| Backend `v0.15.0`, terminal client `v0.3.1`, web chat `v0.3.1`, satellite `v0.8.1` | The backend shortens the rules added to agents with tools, drops `announcementMs` from `conversation_reply_timing` and no longer accepts the client message `client.result`, which no backend release ever asked for. The clients no longer send it; earlier clients sent it only in answer to server messages that no backend sends, so every client release still works. | Same |
-| Backend `v0.14.0` | Removes the final tool `finish`: agents call tools only when they need them, and the orchestrator's model decides whether an answer with a question expects a reply. An agent with tools no longer needs a model that accepts a required tool call. | Same as `v0.13.0` |
-| Backend `v0.13.0` | Keeps each agent's tool calls in the archive and shows them only to that agent in later turns; sends the models only the latest [`AMBROGIO_HISTORY_TURNS`](../backend-configuration/#conversations) turns; asks an agent once more when its answer has no words. Database migration at startup. | New optional variable |
-| Backend `v0.12.1`, `v0.12.2` | Agents with tools carry out every requested action; from `v0.12.2` they answer only after their tool calls. | Same as `v0.12.0` |
-| Backend `v0.12.0`, satellite `v0.8.0` | Speech engines replaced by sherpa-onnx. See [Changes in backend `v0.12.0` and satellite `v0.8.0`](#changes-in-backend-v0120-and-satellite-v080). | Changed |
-| Backend `v0.11.0` | No longer serves `/api/conversations`, which terminal client and web chat `v0.2.0` read: they need `v0.3.0` or later. | Same |
-| Backend `v0.10.1`, satellite `v0.7.0`, terminal client and web chat `v0.3.0` | Configuration by environment variables and JSON agent files; HTTP API `v1`. See [Changes in backend `v0.10.1` and satellite `v0.7.0`](#changes-in-backend-v0101-and-satellite-v070). Terminal client and web chat `v0.3.0` need HTTP API `v1`. | Changed |
-| Backend `v0.10.0` | Tagged but not published: use `v0.10.1`. | |
-
-## Changes in backend `v0.16.0`
-
-Backend `v0.16.0` keeps the conversation archive in a PostgreSQL 18 database that runs as a separate service, instead of a SQLite file. The conversation protocol `ambrogio.v1` and HTTP API `v1` do not change, so every client release that works with `v0.15.0` works with it.
-
-| Before | From backend `v0.16.0` |
-|---|---|
-| `AMBROGIO_ARCHIVE_PATH`, the path of the SQLite file | `AMBROGIO_DATABASE_URL`, the URL of a PostgreSQL database, required in every environment. `AMBROGIO_ARCHIVE_PATH` is no longer read. See [Backend configuration](../backend-configuration/#conversations). |
-| One backend container with a volume for the SQLite file | `compose.example.yaml` adds a `database` service with the image `pgvector/pgvector:pg18` and its own volume, and needs `AMBROGIO_DATABASE_PASSWORD`. |
-| Back up by copying the SQLite file | Back up the PostgreSQL database, for example with `pg_dump`. |
-| No archive connection event | `conversation_archive_connection_failed` when an idle connection to the database fails. See [Logs](../logs/). |
-
-The SQLite archive is not imported: the new backend starts with an empty archive, and earlier conversations stay only in the old file.
-
-## Changes in backend `v0.12.0` and satellite `v0.8.0`
-
-Backend `v0.12.0` and satellite `v0.8.0` replace their speech engines with [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx): a streaming transducer model, Nemotron 3.5 ASR streaming 0.6B, instead of Vosk for speech recognition in the backend, Piper as the only kind of voice, and sherpa-onnx keyword spotting and Silero VAD instead of openWakeWord in the satellite. The voice configuration of both changes in a way that is not compatible with earlier releases. The conversation protocol `ambrogio.v1` and HTTP API `v1` do not change.
-
-The backend and the satellite are released together. Because the protocol is the same, either one works with the other's previous release over `ambrogio.v1`, but each needs its own new variables.
-
-| Before | From backend `v0.12.0` and satellite `v0.8.0` |
-|---|---|
-| Backend: `AMBROGIO_VOICE_<L>_VOSK_MODEL_PATH`, the folder of a Vosk model | `AMBROGIO_VOICE_<L>_STT_MODEL_DIR`, the folder of a sherpa-onnx streaming transducer model, required for each listed language. `AMBROGIO_VOICE_<L>_VOSK_MODEL_PATH` is no longer read. |
-| Backend image: Vosk models in `/opt/ambrogio/models/vosk-model-small-it-0.22` and `/opt/ambrogio/models/vosk-model-small-en-us-0.15` | One multilingual Nemotron 3.5 ASR streaming 0.6B model in `/opt/ambrogio/models/sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11`, for Italian and English, under OpenMDW 1.1. |
-| Backend: audio transcribed by Vosk while it arrives | Audio still transcribed while it arrives, by the streaming model in a worker thread; at `input.end` only the last part remains to decode. Real-time recognition needs an x86_64 CPU with AVX2. |
-| Backend: `AMBROGIO_VOICE_<L>_ENGINE`, `piper` or `kokoro`, and with `kokoro` `AMBROGIO_VOICE_<L>_SPEAKER` and `AMBROGIO_VOICE_<L>_LANGUAGE` | No longer read: `AMBROGIO_VOICE_<L>_MODEL_DIR` is always a Piper voice. A profile that used Kokoro must point `MODEL_DIR` to a Piper voice. |
-| Backend image: Kokoro model in `/opt/ambrogio/kokoro/kokoro-multi-lang-v1_0` | Removed. |
-| Backend: agents with tools speak only when their work is done | The agent first announces the action in one sentence, written before its tool calls, and stays silent after an announced action succeeds. Specialised agents answer in plain text and end with the tool `finish`, so their models must support a required tool call; only the orchestrator needs structured output. See [Agent configuration](../agent-configuration/#providers). |
-| Backend: logs from level `warn` only | Logs from level `info`, with the new `conversation_voice_turn_timing` line for every answered voice turn and `conversation_reply_timing` for every answer. The satellite writes the new `satellite_request_timing` line. See [Logs](../logs/). |
-| Satellite: `AMBROGIO_WAKE_WORD_MODEL` chose a bundled or custom openWakeWord model, `hey_jarvis` by default | `AMBROGIO_WAKE_WORD` is the wake word as text, `Alexa` by default. `AMBROGIO_WAKE_WORD_MODEL` is no longer read. |
-| Satellite: `AMBROGIO_WAKE_WORD_THRESHOLD`, above 0 and up to 1, default `0.5` | `AMBROGIO_WAKE_WORD_THRESHOLD`, above 0 and below 1, default `0.25`: the keyword spotting threshold of sherpa-onnx. |
-| Satellite: `AMBROGIO_WAKE_WORD_PATIENCE` | Removed and no longer read. A detection counts only if the speech detector heard speech in the 1.5 seconds that end with it. |
-| Satellite: custom models mounted at `/app/models/wakeword` | Another sherpa-onnx keyword spotting model can be mounted at `/app/models/kws`. |
-| Satellite: `satellite_wake_detected` with `score` and `chunks` | `satellite_wake_detected` with only `level`, `time` and `event`, and the new `satellite_wake_rejected` for a detection without speech. |
-| Satellite: wake word models under CC BY-NC-SA 4.0, for non-commercial use only | Apache-2.0 keyword spotting model and MIT Silero VAD. |
-
-
-## Changes in backend `v0.10.1` and satellite `v0.7.0`
-
-Backend `v0.10.1` and satellite `v0.7.0` change the configuration in a way that is not compatible with earlier releases. The conversation protocol does not change. The backend adds HTTP API `v1` under `/api/v1/`, with errors as Problem Details, and still answers on the previous endpoints under `/api/conversations`; later backend releases do not.
-
-| Before | From backend `v0.10.1` and satellite `v0.7.0` |
-|---|---|
-| Backend: TypeScript modules `http.ts`, `conversations.ts` and `voice.ts`, chosen with `AMBROGIO_HTTP_CONFIG_PATH`, `AMBROGIO_CONVERSATIONS_CONFIG_PATH` and `AMBROGIO_VOICE_CONFIG_PATH` | Environment variables read by the backend itself, such as `AMBROGIO_HTTP_PORT`, `AMBROGIO_ARCHIVE_PATH` and `AMBROGIO_VOICE_LANGUAGES` with the `AMBROGIO_VOICE_<L>_*` profile variables. The `*_CONFIG_PATH` variables are no longer read. |
-| Backend: agent modules `<id>.ts` with credentials read from `process.env` | Data-only JSON files `<id>.json` that name the variables holding their credentials with `apiKeyEnv`, `tokenEnv` and `clientSecretEnv`. `.ts` files in the agents folder are ignored. |
-| Satellite: TypeScript module chosen with `--config` (`/config/satellite.ts` in the image) | Environment variables such as `AMBROGIO_BACKEND_URL` and `AMBROGIO_WAKE_WORD_MODEL`. The satellite takes no arguments; `--config` is refused. |
-| No runtime environment | `AMBROGIO_ENV` is required by the backend and the satellite: `development`, `test` or `production`. |
-| Defaults repeated in the example modules and Compose files | Each default is applied only by the program; the examples set only the values production requires. |
-
+All four current releases work together. Each client release is tested in CI against the backend under development, through the backend's test entry point.
 
 ## Release rules
 
@@ -110,7 +44,7 @@ Ambrogio depends on these versions of services, protocols and models it does not
 | Dependency | Version | Used by |
 |---|---|---|
 | Model Context Protocol | revision `2025-03-26` or later. The backend's client proposes `2025-11-25` and accepts `2025-06-18` and `2025-03-26` from the server. | Backend, MCP connectors |
-| PostgreSQL | 18. The examples use the image `pgvector/pgvector:pg18`, which adds the pgvector extension; the archive uses no extension. | Backend, from `v0.16.0` |
+| PostgreSQL | 18. The examples use the image `pgvector/pgvector:pg18`, which adds the pgvector extension; the archive uses no extension. | Backend |
 | LLM provider APIs | Mistral AI `v1`, OpenAI `v1` (Responses), Anthropic Messages with `anthropic-version: 2023-06-01`, Gemini API `v1beta`, or a Chat Completions API compatible with OpenAI | Backend, see [Agent configuration](../agent-configuration/) |
 | Speech recognition and synthesis models: Nemotron 3.5 ASR streaming 0.6B from the sherpa-onnx `asr-models` release, Piper voices from the `tts-models` release | the archives listed in [Bundled models and licenses](../bundled-models/#backend), fixed by SHA-256 | Backend image |
 | Keyword spotting model zipformer GigaSpeech 3.3M, from the sherpa-onnx `kws-models` release, and Silero VAD, from the `asr-models` release | the files listed in [Bundled models and licenses](../bundled-models/#satellite), fixed by SHA-256 | Satellite |

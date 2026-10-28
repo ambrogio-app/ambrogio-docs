@@ -28,7 +28,7 @@ When a page starts mixing kinds, move the foreign part to the page of its kind a
 - System administration, such as backups, upgrades, host setup and Docker itself, is left to the reader: the documentation says only what Ambrogio needs, such as which data to keep.
 - The backend, the web chat and the satellite are documented with Docker only: no guide for running them from source or directly on the host, which belongs to the README of each repository. The terminal client, which has no image, runs from a checkout of its release.
 - Each component has one installation path: either in a tutorial or in a how-to guide, never in both. *Self-host Ambrogio* installs the backend and the web chat on the reader's server, at the path `tutorials/install-ambrogio/`, kept so that existing links stay valid; the terminal client and the voice satellite have their own how-to guides.
-- There is no upgrade guide: with Docker, moving to a new release is changing the image tag. `reference/versions.md` records which releases work together and what changes between them, configuration and database migrations included, without steps.
+- There is no upgrade guide: with Docker, moving to a new release is changing the image tag. `reference/versions.md` records the current releases and which of them work together; releases earlier than the current ones are not covered. From the current releases on, it records what changes between one release and the next, configuration and database migrations included, without steps.
 
 ### Index
 
