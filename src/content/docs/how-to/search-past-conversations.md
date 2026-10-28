@@ -5,7 +5,7 @@ sidebar:
   label: Search past conversations
 ---
 
-The Memory agent answers questions such as *"When did I say the dentist appointment was?"* by searching the family's past conversations. The backend itself serves the search, as an [MCP server at `/mcp/memory`](../../reference/http-api/#memory-mcp-server-mcpmemory), so you only add the [agent](../../explanation/agents/) file. 
+The Memory agent answers questions such as *"When did I say the dentist appointment was?"* by searching the family's past conversations. The backend itself serves the search, as an MCP server at `/mcp/memory`, so you only add the [agent](../../explanation/agents/) file. 
 
 ## Before you start
 
@@ -56,6 +56,8 @@ The orchestrator chooses the agent from the descriptions. A question such as *"W
 
 Tell it something to remember: *"Remember that the car service is due by February."* The Memory agent confirms. Then, in another conversation, ask about it: *"When do I have to get the car serviced?"*. The Memory agent answers with the date of the conversation it found.
 
+The agent searches the question and the answer of every answered exchange, in all conversations. It finds the words in any form of the language set by `AMBROGIO_LANGUAGE`, such as *dentista* and *dentisti*, but not synonyms or words written without their accent: its instructions ask it to try other words when a search finds nothing.
+
 ## Keep the server private
 
-`/mcp/memory` has no authentication, like the rest of the backend. If you [put the backend behind a reverse proxy](../reverse-proxy-https/), forward only `/api/*`, so that the proxy does not expose it.
+`/mcp/memory` has no authentication, like the rest of the backend, and refuses requests from web pages. If you [put the backend behind a reverse proxy](../reverse-proxy-https/), forward only `/api/*`, so that the proxy does not expose it.

@@ -86,7 +86,7 @@ The backend and the satellite are released together. Because the protocol is the
 
 ## Changes in backend `v0.10.1` and satellite `v0.7.0`
 
-Backend `v0.10.1` and satellite `v0.7.0` change the configuration in a way that is not compatible with earlier releases. The conversation protocol does not change. The backend adds [HTTP API `v1`](../http-api/) under `/api/v1/`, with errors as Problem Details, and still answers on the previous endpoints under `/api/conversations`; later backend releases do not.
+Backend `v0.10.1` and satellite `v0.7.0` change the configuration in a way that is not compatible with earlier releases. The conversation protocol does not change. The backend adds HTTP API `v1` under `/api/v1/`, with errors as Problem Details, and still answers on the previous endpoints under `/api/conversations`; later backend releases do not.
 
 | Before | From backend `v0.10.1` and satellite `v0.7.0` |
 |---|---|

@@ -6,7 +6,7 @@ This repository contains only the user documentation of Ambrogio: an Astro Starl
 
 - Every statement about behaviour, configuration fields, defaults, limits, messages and versions must be traceable to a contract or requirement of the model, or to the code that implements it. Read the model with `ambrogio-model/scripts/rv` from the workspace folder (see `ambrogio-model/AGENTS.md`) or directly in the `system-model/` folders.
 - Do not document behaviour that the model does not record. If the code and the model disagree, report it instead of choosing one.
-- The backend owns the protocol and the HTTP API. Each release declares the interface versions it offers (backend) or uses (clients); an incompatible change of an interface is made in the backend and in the clients that use it together, and they are released together, without keeping the previous version. Keep `reference/versions.md` in line with those declarations and with the published tags and images, and state which releases work together.
+- The backend owns the protocol and the HTTP API. Each release declares the interface versions it offers (backend) or uses (clients); an incompatible change of an interface is made in the backend and in the clients that use it together, and they are released together, without keeping the previous version. Keep `reference/versions.md` in line with those declarations and with the published tags and images, and state which releases work together. The documentation does not describe the protocol or the HTTP API themselves: only the clients of Ambrogio use them, and the backend's contracts describe them.
 - External facts (Home Assistant, sherpa-onnx and the models it runs, such as Nemotron, Piper and Silero VAD) need a check against their official documentation.
 
 ## Structure
@@ -17,7 +17,7 @@ Decide the kind of a page before writing it, using <https://diataxis.fr/>, and k
 
 - **Tutorials** (`tutorials/`): learning by doing, one safe path, concrete commands, visible results at every step, no alternatives or explanations beyond a sentence. A tutorial produces a real installation, the one the reader keeps: there is no trial setup to throw away.
 - **How-to guides** (`how-to/`): a goal for a competent reader, numbered steps, prerequisites first, link to reference instead of listing every option.
-- **Reference** (`reference/`): structured like the product (files, fields, endpoints), tables, complete and neutral, no instructions.
+- **Reference** (`reference/`): structured like the product (files, fields, variables), tables, complete and neutral, no instructions.
 - **Explanation** (`explanation/`, the *Concepts* of the sidebar): what a concept means for the person who uses and installs Ambrogio, such as an agent, a turn or the wake word, and why it behaves as it does from their point of view. Direct and short: what the reader needs to understand to use Ambrogio, and nothing more, in about one screen. Plain words, lists rather than paragraphs. This is a user manual: no implementation choices, rejected alternatives, history of decisions, comparisons with other projects or organisation of the code; those belong to the models.
 
 When a page starts mixing kinds, move the foreign part to the page of its kind and link it. A how-to guide links to the concept it relies on the first time it uses it, for example *Add an agent* to what an agent is.

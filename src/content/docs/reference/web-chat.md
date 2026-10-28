@@ -14,7 +14,7 @@ Read by the page every time it opens, from the same folder as `index.html`, bypa
 | `backendUrl` | string | required | Backend address as the browser sees it. Absolute `http://` or `https://` URL with no user name, password, query or fragment. A path prefix is allowed. |
 | `language` | `"it"` or `"en"` | the first supported language of the browser, otherwise `"en"` | Language of the interface. |
 
-Any other field, an unsupported `language` or an invalid `backendUrl` makes the file invalid. From `backendUrl` the page derives `api/v1/conversations` for the list and history ([HTTP API](../http-api/) `v1`), and `api/session` for the conversation session, with `ws://` for `http://` and `wss://` for `https://`.
+Any other field, an unsupported `language` or an invalid `backendUrl` makes the file invalid. From `backendUrl` the page derives `api/v1/conversations` for the list and history, and `api/session` for the conversation session, with `ws://` for `http://` and `wss://` for `https://`.
 
 When the file is missing or invalid, the page shows "Invalid web client configuration" in the browser's language (see [Interface texts](#interface-texts)), followed by a technical reason, and contacts nothing else:
 
@@ -124,7 +124,7 @@ The chat list is a navigation region and the open chat the main region. Every co
 | Backend HTTP error | Il backend ha risposto con un errore (HTTP \<n\>). | The backend answered with an error (HTTP \<n\>). |
 | Invalid configuration | Configurazione del client web non valida | Invalid web client configuration |
 
-Messages produced by the backend, such as refusals and turn errors, appear as the backend sends them, in the language set by its [`AMBROGIO_LANGUAGE`](../backend-configuration/#conversations). An error of the list or of a history read is shown with the texts above, chosen from the [problem `type`](../http-api/#problem-types): "Conversation not found." for `/problems/conversation-not-found`, the HTTP error text for any other error.
+Messages produced by the backend, such as refusals and turn errors, appear as the backend sends them, in the language set by its [`AMBROGIO_LANGUAGE`](../backend-configuration/#conversations). An error of the list or of a history read is shown with the texts above, "Conversation not found." when the conversation does not exist, the HTTP error text for any other error.
 
 ## Compatibility
 

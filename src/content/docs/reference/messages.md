@@ -32,7 +32,7 @@ This text is also stored as the turn's `error`.
 
 ## HTTP errors
 
-The errors of the [HTTP API](../http-api/#error-responses) are Problem Details with English texts, the same in every language; the clients show their own texts.
+When the backend answers a request for the conversation list or history with an error, the clients show their own texts, listed below.
 
 ## Satellite sounds
 
@@ -45,7 +45,7 @@ The satellite plays two sounds of its own, the same in every language. It does n
 
 ## Terminal client
 
-The terminal client shows the backend's turn messages as they are; for errors of the list or of a history read it shows its own texts, chosen from the [problem `type`](../http-api/#problem-types). Its own texts are in Italian or English, depending on its [language](../terminal-client/#command-line). `<host>` is the host name, `<n>` an HTTP status, `<text>` your message and `<detail>` the error.
+The terminal client shows the backend's turn messages as they are; for errors of the list or of a history read it shows its own texts, chosen from the error the backend returns. Its own texts are in Italian or English, depending on its [language](../terminal-client/#command-line). `<host>` is the host name, `<n>` an HTTP status, `<text>` your message and `<detail>` the error.
 
 ### Start
 
