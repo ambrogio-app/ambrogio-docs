@@ -11,7 +11,7 @@ sidebar:
 
 - OpenCloud with full-text search, so that the search also finds the words inside PDFs and office documents. The [opencloud-mcp README](https://github.com/adrianofoschi/opencloud-mcp#requirements) lists what it needs.
 - You can sign in to OpenCloud as an administrator and run its `opencloud` command.
-- The installation from [Install Ambrogio](../../tutorials/install-ambrogio/). Run the commands from `~/ambrogio`.
+- The installation from [Self-host Ambrogio](../../tutorials/install-ambrogio/). Run the commands from `~/ambrogio`.
 
 ## 1. Choose what Ambrogio may read
 

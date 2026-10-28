@@ -5,7 +5,7 @@ sidebar:
   label: Configure voice
 ---
 
-Speech recognition and the voice run in the backend and serve every satellite; [How voice works](../../explanation/voice/) explains the split. This guide works on the installation from [Install Ambrogio](../../tutorials/install-ambrogio/); run the commands from `~/ambrogio`.
+Speech recognition and the voice run in the backend and serve every satellite; [How voice works](../../explanation/voice/) explains the split. This guide works on the installation from [Self-host Ambrogio](../../tutorials/install-ambrogio/); run the commands from `~/ambrogio`.
 
 ## Before you start
 

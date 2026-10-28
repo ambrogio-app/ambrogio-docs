@@ -9,7 +9,7 @@ The Memory agent answers questions such as *"When did I say the dentist appointm
 
 ## Before you start
 
-- The installation from [Install Ambrogio](../../tutorials/install-ambrogio/), with backend `v0.17.0` or later. Run the commands from `~/ambrogio`.
+- The installation from [Self-host Ambrogio](../../tutorials/install-ambrogio/), with backend `v0.17.0` or later. Run the commands from `~/ambrogio`.
 
 ## 1. Add the agent file
 

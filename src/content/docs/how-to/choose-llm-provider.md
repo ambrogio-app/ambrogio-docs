@@ -5,7 +5,7 @@ sidebar:
   label: Choose the LLM provider
 ---
 
-Each agent, the orchestrator included, has its own LLM, from a cloud provider or from an OpenAI-compatible server on your network; see [Agents and the orchestrator](../../explanation/agents/). The example agents use Mistral. This guide sets another provider. It works on the installation from [Install Ambrogio](../../tutorials/install-ambrogio/); run the commands from `~/ambrogio`.
+Each agent, the orchestrator included, has its own LLM, from a cloud provider or from an OpenAI-compatible server on your network; see [Agents and the orchestrator](../../explanation/agents/). The example agents use Mistral. This guide sets another provider. It works on the installation from [Self-host Ambrogio](../../tutorials/install-ambrogio/); run the commands from `~/ambrogio`.
 
 ## Before you start
 

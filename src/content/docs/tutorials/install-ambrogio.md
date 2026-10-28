@@ -1,11 +1,11 @@
 ---
-title: Install Ambrogio
+title: Self-host Ambrogio
 description: Install the Ambrogio backend and the web chat on your home server with Docker, and have your first conversation.
 sidebar:
-  label: Install Ambrogio
+  label: Self-host Ambrogio
 ---
 
-In this tutorial you will install Ambrogio on your home server: the backend, its database and the web chat. At the end, anyone in your family can open the chat in a browser on any device of your home network, and every conversation is stored on your server.
+In this tutorial you will self-host Ambrogio on your home server: the backend, its database and the web chat. At the end, anyone in your family can open the chat in a browser on any device of your home network, and every conversation is stored on your server.
 
 This is the installation you keep. The other guides add to it: a voice satellite, more agents, HTTPS.
 

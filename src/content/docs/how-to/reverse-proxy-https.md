@@ -9,7 +9,7 @@ The backend speaks plain HTTP and [has no login](../../explanation/security/#the
 
 ## Before you start
 
-- The installation from [Install Ambrogio](../../tutorials/install-ambrogio/). Run the commands from `~/ambrogio`.
+- The installation from [Self-host Ambrogio](../../tutorials/install-ambrogio/). Run the commands from `~/ambrogio`.
 - Caddy or nginx on the same host, and a name for the address with a certificate for it.
 
 ## 1. Keep the backend and the web chat private

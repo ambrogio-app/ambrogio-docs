@@ -11,7 +11,7 @@ sidebar:
 
 - Music Assistant reachable from the machine that runs the Ambrogio backend, with your music providers and players already set up in Music Assistant.
 - You can log in to Music Assistant.
-- The installation from [Install Ambrogio](../../tutorials/install-ambrogio/). Run the commands from `~/ambrogio`.
+- The installation from [Self-host Ambrogio](../../tutorials/install-ambrogio/). Run the commands from `~/ambrogio`.
 
 ## 1. Turn on the MCP server in Music Assistant
 
