@@ -109,7 +109,6 @@ Ambrogio depends on these versions of services, protocols and models it does not
 
 | Dependency | Version | Used by |
 |---|---|---|
-| Home Assistant, **Model Context Protocol Server** integration | 2025.11 or later: the first release that serves the Streamable HTTP endpoint `/api/mcp`. Earlier releases offer only the SSE endpoint, which Ambrogio does not use. | Backend, [Home Assistant connector](../../how-to/connect-home-assistant/) |
 | Model Context Protocol | revision `2025-03-26` or later. The backend's client proposes `2025-11-25` and accepts `2025-06-18` and `2025-03-26` from the server. | Backend, MCP connectors |
 | PostgreSQL | 18. The examples use the image `pgvector/pgvector:pg18`, which adds the pgvector extension; the archive uses no extension. | Backend, from `v0.16.0` |
 | LLM provider APIs | Mistral AI `v1`, OpenAI `v1` (Responses), Anthropic Messages with `anthropic-version: 2023-06-01`, Gemini API `v1beta`, or a Chat Completions API compatible with OpenAI | Backend, see [Agent configuration](../agent-configuration/) |

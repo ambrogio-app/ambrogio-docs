@@ -178,7 +178,7 @@ Docker starts the three services again when the server restarts.
 ## Next steps
 
 - [Install a voice satellite](../../how-to/install-satellite/) to talk to Ambrogio out loud.
-- [Add an agent](../../how-to/add-agent/) or [connect Home Assistant](../../how-to/connect-home-assistant/).
+- [Add an agent](../../how-to/add-agent/), or connect [Home Assistant](../../how-to/connect-home-assistant/), [Music Assistant](../../how-to/connect-music-assistant/) or [OpenCloud](../../how-to/connect-opencloud/).
 - [Put the backend behind HTTPS](../../how-to/reverse-proxy-https/).
 - [Web chat](../../reference/web-chat/#configjson) describes the fields of `config.json`.
 - [Architecture](../../explanation/architecture/) explains what you have just installed.
