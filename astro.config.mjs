@@ -16,12 +16,14 @@ export default defineConfig({
 		mermaid({ autoTheme: true }),
 		starlight({
 			title: 'Ambrogio',
-			logo: {
-				light: './src/assets/logo-light.svg',
-				dark: './src/assets/logo-dark.svg',
-				replacesTitle: true,
-			},
 			description: 'Documentation of Ambrogio. Talk to it like Alexa, chat with it like ChatGPT: one self-hosted AI assistant for your whole homelab.',
+			// Brand files copied from ambrogio-brand (src/brand/), mapped onto Starlight in theme.css; light theme only.
+			customCss: ['./src/brand/fonts.css', './src/brand/tokens.css', './src/styles/theme.css'],
+			components: {
+				ThemeProvider: './src/components/ThemeProvider.astro',
+				ThemeSelect: './src/components/ThemeSelect.astro',
+				SiteTitle: './src/components/SiteTitle.astro',
+			},
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/ambrogio-app/ambrogio-backend' },
 			],

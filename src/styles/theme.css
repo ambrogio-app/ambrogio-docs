@@ -1,0 +1,46 @@
+/* Starlight in the colours and typeface of the Ambrogio brand (src/brand/tokens.css, copied from ambrogio-brand).
+   Light theme only (see src/components/ThemeProvider.astro); layout stays Starlight's. */
+
+:root[data-theme='light'] {
+	--sl-font: var(--ambrogio-font);
+	--sl-font-mono: var(--ambrogio-font-mono);
+
+	--sl-color-white: var(--ambrogio-neutral-900);
+	--sl-color-gray-1: var(--ambrogio-neutral-800);
+	--sl-color-gray-2: var(--ambrogio-neutral-700);
+	--sl-color-gray-3: var(--ambrogio-neutral-600);
+	--sl-color-gray-4: var(--ambrogio-neutral-500);
+	--sl-color-gray-5: var(--ambrogio-neutral-400);
+	--sl-color-gray-6: var(--ambrogio-neutral-300);
+	--sl-color-gray-7: var(--ambrogio-neutral-200);
+	--sl-color-black: var(--ambrogio-neutral-100);
+
+	/* Yellow for highlights, borders and selections; dark gold only for text, such as links, where yellow
+	   would not read on a light background. */
+	--sl-color-accent-low: var(--ambrogio-gold-200);
+	--sl-color-accent: var(--ambrogio-gold-500);
+	--sl-color-accent-high: var(--ambrogio-gold-800);
+	--sl-color-text-accent: var(--ambrogio-gold-700);
+	--sl-color-text-invert: var(--ambrogio-neutral-900);
+	--sl-color-bg-accent: var(--ambrogio-gold-500);
+}
+
+/* Starlight fills these with the text accent; the brand fills them with yellow and ink text. */
+.sl-link-button.primary,
+.sl-skip-link {
+	background-color: var(--ambrogio-gold-500);
+	border-color: var(--ambrogio-gold-500);
+	color: var(--ambrogio-neutral-900);
+}
+
+/* The current page in the sidebar is marked by bold ink text alone, without a background. */
+nav.sidebar a[aria-current='page'] {
+	background-color: transparent;
+	color: var(--ambrogio-neutral-900);
+	font-weight: 800;
+}
+
+::selection {
+	background-color: var(--ambrogio-gold-500);
+	color: var(--ambrogio-neutral-900);
+}

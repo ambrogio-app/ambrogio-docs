@@ -48,6 +48,10 @@ Tutorials and how-to guides refer to the installation created by *Install Ambrog
 - Quote messages in double quotes, name buttons and list entries in **bold**, and write what the reader says or types in italics with quotes (*"Tell me a fun fact about cats."*).
 - Examples and tutorials use English: `"language": "en"`, English models and voices, English questions and agent instructions.
 
+## Brand
+
+`src/brand/`, `public/favicon.svg` and the logos in `.github/` are copies from the private repository `ambrogio-brand`, made by its `scripts/sync`: do not edit them here. `src/styles/theme.css` maps the brand's tokens onto Starlight, and the site has only a light theme: `src/components/ThemeProvider.astro` and `ThemeSelect.astro` replace Starlight's to remove the dark theme and its switch. `src/components/SiteTitle.astro` replaces Starlight's title with the brand's logo and wordmark. Yellow (`--ambrogio-gold-500`) fills highlights and selections with ink text, and the current page in the sidebar is bold without a background; links use the darker `--ambrogio-gold-700`, because yellow text does not read on a light background.
+
 ## Links and publishing
 
 `main` accepts changes only through a pull request whose CI and secret scan pass: a GitHub ruleset rejects direct pushes, force pushes and deletion, for everyone. Work on a branch and open a pull request.
