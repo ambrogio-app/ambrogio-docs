@@ -45,6 +45,8 @@ export default defineConfig({
 						'how-to/add-agent',
 						'how-to/choose-llm-provider',
 						'how-to/connect-home-assistant',
+						'how-to/connect-music-assistant',
+						'how-to/connect-opencloud',
 						'how-to/connect-mcp-server',
 						'how-to/search-past-conversations',
 					],

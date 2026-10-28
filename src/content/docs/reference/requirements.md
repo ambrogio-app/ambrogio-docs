@@ -51,5 +51,7 @@ None of the clients is required: install only the ones you want, in any combinat
 
 | Service | Requirement |
 |---|---|
-| Home Assistant | 2025.11 or later, with the **Model Context Protocol Server** integration. See [External services and models](../versions/#external-services-and-models). |
+| Home Assistant | The **Model Context Protocol Server** integration, in a release that serves the Streamable HTTP endpoint `/api/mcp`. See [Connect Home Assistant](../../how-to/connect-home-assistant/). |
+| Music Assistant | The **FastMCP Server** plugin. See [Connect Music Assistant](../../how-to/connect-music-assistant/). |
+| OpenCloud | Full-text search and the independent [opencloud-mcp](https://github.com/adrianofoschi/opencloud-mcp) server. See [Connect OpenCloud](../../how-to/connect-opencloud/). |
 | Other MCP servers | Streamable HTTP over `http://` or `https://`. See [Agent configuration](../agent-configuration/#mcp). |
