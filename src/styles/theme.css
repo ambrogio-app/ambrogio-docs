@@ -44,3 +44,20 @@ nav.sidebar a[aria-current='page'] {
 	background-color: var(--ambrogio-gold-500);
 	color: var(--ambrogio-neutral-900);
 }
+
+/* Headings smaller than Starlight's: on phones, then from 50em as Starlight does. */
+:root {
+	--sl-text-h1: 1.75rem; /* 28px */
+	--sl-text-h2: 1.375rem; /* 22px */
+	--sl-text-h3: 1.1875rem; /* 19px */
+	--sl-text-h4: 1.0625rem; /* 17px */
+	--sl-text-h5: 1rem; /* 16px */
+}
+@media (min-width: 50em) {
+	:root {
+		--sl-text-h1: 2rem; /* 32px */
+		--sl-text-h2: 1.5rem; /* 24px */
+		--sl-text-h3: 1.25rem; /* 20px */
+		--sl-text-h4: 1.125rem; /* 18px */
+	}
+}
