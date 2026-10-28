@@ -1,0 +1,32 @@
+---
+// Replaces Starlight's SiteTitle: the logo and the official wordmark of the brand, instead of the title as text.
+import Logo from '../brand/logo.svg';
+import Wordmark from '../brand/wordmark.svg';
+const { siteTitle, siteTitleHref } = Astro.locals.starlightRoute;
+---
+
+<a href={siteTitleHref} class="site-title">
+	<Logo class="logo" aria-hidden="true" />
+	<Wordmark class="wordmark" aria-hidden="true" />
+	<span class="sr-only" translate="no">{siteTitle}</span>
+</a>
+
+<style>
+	.site-title {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		min-width: 0;
+		text-decoration: none;
+	}
+	.logo {
+		height: calc(var(--sl-nav-height) - 2 * var(--sl-nav-pad-y));
+		width: auto;
+		flex-shrink: 0;
+	}
+	.wordmark {
+		height: 1.75rem;
+		width: auto;
+		min-width: 0;
+	}
+</style>

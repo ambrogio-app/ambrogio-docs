@@ -1,0 +1,31 @@
+/* Ambrogio brand tokens: colours, typeface and shapes. Light backgrounds only: Ambrogio's pages have no dark
+   theme. Requires fonts.css for the typeface. */
+
+:root {
+	/* Neutrals, warm, from the ink of the logo to white. */
+	--ambrogio-neutral-900: #0b0b0b; /* ink: logo, headings, body text */
+	--ambrogio-neutral-800: #1f1e1b;
+	--ambrogio-neutral-700: #35332e;
+	--ambrogio-neutral-600: #5a574f; /* secondary text */
+	--ambrogio-neutral-500: #8a867c;
+	--ambrogio-neutral-400: #c9c5ba;
+	--ambrogio-neutral-300: #e4e1d8; /* lines and borders */
+	--ambrogio-neutral-200: #f3f1ea;
+	--ambrogio-neutral-100: #fbfaf7; /* page background */
+	--ambrogio-neutral-0: #ffffff; /* cards and controls */
+
+	/* Gold, from the bars inside the wordmark. */
+	--ambrogio-gold-200: #ffe8a3; /* tinted backgrounds */
+	--ambrogio-gold-500: #ffc414; /* the gold of the logo: accents, primary buttons with ink text */
+	--ambrogio-gold-700: #8a5a00; /* links and gold text on light backgrounds */
+	--ambrogio-gold-800: #5c3c00;
+
+	/* Typeface. */
+	--ambrogio-font: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--ambrogio-font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+	/* Shapes, round like the wordmark. */
+	--ambrogio-radius-pill: 999px; /* buttons, tags, accent bars */
+	--ambrogio-radius-card: 1.75rem; /* cards and panels */
+	--ambrogio-radius-small: 0.75rem; /* code blocks, inputs, small boxes */
+}
