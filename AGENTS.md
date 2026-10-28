@@ -27,7 +27,7 @@ When a page starts mixing kinds, move the foreign part to the page of its kind a
 - Each fact lives in one page; every other page links to it instead of repeating it. Rules, defaults, limits and file layouts live in `reference/`; reasons live in `explanation/`; steps live in a tutorial or a how-to guide.
 - System administration, such as backups, upgrades, host setup and Docker itself, is left to the reader: the documentation says only what Ambrogio needs, such as which data to keep.
 - The backend, the web chat and the satellite are documented with Docker only: no guide for running them from source or directly on the host, which belongs to the README of each repository. The terminal client, which has no image, runs from a checkout of its release.
-- Each component has one installation path: either in a tutorial or in a how-to guide, never in both. *Install Ambrogio* installs the backend and the web chat; the terminal client and the voice satellite have their own how-to guides.
+- Each component has one installation path: either in a tutorial or in a how-to guide, never in both. *Self-host Ambrogio* installs the backend and the web chat on the reader's server, at the path `tutorials/install-ambrogio/`, kept so that existing links stay valid; the terminal client and the voice satellite have their own how-to guides.
 - There is no upgrade guide: with Docker, moving to a new release is changing the image tag. `reference/versions.md` records which releases work together and what changes between them, configuration and database migrations included, without steps.
 
 ### Index
@@ -36,7 +36,7 @@ The sidebar follows the path of the person who installs Ambrogio, not the four k
 
 ### The reader's installation
 
-Tutorials and how-to guides refer to the installation created by *Install Ambrogio*: a folder `~/ambrogio` with `compose.yaml`, the private `.env`, the agent files in `agents/` and the web chat's `web/config.json`. The Compose services are `backend`, `database` and `web`. Commands run from that folder.
+Tutorials and how-to guides refer to the installation created by *Self-host Ambrogio*: a folder `~/ambrogio` with `compose.yaml`, the private `.env`, the agent files in `agents/` and the web chat's `web/config.json`. The Compose services are `backend`, `database` and `web`. Commands run from that folder.
 
 ## Style
 

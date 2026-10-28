@@ -36,5 +36,5 @@ Everyone in the home shares one identity, and every conversation can be opened f
 ## Further reading
 
 - [Before you install](../../reference/requirements/) lists what each program needs.
-- [Install Ambrogio](../../tutorials/install-ambrogio/) sets up the backend and the web chat.
+- [Self-host Ambrogio](../../tutorials/install-ambrogio/) sets up the backend and the web chat.
 - [Architecture](../architecture/) explains how the programs fit together, and why.

@@ -11,7 +11,7 @@ Any service that offers an [MCP](https://modelcontextprotocol.io/) server over *
 
 - The server speaks Streamable HTTP at an `http://` or `https://` URL. Servers that only run as a local command (stdio) or only offer the older HTTP+SSE transport do not work.
 - The server is reachable from the backend container. There, `localhost` is the container itself: use the host's LAN address or a Docker network name.
-- The installation from [Install Ambrogio](../../tutorials/install-ambrogio/). Run the commands from `~/ambrogio`.
+- The installation from [Self-host Ambrogio](../../tutorials/install-ambrogio/). Run the commands from `~/ambrogio`.
 
 ## Write the agent file
 

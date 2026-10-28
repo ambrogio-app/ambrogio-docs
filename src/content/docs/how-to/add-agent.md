@@ -5,7 +5,7 @@ sidebar:
   label: Add an agent
 ---
 
-An agent is a JSON file with a description, instructions, a model and optionally tools; [What an agent is](../../explanation/agents/) explains each part. This guide adds a cooking agent that uses a cheaper model than the general one, to the installation from [Install Ambrogio](../../tutorials/install-ambrogio/). Run the commands from `~/ambrogio`.
+An agent is a JSON file with a description, instructions, a model and optionally tools; [What an agent is](../../explanation/agents/) explains each part. This guide adds a cooking agent that uses a cheaper model than the general one, to the installation from [Self-host Ambrogio](../../tutorials/install-ambrogio/). Run the commands from `~/ambrogio`.
 
 ## 1. Write the agent file
 

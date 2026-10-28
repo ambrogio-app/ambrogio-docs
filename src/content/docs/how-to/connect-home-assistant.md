@@ -11,7 +11,7 @@ Home Assistant can act as an [MCP](https://modelcontextprotocol.io/) server. You
 
 - Home Assistant reachable from the machine that runs the Ambrogio backend, in a release whose **Model Context Protocol Server** integration serves the Streamable HTTP endpoint `/api/mcp`. The first releases of the integration offer only an SSE endpoint, which Ambrogio does not use.
 - You can log in to Home Assistant as an administrator.
-- The installation from [Install Ambrogio](../../tutorials/install-ambrogio/). Run the commands from `~/ambrogio`.
+- The installation from [Self-host Ambrogio](../../tutorials/install-ambrogio/). Run the commands from `~/ambrogio`.
 
 ## 1. Turn on the MCP server in Home Assistant
 
