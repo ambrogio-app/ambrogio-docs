@@ -7,7 +7,9 @@
 
 # Ambrogio — user documentation
 
-Documentation for people who install and run [Ambrogio](https://github.com/ambrogio-app/ambrogio-backend), a self-hosted home assistant, in their own home. It covers the three programs: `ambrogio-backend`, `ambrogio-cli` and `ambrogio-satellite`.
+**Ambrogio**: talk to it like Alexa, chat with it like ChatGPT — one self-hosted AI assistant for your whole homelab. Multi-agent by design: each agent you configure handles one job, such as the house, music, weather or your documents, using the services you already host.
+
+This repository holds the user documentation, for people who install and run Ambrogio at home. It covers the backend, the web chat, the terminal client and the voice satellite.
 
 The site is built with [Astro Starlight](https://starlight.astro.build/). Diagrams use Mermaid through [`astro-mermaid`](https://github.com/joesaby/astro-mermaid).
 
