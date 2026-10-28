@@ -5,12 +5,11 @@ sidebar:
   label: Install the terminal client
 ---
 
-The terminal client runs from a checkout of its repository. There is no installable package yet.
+The terminal client is a chat in a terminal window, for any computer that can reach the backend; it shows the same conversations as every other client (see [Architecture](../../explanation/architecture/#any-client-any-conversation)). It runs from a checkout of its repository. There is no installable package yet.
 
 ## Before you start
 
-- Node.js 24 or later.
-- A terminal window at least 70 columns wide and 14 rows high.
+- The computer meets the [terminal client requirements](../../reference/requirements/#terminal-client).
 - The backend's address, for example `http://ambrogio.home.lan:3000`, reachable from this computer.
 
 ## Install
@@ -51,12 +50,13 @@ or `export AMBROGIO_CLIENT_ID=cli-anna-laptop`. The identifier only labels the c
 
 ## Update
 
+From the client's folder, check out the new release and build it again:
+
 ```bash
-git pull
+git fetch --tags
+git checkout <release>
 pnpm install --frozen-lockfile
 pnpm build
 ```
-
-Check that the new version matches your backend; see [Versions and compatibility](../../reference/versions/).
 
 All options and keys are listed in [Terminal client](../../reference/terminal-client/).

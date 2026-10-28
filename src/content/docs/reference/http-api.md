@@ -126,3 +126,16 @@ No endpoint accepts a body today: the backend reads a body before it chooses the
 ## Browsers
 
 Only `GET` is allowed across origins, and only for origins listed in `AMBROGIO_ALLOWED_ORIGINS`. See [Backend configuration](../backend-configuration/#http-listener).
+
+## Memory MCP server `/mcp/memory`
+
+The backend also serves an [MCP](https://modelcontextprotocol.io/) server over Streamable HTTP at `/mcp/memory`, from backend `v0.17.0`, for the Memory agent. It is outside `/api/` and not part of HTTP API `v1`. See [Search past conversations](../../how-to/search-past-conversations/).
+
+| Item | Value |
+|---|---|
+| Tool | `search_conversations` |
+| What it searches | The question and the answer of every answered turn, in all conversations. Failed, interrupted and pending turns are not searched. A turn can be found as soon as it ends. |
+| Matching | The words of the query in any form of the language set by `AMBROGIO_LANGUAGE`: *dentista* also finds *dentisti*. A word written without its accent, or a synonym, is not found. |
+| Authentication | None. |
+| Requests with an `Origin` header | Refused, so a web page cannot use the server through a browser. |
+| Search failure | The agent receives `Conversation search failed`; the log has `conversation_memory_search_failed`. |

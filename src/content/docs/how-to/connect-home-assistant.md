@@ -5,13 +5,13 @@ sidebar:
   label: Connect Home Assistant
 ---
 
-Home Assistant can act as an [MCP](https://modelcontextprotocol.io/) server. You give Ambrogio an agent that connects to it, and that agent can then read the state of your devices and switch them on and off during a conversation.
+Home Assistant can act as an [MCP](https://modelcontextprotocol.io/) server. You give Ambrogio an [agent with tools](../../explanation/agents/) that connects to it, and that agent can then read the state of your devices and switch them on and off during a conversation. [Agents that act on your home](../../explanation/security/#agents-that-act-on-your-home) explains how to limit what it can do.
 
 ## Before you start
 
 - Home Assistant 2025.11 or later, reachable from the machine that runs the Ambrogio backend. Earlier releases do not serve the `/api/mcp` endpoint. See [External services and models](../../reference/versions/#external-services-and-models).
 - You can log in to Home Assistant as an administrator.
-- The backend running with the Compose example, and a checkout of the backend repository at the same version.
+- The installation from [Install Ambrogio](../../tutorials/install-ambrogio/). Run the commands from `~/ambrogio`.
 
 ## 1. Turn on the MCP server in Home Assistant
 
@@ -33,32 +33,40 @@ Home Assistant only lets MCP clients see and control the entities that are **exp
 
 ## 4. Add the agent file
 
-The backend repository provides `examples/agents/home-assistant.json`. Copy it, for example to `agents/home-assistant.json`, and set `mcp.url` to your Home Assistant address followed by `/api/mcp`. The example address is `http://homeassistant.local:8123/api/mcp`.
+1. Download the example agent of your backend release, for example `v0.17.0`:
 
-Mount your copy in the backend service in `compose.example.yaml`:
+   ```bash
+   curl -fsSLo agents/home-assistant.json https://raw.githubusercontent.com/ambrogio-app/ambrogio-backend/v0.17.0/examples/agents/home-assistant.json
+   ```
 
-```yaml
-- ./agents/home-assistant.json:/etc/ambrogio/agents/home-assistant.json:ro
-```
+2. In `agents/home-assistant.json`, set `mcp.url` to your Home Assistant address followed by `/api/mcp`, for example `http://homeassistant.local:8123/api/mcp`.
 
-The file contains no token. Its `mcp.auth.tokenEnv` names the variable `HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN`. Add it under the backend service's `environment` section:
+3. The file names the token's variable, `HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN`, in `mcp.auth.tokenEnv`. Add it to the `environment` section of the `backend` service in `compose.yaml`:
 
-```yaml
-HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN: ${HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN:?Set HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN}
-```
+   ```yaml
+   HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN: ${HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN:?Set HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN}
+   ```
 
-Add `HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN=<your-token>` to the private `.env` beside the Compose file. The agent uses `MISTRAL_API_KEY`, which the Compose service already passes. Its `maxToolCalls` limit is five. The file name, `home-assistant`, is the agent identifier. The backend supplies the response language selected by `AMBROGIO_LANGUAGE`.
+4. Add the token to `.env`:
 
-```bash
-docker compose -f compose.example.yaml up -d
-```
+   ```dotenv
+   HOME_ASSISTANT_LONG_LIVED_ACCESS_TOKEN=<your-token>
+   ```
+
+5. Start Home Assistant first, then recreate the backend:
+
+   ```bash
+   docker compose up -d
+   ```
+
+   The backend connects to Home Assistant once, after it starts.
 
 ## 5. Try it
 
-Once the backend is listening, it connects to Home Assistant and asks which tools and prompts it offers. At every request it reads Home Assistant's prompt again: it tells the model how to use the tools and lists the areas and devices exposed to Assist. A device you expose or rename in Home Assistant works from the next request, without restarting the backend. If Home Assistant cannot be reached at that moment, or the token is wrong, the backend still starts but the `home-assistant` agent stays unavailable until the backend restarts: its log shows `"event":"agent_mcp_unavailable"` with `"agent":"home-assistant"`, and requests for the home get the standard error answer. Start Home Assistant before the backend, or restart the backend once Home Assistant is up.
+Ask: *"Which lights are on?"*, followed by *"Turn off the kitchen one."* and *"Turn off all the lights."*.
 
-Then ask: *"Which lights are on?"*, followed by *"Turn off the kitchen one."* and *"Turn off all the lights."*. A question such as *"Is the bedroom light on?"* only reads the state; it does not change any device.
+If the home requests get the standard error answer, look for `agent_mcp_unavailable` in `docker compose logs backend`; see [Troubleshooting](../troubleshoot/#an-agent-with-an-mcp-server-does-not-work).
 
 ## If the orchestrator picks the wrong agent
 
-The orchestrator only sees each agent's `description`. If home requests end up with the general agent, make the Home Assistant description more specific (name the rooms or kinds of devices) and the general one clearly about other things. See [Agents and the orchestrator](../../explanation/agents/).
+Make the Home Assistant agent's `description` more specific, for example by naming the rooms or kinds of devices, and the general one clearly about other things. Then run `docker compose restart backend`.

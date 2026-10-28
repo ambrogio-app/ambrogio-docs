@@ -13,7 +13,6 @@ The backend reads its configuration once, at startup, from environment variables
 - A variable set to an empty string counts as unset.
 - A default applies either in every environment or only in `development`. In `test` and `production`, a variable whose default is development-only is required.
 - Configuration errors name the variable and the condition, for example `Missing environment variable AMBROGIO_DATABASE_URL` or `Invalid environment variable AMBROGIO_HTTP_PORT: expected an integer from 1 to 65535`.
-- A local `.env` file is read only by the development command `pnpm dev`, which runs `node --env-file=.env apps/server/dist/main.js`. Variables already set in the shell take precedence over the file. The backend never reads `.env` by itself, and the Docker image contains no `.env`. See [Run the backend from source](../../how-to/run-backend-from-source/).
 
 ## Runtime environment
 
@@ -72,7 +71,7 @@ Each listed language `<L>` (`EN` or `IT`) has a profile:
 
 The profile of `AMBROGIO_LANGUAGE` is the active one: its models are loaded before the server starts listening. The variables of the other listed profile are checked but its models are not loaded. Paths are inside the container and may refer to [bundled models](../bundled-models/) or to models mounted into the container. No voice variable has a default.
 
-Speech recognition runs while the client sends the audio: a worker thread decodes each frame as it arrives, using up to two CPU threads, and at `input.end` only the last part remains; see [Limits and timeouts](../limits-and-timeouts/#backend). The model recognises the spoken language by itself; the language of the profile is not passed to it. Real-time recognition needs an x86_64 CPU with AVX2: without AVX2, for example on a low-end Celeron, recognition falls behind and the text arrives after the end of the sentence, with a delay that grows with the length of the turn. Speech synthesis uses up to four CPU threads. Audio has the sample rate of the loaded voice.
+Speech recognition runs while the client sends the audio: a worker thread decodes each frame as it arrives, using up to two CPU threads, and at `input.end` only the last part remains; see [Limits and timeouts](../limits-and-timeouts/#backend). The model recognises the spoken language by itself; the language of the profile is not passed to it. Real-time recognition needs an x86_64 CPU with AVX2; see [Before you install](../requirements/#backend). Speech synthesis uses up to four CPU threads. Audio has the sample rate of the loaded voice.
 
 ## Fixed paths in the Docker image
 
@@ -88,7 +87,6 @@ The backend repository provides:
 
 | File | Purpose |
 |---|---|
-| `.env.example` | Every variable the backend reads, with empty values except `AMBROGIO_ENV=development`. Copy it to `.env` for development. It repeats no default. |
 | `compose.example.yaml` | A production deployment that sets only the variables production requires, plus the bundled voices for English and Italian, and a `database` service with PostgreSQL 18 (image `pgvector/pgvector:pg18`, data in a volume on `/var/lib/postgresql`). It needs `AMBROGIO_VERSION`, `AMBROGIO_DATABASE_PASSWORD` and `MISTRAL_API_KEY`. |
 | `examples/agents/*.json` | Example agent files. See [Agent configuration](../agent-configuration/#examples). |
 

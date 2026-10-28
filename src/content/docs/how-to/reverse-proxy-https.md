@@ -1,26 +1,35 @@
 ---
 title: Put the backend behind HTTPS
-description: Serve Ambrogio through a reverse proxy with TLS, and limit who can reach it.
+description: Serve the backend and the web chat through a reverse proxy with TLS, and limit who can reach them.
 sidebar:
   label: Put the backend behind HTTPS
 ---
 
-The backend speaks plain HTTP and has no login. To use HTTPS, put a reverse proxy in front of it. The proxy handles the certificate and is also the right place to decide who may connect.
+The backend speaks plain HTTP and [has no login](../../explanation/security/#there-is-no-login). A reverse proxy in front of it handles the certificate and decides who may connect. This guide serves the backend and the web chat at one HTTPS address, `https://ambrogio.example.com`: the proxy sends `/api/*` to the backend and everything else to the web chat.
 
-## 1. Keep the backend private
+## Before you start
 
-Publish the backend's port only on the loopback interface, so that clients have to go through the proxy:
+- The installation from [Install Ambrogio](../../tutorials/install-ambrogio/). Run the commands from `~/ambrogio`.
+- Caddy or nginx on the same host, and a name for the address with a certificate for it.
 
-Change the backend Compose service port mapping to `127.0.0.1:3000:3000`, then run `docker compose -f compose.example.yaml up -d`.
+## 1. Keep the backend and the web chat private
 
-If the proxy runs in another container, put both on the same Docker network instead and publish nothing.
+In `compose.yaml`, publish both ports on the loopback interface only, so that clients have to go through the proxy:
+
+```yaml
+  backend:
+    ports:
+      - "127.0.0.1:3000:3000"
+  web:
+    ports:
+      - "127.0.0.1:8080:8080"
+```
+
+If the proxy runs in a container, put it on the same Docker network as `backend` and `web` instead, and publish neither port.
 
 ## 2. Configure the proxy
 
-The proxy must forward two kinds of traffic to the same port:
-
-- ordinary `GET` requests under `/api/v1/`;
-- a WebSocket upgrade on `/api/session`.
+Forward only `/api/*` to the backend: it carries the HTTP API and the WebSocket upgrade on `/api/session`. Other paths of the backend, such as `/mcp/memory`, stay inside the server.
 
 ### Caddy
 
@@ -31,7 +40,12 @@ ambrogio.example.com {
 	@outside not remote_ip 192.168.1.0/24
 	respond @outside 403
 
-	reverse_proxy 127.0.0.1:3000
+	handle /api/* {
+		reverse_proxy 127.0.0.1:3000
+	}
+	handle {
+		reverse_proxy 127.0.0.1:8080
+	}
 }
 ```
 
@@ -51,41 +65,54 @@ server {
     allow 192.168.1.0/24;
     deny  all;
 
-    location / {
+    location /api/ {
         proxy_pass http://127.0.0.1:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_set_header Host $host;
     }
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+    }
 }
 ```
 
-The backend pings every session every 30 seconds, which keeps idle connections well inside nginx's default 60-second read timeout.
+The default read timeout of nginx, 60 seconds, is enough: the backend pings every session every 30 seconds.
 
-## 3. Tell the backend it is served over HTTPS
+## 3. Tell the backend about the new address
 
-When the public address is HTTPS only, set these values in the backend service's `environment` section of the Compose file, so the backend sends a `Strict-Transport-Security` header:
+In the `environment` section of the `backend` service in `compose.yaml`, set:
 
 ```yaml
+AMBROGIO_ALLOWED_ORIGINS: https://ambrogio.example.com
 AMBROGIO_PUBLIC_HTTPS: "true"
 AMBROGIO_HSTS_MAX_AGE_SECONDS: "86400"
 ```
 
-`AMBROGIO_HSTS_MAX_AGE_SECONDS` is required when `AMBROGIO_PUBLIC_HTTPS` is `true`. Start with one day; raise it to a year (`31536000`) once you are sure HTTPS stays. The backend never adds `includeSubDomains` or `preload`. If your proxy already sends this header, set it in only one place.
+Start with one day of HSTS; raise it to a year (`31536000`) once you are sure HTTPS stays. If your proxy already sends a `Strict-Transport-Security` header, remove it there or here. See [Backend configuration](../../reference/backend-configuration/#http-listener).
 
-Recreate the backend with `docker compose -f compose.example.yaml up -d`.
+## 4. Point the web chat at the new address
 
-## 4. Point the clients at the new address
+In `web/config.json`, set:
 
-Use the `https://` address everywhere. The clients switch to `wss://` for the session by themselves.
+```json
+"backendUrl": "https://ambrogio.example.com"
+```
+
+Then recreate the containers:
+
+```bash
+docker compose up -d
+```
+
+## 5. Point the other clients at the new address
 
 - Terminal client: `pnpm start --server https://ambrogio.example.com`
-- Satellite: `AMBROGIO_BACKEND_URL=https://ambrogio.example.com`
-- Web chat: `"backendUrl": "https://ambrogio.example.com"` in `config.json`
+- Satellite: `AMBROGIO_BACKEND_URL: https://ambrogio.example.com`
 
-All three accept a path prefix, such as `https://example.com/ambrogio/`. The backend itself always serves `/api/...`, so a proxy that uses a prefix must strip it before forwarding.
+## Check it
 
-## About `AMBROGIO_ALLOWED_ORIGINS`
-
-The terminal client and the satellite are not web pages and send no `Origin` header, so they need nothing here. The [web chat](../install-web-chat/) is a web page: list the HTTPS address where people open it, for example `https://chat.example.com`, and set its `config.json` to the HTTPS address of the backend. Add other entries only for browser applications of your own. See [Backend configuration](../../reference/backend-configuration/#http-listener).
+Open `https://ambrogio.example.com` and send a message. If it ends with "Cannot connect to the backend.", the origin in `AMBROGIO_ALLOWED_ORIGINS` differs from the address bar, or the proxy does not forward the WebSocket upgrade on `/api/session`.

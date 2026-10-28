@@ -7,13 +7,9 @@ sidebar:
 
 The satellite reads its configuration once, at startup, from environment variables. The configuration code is part of the satellite: you set variables, you do not write code. Every value, the wake word included, is checked before the microphone is opened.
 
-## Command line
+## Exit codes
 
-```bash
-node dist/main.js
-```
-
-The satellite takes no arguments. Any argument is refused with `invalid_arguments`.
+The satellite takes no arguments: any argument is refused with `invalid_arguments`.
 
 | Exit code | Meaning |
 |---|---|
@@ -28,7 +24,6 @@ An invalid configuration produces one log line with `event: "invalid_configurati
 - `AMBROGIO_ENV` is required: `development`, `test` or `production`. There is no default.
 - A variable set to an empty string counts as unset.
 - The satellite has no development-only defaults: the defaults below apply in every environment.
-- A local `.env` file is read only by the development command `pnpm dev`, which runs `node --env-file=.env dist/main.js`. Variables already set in the shell take precedence over the file. The satellite never reads `.env` by itself.
 
 ## Variables
 
@@ -79,7 +74,7 @@ The control is usually created by an ALSA `softvol` device placed in front of th
 
 ## Example files
 
-The satellite repository provides `.env.example`, with every variable and empty values except `AMBROGIO_ENV=development`, and `compose.example.yaml`, which sets only `AMBROGIO_ENV: production` and `AMBROGIO_BACKEND_URL`. Neither repeats a default.
+The satellite repository provides `compose.example.yaml`, which sets only `AMBROGIO_ENV: production` and `AMBROGIO_BACKEND_URL`. It repeats no default.
 
 ## Docker image
 

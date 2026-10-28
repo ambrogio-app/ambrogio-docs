@@ -1,59 +1,53 @@
 ---
 title: Security and privacy
-description: What Ambrogio protects by design, what it does not, and what that means for where you run it.
+description: What Ambrogio protects, what it leaves to you, and what that means for where you run it.
 sidebar:
   label: Security and privacy
 ---
 
-Ambrogio is built for a trusted home network. Knowing exactly where that trust is placed helps you decide how to install it.
+Ambrogio is built for a trusted home network. Knowing where that trust is placed helps you decide how to install it.
 
 ## There is no login
 
-The backend has no user accounts and no authentication. Anyone who can reach its port can read every conversation and talk to every agent, including agents that control your home through Home Assistant.
+Ambrogio has no user accounts and no passwords. Anyone who can reach the backend can read every conversation and talk to every agent, including the agents that control your home. The protection comes from your network:
 
-This is a deliberate choice for the first versions: the family shares one identity, and the protection comes from the network rather than from passwords. In practice:
+- run the backend on your home network only, and do not forward its port on your router;
+- for access from outside, use a VPN, or a [reverse proxy](../../how-to/reverse-proxy-https/) that only lets your own devices in;
+- remember that every device on the network, guests' phones and smart TVs included, can reach it unless you separate them.
 
-- run the backend on your home network only;
-- do not forward its port on your router;
-- if you need access from outside, use a VPN, or a reverse proxy that only lets your own devices in ([Put the backend behind HTTPS](../../how-to/reverse-proxy-https/) shows an IP allow-list);
-- remember that every device on the network, including guests' phones and smart TVs, can reach it unless you separate them.
+## Web pages cannot use it behind your back
 
-## What the backend does protect
-
-- **Browsers.** Web pages cannot call the API or open a session from another site unless you list that site in `AMBROGIO_ALLOWED_ORIGINS`. This stops a malicious web page from talking to Ambrogio through a family member's browser. It does nothing against programs that are not browsers. List only the address of the [web chat](../../reference/web-chat/) and of browser applications you trust.
-- **HTTP headers.** Responses carry standard security headers, and HSTS when you declare the public address HTTPS-only.
-- **Caching.** Responses that contain conversations are marked not to be cached by browsers or proxies.
+A web page opened in a family member's browser cannot talk to Ambrogio, unless you list its address in `AMBROGIO_ALLOWED_ORIGINS`. List only the address of your web chat.
 
 ## Secrets
 
-API keys, MCP tokens and OAuth client secrets live only in environment variables. Agent files are plain data and only name the variable that holds each secret, so they can be shared or versioned without exposing a key. Protect the Compose `.env` and the container environment. The backend:
+API keys and tokens live only in environment variables, in your private `.env`. Agent files only name the variable that holds each secret, so you can share them without exposing a key. Ambrogio never sends one agent's credentials to another agent or to an LLM, and never writes them in its logs.
 
-- never sends one agent's credentials to another agent or to the language model;
-- never writes them to the logs or to error messages: a configuration error names the variable, never its value.
-
-Protecting the files themselves is up to you: restrict their permissions, mount them read-only into the container, and keep backups private. Never commit them to a repository.
+Protecting `.env` and its backups is up to you: keep them readable only by you, and never commit them to a repository.
 
 ## What leaves your home
 
+It depends on the LLMs and the services you choose. Each agent, the orchestrator included, can use a cloud LLM provider or an LLM that runs on your own network; see [Choose the LLM provider](../../how-to/choose-llm-provider/).
+
 | Data | Goes to |
 |---|---|
-| The text of each conversation, sent with every turn | The model provider of the orchestrator and of the agent that answers, to produce the answer |
-| Tool calls and their results | The MCP servers you configured, and the model |
-| Audio | Nowhere outside your network |
+| The text of the conversation, with every message | The LLM of the orchestrator and of the agent that answers: outside your home with a cloud provider, nowhere with an LLM on your network |
+| Tool calls and their results | The services the agent is connected to, and its LLM |
+| Audio | Nowhere: speech is recognised and spoken on your server |
 
-If you configure an MCP server outside your network, the agent's requests to it leave your home too.
+With every LLM and every connected service on your network, nothing leaves your home. A connected service outside your network, such as a public web search, receives the agent's requests.
 
 ## What is stored
 
-The backend stores conversations as text, indefinitely, in its PostgreSQL database. The connection to the database has no TLS, so keep the database on the backend machine or on your internal network, and never publish its port. It does not store audio. There is no built-in way to delete a conversation yet; the archive is yours to manage.
+The backend stores conversations as text, with no time limit, in its database. Keep the database on the backend's machine and never publish its port: the connection to it is not encrypted. Audio is never stored. Ambrogio has no way to delete a conversation yet.
 
-Logs record that something happened, never what was said: no conversation text, no audio, no credentials. See [Logs](../../reference/logs/).
+The logs record that something happened, never what was said: no conversation text, no audio, no credentials.
 
-## Tools that act on your home
+## Agents that act on your home
 
 An agent connected to Home Assistant can switch things on and off. Two settings limit what it can do:
 
-- in Home Assistant, expose only the entities you are comfortable with an AI controlling;
-- in Ambrogio, `maxToolCalls` caps the number of actions per request.
+- in Home Assistant, expose only the devices you are comfortable with an AI controlling, and leave out locks and alarms;
+- in the agent file, `maxToolCalls` caps the actions per request.
 
-The orchestrator itself cannot act or claim to have acted; only the chosen agent can call tools. See [Agents and the orchestrator](../agents/#why-the-orchestrator-never-answers).
+The orchestrator cannot act: only the agent it chooses can. See [Agents and the orchestrator](../agents/).

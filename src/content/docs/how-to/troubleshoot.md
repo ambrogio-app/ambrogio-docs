@@ -5,14 +5,14 @@ sidebar:
   label: Troubleshooting
 ---
 
-Start with the logs. The backend and the satellite both write one JSON object per line to standard output. With Docker, read them with `docker logs <container>`. [Logs](../../reference/logs/) lists the events.
+Start with the logs. From `~/ambrogio`, read the backend's with `docker compose logs backend`; from the satellite's folder, `docker compose logs satellite`. [Logs](../../reference/logs/) lists the events.
 
 ## The backend does not start
 
 When the backend refuses to start, it writes `Unable to start HTTP server.` to standard error and, just before it, one JSON line on standard output that says why:
 
 ```bash
-docker logs ambrogio 2>&1 | grep server_startup_failed
+docker compose logs backend | grep server_startup_failed
 ```
 
 ```
@@ -23,17 +23,17 @@ Look at `err.message` and find it in this table.
 
 | `err.message` | What to check |
 |---|---|
-| `Missing environment variable <NAME>` | A required variable is not set, or is set to an empty string. In production `AMBROGIO_ENV`, `AMBROGIO_HTTP_HOST`, `AMBROGIO_HTTP_PORT`, `AMBROGIO_PUBLIC_HTTPS` and `AMBROGIO_DATABASE_URL` are required; with voice, each listed language needs its profile variables. In Docker, `docker inspect ambrogio` shows the variables of the container. |
+| `Missing environment variable <NAME>` | A required variable is not set, or is set to an empty string. In production `AMBROGIO_ENV`, `AMBROGIO_HTTP_HOST`, `AMBROGIO_HTTP_PORT`, `AMBROGIO_PUBLIC_HTTPS` and `AMBROGIO_DATABASE_URL` are required; with voice, each listed language needs its profile variables. `docker compose config` shows the variables Compose passes to the container. |
 | `Invalid environment variable <NAME>: <condition>` | The variable has a value the backend does not accept; the condition says what it expects. Common cases: `AMBROGIO_ENV` other than `development`, `test` or `production`; a port outside 1–65535; `AMBROGIO_PUBLIC_HTTPS` other than `true` or `false`; `AMBROGIO_HSTS_MAX_AGE_SECONDS` missing with `AMBROGIO_PUBLIC_HTTPS=true`; an origin with a path, a trailing slash or `*`; `AMBROGIO_LANGUAGE` other than `en` or `it`; a time zone that is not an IANA name such as `Europe/Rome`; `AMBROGIO_LIST_PAGE_SIZE` above `AMBROGIO_MAX_LIST_PAGE_SIZE`; `AMBROGIO_VOICE_LANGUAGES` without `AMBROGIO_LANGUAGE` or with an unknown or repeated language. |
-| `Conversation archive could not be prepared` | The backend could not use the database of `AMBROGIO_DATABASE_URL`: PostgreSQL is not running or not reachable from the backend, the database does not exist, the user or password is wrong, the user cannot create tables, or the database structure could not be updated. With Compose, check `docker compose -f compose.example.yaml logs database`. |
-| `Voice resources are unavailable` | `AMBROGIO_VOICE_<L>_STT_MODEL_DIR` of the active language lacks the files of a streaming transducer: exactly one file whose name contains `encoder` and ends with `.onnx`, exactly one that contains `decoder` and ends with `.onnx`, exactly one that contains `joiner` and ends with `.onnx`, and exactly one that ends with `tokens.txt`. Or `AMBROGIO_VOICE_<L>_MODEL_DIR` lacks the files of a Piper voice: exactly one `.onnx` file, `tokens.txt` and `espeak-ng-data/`. |
+| `Conversation archive could not be prepared` | The backend could not use the database of `AMBROGIO_DATABASE_URL`: PostgreSQL is not running or not reachable from the backend, the database does not exist, the user or password is wrong, the user cannot create tables, or the database structure could not be updated. Check `docker compose logs database`. |
+| `Voice resources are unavailable` | A folder of the active voice profile lacks the files listed in [Backend configuration](../../reference/backend-configuration/#voice). Check the path and the mount. |
 | `Voice components could not be loaded` | The files are there but a model failed to load. Download it again. |
-| `Agent configuration directory unavailable` | The agents folder, `AMBROGIO_AGENTS_DIR` or `/etc/ambrogio/agents` by default, does not exist. In Docker, check the mounts of the agent files. |
+| `Agent configuration directory unavailable` | The agents folder, `AMBROGIO_AGENTS_DIR` or `/etc/ambrogio/agents` by default, does not exist. Check the mount of `./agents` in `compose.yaml`. |
 | `Missing orchestrator configuration` | There is no `orchestrator.json`. |
 | `No specialist agent configured` | There is no agent file besides `orchestrator.json`. |
 | `Invalid agent configuration filename: <file>` | The name must be lowercase letters, digits and hyphens, starting with a letter. |
-| `Missing environment variable <NAME> for agent <id>` | The variable named by `apiKeyEnv`, `tokenEnv` or `clientSecretEnv` in that agent's file is not set in the backend environment. In Docker, add it to the service's `environment` section. |
-| `Invalid agent configuration: <id>` | That agent's file. Common mistakes: invalid JSON, a field the backend does not know (a literal `apiKey`, `token` or `clientSecret` included: name the variable with `apiKeyEnv`, `tokenEnv` or `clientSecretEnv` instead), a variable name that is not uppercase letters, digits and underscores, `description` missing (or present in `orchestrator.json`), `maxToolCalls` missing with `mcp` or present without it, `provider` not among `mistral`, `openai`, `anthropic`, `google` and `openai-compatible`, `baseURL` missing or not an `http(s)://` address with `openai-compatible` or present with another provider, an `mcp.url` that is not `http(s)://`, an `mcp.tools` that is empty, not an array or with a repeated name. |
+| `Missing environment variable <NAME> for agent <id>` | The variable named by `apiKeyEnv`, `tokenEnv` or `clientSecretEnv` in that agent's file is not set in the backend environment. Add it to the `environment` section of the `backend` service and its value to `.env`. |
+| `Invalid agent configuration: <id>` | That agent's file: check that it is valid JSON and that every field follows [Agent configuration](../../reference/agent-configuration/). A common mistake is a literal `apiKey`, `token` or `clientSecret`: name the variable with `apiKeyEnv`, `tokenEnv` or `clientSecretEnv` instead. |
 | `Invalid agent options: <id>` | `llm.options` may contain only `temperature` (0 or more) and `max_tokens` (1 or more). |
 | `HTTP listener could not start` | The port is already in use, or `AMBROGIO_HTTP_HOST` is not an address of this machine. |
 
@@ -67,6 +67,8 @@ The client needs at least 70 columns and 14 rows. Make the window bigger; your c
 
 ## A turn shows "In progress"
 
+[Conversations](../../explanation/conversations/#when-the-answer-does-not-arrive) explains what each state means.
+
 The backend accepted the turn and has not saved an outcome yet. Press `Ctrl+R` later to refresh. If it never changes, the backend probably stopped while answering; after the next restart the turn shows as interrupted.
 
 ## Every answer is "I can't complete the response."
@@ -89,8 +91,8 @@ The satellite checks its environment variables before it starts and stops at the
 {"level":"info","time":...,"event":"invalid_configuration","variable":"AMBROGIO_WAKE_WORD","condition":"invalid"}
 ```
 
-- `"condition":"missing"`: the variable is not set, or is empty. `AMBROGIO_ENV` and `AMBROGIO_BACKEND_URL` are always required; the three `AMBROGIO_ATTENUATION_*` variables go together. In Docker, check the service's `environment` section.
-- `"condition":"invalid"`: the value is wrong. [Satellite configuration](../../reference/satellite-configuration/) lists the rules for each variable. The usual suspects are an `AMBROGIO_ENV` other than `development`, `test` or `production`, an `AMBROGIO_BACKEND_URL` with spaces or a query string, an `AMBROGIO_WAKE_WORD` with characters other than ASCII letters, single spaces and inner apostrophes, or longer than 64 characters, a threshold that is not above 0 and below 1, a reply timeout that is not a whole number, and audio selectors with spaces around them.
+- `"condition":"missing"`: set the variable. `AMBROGIO_ENV` and `AMBROGIO_BACKEND_URL` are always required, and the three `AMBROGIO_ATTENUATION_*` variables go together.
+- `"condition":"invalid"`: correct the value following the rules of that variable in [Satellite configuration](../../reference/satellite-configuration/#variables).
 
 `invalid_arguments` means the command line had arguments: the satellite takes none.
 
@@ -100,7 +102,7 @@ When the satellite cannot start, it prints `Unable to start Ambrogio satellite.`
 
 | `err.message` | What to check |
 |---|---|
-| `Wake word model could not be loaded` | The keyword spotting model is missing or damaged. If you mount your own model at `/app/models/kws`, the folder must contain exactly one `encoder*.onnx`, one `decoder*.onnx` and one `joiner*.onnx` file, plus `tokens.txt` and `bpe.model`; see [Change the wake word](../change-wake-word/#replace-the-keyword-spotting-model). Otherwise reinstall the satellite or pull the image again. |
+| `Wake word model could not be loaded` | The keyword spotting model is missing or damaged. If you mount your own model at `/app/models/kws`, check its files; see [Change the wake word](../change-wake-word/#replace-the-keyword-spotting-model). Otherwise reinstall the satellite or pull the image again. |
 | `Voice activity model could not be loaded` | The bundled speech detection model is damaged. Reinstall the satellite or pull the image again. |
 | `Microphone could not be started` | The selected microphone does not exist or is busy. See [Choose audio devices](../choose-audio-devices/). |
 
@@ -113,7 +115,7 @@ When two things fail, for example the microphone and then the release of a model
 The satellite plays this error tone in two cases. Its log tells you which:
 
 - `satellite_failure`: the interaction failed on the satellite's side. The backend cannot be reached, the session dropped during the turn, or no outcome arrived within 60 seconds. Check the address and the network from the device, then the backend logs. The satellite keeps running and tries again at the next wake word.
-- `satellite_voice_unavailable`: the backend is running without voice and answered in text. [Enable voice](../enable-voice/) on the backend.
+- `satellite_voice_unavailable`: the backend is running without voice and answered in text. [Configure voice](../configure-voice/) on the backend.
 
 ## The satellite never reacts to the wake word
 
@@ -138,16 +140,16 @@ The satellite plays the beep once the backend session is ready. If the speaker c
 
 ## My question is cut short
 
-The satellite decides you have finished after about two-thirds of a second of silence. Speak without long pauses. A request may last at most 60 seconds.
+Speak without long pauses: a short silence ends the request, and a request may last at most 60 seconds. See [Limits and timeouts](../../reference/limits-and-timeouts/#satellite).
 
 ## Voice answers start long after I stop speaking
 
-The backend recognises speech while you talk, so after the end of a sentence only the last part remains to decode. If the delay grows with the length of what you say, the backend CPU cannot recognise speech in real time: audio waits and the text arrives late, but nothing is lost.
+If the delay grows with the length of what you say, the backend's CPU cannot recognise speech in real time.
 
-1. Check that the backend host has an x86_64 CPU with AVX2. This prints `avx2` when it does:
+1. Check that the backend host has AVX2:
 
    ```bash
    grep -o -m1 avx2 /proc/cpuinfo
    ```
 
-2. Without AVX2, for example on a low-end Celeron, recognition falls behind. Run the backend on a CPU with AVX2.
+2. If it prints nothing, run the backend on a CPU that meets the [voice requirement](../../reference/requirements/#backend).

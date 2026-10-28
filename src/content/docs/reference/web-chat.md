@@ -37,7 +37,7 @@ The page's origin must be listed in the backend's `AMBROGIO_ALLOWED_ORIGINS`, ot
 
 | Item | Value |
 |---|---|
-| Image | `ambrogio-web`, built from the repository. Release images will be published as `ghcr.io/ambrogio-app/ambrogio-web:<tag>` for `linux/amd64` and `linux/arm64`, without a `latest` tag. |
+| Image | `ghcr.io/ambrogio-app/ambrogio-web:<tag>`, for `linux/amd64` and `linux/arm64`, without a `latest` tag. See [Versions and compatibility](../versions/#current-state). |
 | Port | `8080`, plain HTTP |
 | User | Unprivileged (`nginx-unprivileged`) |
 | Configuration | `config.json`, mounted read-only at `/usr/share/nginx/html/config.json`. Not included in the image. |
