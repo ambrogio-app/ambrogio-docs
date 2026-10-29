@@ -40,10 +40,11 @@ Tutorials and how-to guides refer to the installation created by *Self-host Ambr
 
 ## Style
 
-- Describe Ambrogio with the standard definition, the same in this site and in the README of every repository: "Talk to it like Alexa, chat with it like ChatGPT — one self-hosted AI assistant for your whole homelab." When more is needed, add: "Multi-agent by design: each agent you configure handles one job, such as the house, music, weather or your documents, using the services you already host." Do not call it a "home assistant", which is confused with Home Assistant.
+- Describe Ambrogio with the standard definition, the same in this site and in the README of every repository: "Talk to it like Alexa, chat with it like ChatGPT. One self-hosted AI assistant for your whole homelab." When more is needed, add: "Multi-agent by design: each agent you configure handles one job, such as the house, music, weather or your documents, using the services you already host." Do not call it a "home assistant", which is confused with Home Assistant.
 - English, second person, short sentences, plain words. Say what happens, then why, only where the reader needs it.
 - Use exact names: fields, file paths, log events and messages as they appear in the product.
-- No marketing tone, no filler introductions or summaries, no emoji.
+- No marketing tone, no filler introductions or summaries, no emoji, no em dashes.
+- Review new or changed prose with the `stop-slop` skill. Exact names of the product (fields, variables, log events, messages) stay as they are.
 - Product texts are quoted in English. Italian texts appear only in the `it` or Italian columns of the reference tables that list both languages (`reference/messages.md`, the interface texts of `reference/web-chat.md`), so that a reader who chose Italian can find what they see.
 - Quote messages in double quotes, name buttons and list entries in **bold**, and write what the reader says or types in italics with quotes (*"Tell me a fun fact about cats."*).
 - Examples and tutorials use English: `"language": "en"`, English models and voices, English questions and agent instructions.
