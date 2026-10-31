@@ -33,10 +33,10 @@ Home Assistant only lets MCP clients see and control the entities that are **exp
 
 ## 4. Add the agent file
 
-1. Download the example agent of your backend release, for example `v0.17.0`:
+1. Download the example agent of your backend release, for example `v0.18.0`:
 
    ```bash
-   curl -fsSLo agents/home-assistant.json https://raw.githubusercontent.com/ambrogio-app/ambrogio-backend/v0.17.0/examples/agents/home-assistant.json
+   curl -fsSLo agents/home-assistant.json https://raw.githubusercontent.com/ambrogio-app/ambrogio-backend/v0.18.0/examples/agents/home-assistant.json
    ```
 
 2. In `agents/home-assistant.json`, set `mcp.url` to your Home Assistant address followed by `/api/mcp`, for example `http://homeassistant.local:8123/api/mcp`.

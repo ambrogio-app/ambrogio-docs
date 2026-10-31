@@ -37,11 +37,11 @@ Run every command of this tutorial from `~/ambrogio`.
 
 ## Get the agents
 
-Ambrogio answers through AI agents, each described by a JSON file. Download the two example agents of the backend release `v0.17.0`:
+Ambrogio answers through AI agents, each described by a JSON file. Download the two example agents of the backend release `v0.18.0`:
 
 ```bash
-curl -fsSLo agents/orchestrator.json https://raw.githubusercontent.com/ambrogio-app/ambrogio-backend/v0.17.0/examples/agents/orchestrator.json
-curl -fsSLo agents/generic.json https://raw.githubusercontent.com/ambrogio-app/ambrogio-backend/v0.17.0/examples/agents/generic.json
+curl -fsSLo agents/orchestrator.json https://raw.githubusercontent.com/ambrogio-app/ambrogio-backend/v0.18.0/examples/agents/orchestrator.json
+curl -fsSLo agents/generic.json https://raw.githubusercontent.com/ambrogio-app/ambrogio-backend/v0.18.0/examples/agents/generic.json
 ```
 
 `orchestrator.json` chooses who answers each message; `generic.json` answers general questions. Both use Mistral models.
@@ -51,8 +51,8 @@ curl -fsSLo agents/generic.json https://raw.githubusercontent.com/ambrogio-app/a
 Create `.env`:
 
 ```dotenv title="~/ambrogio/.env"
-AMBROGIO_VERSION=v0.17.0
-AMBROGIO_WEB_VERSION=v0.3.1
+AMBROGIO_VERSION=v0.18.0
+AMBROGIO_WEB_VERSION=v0.3.2
 AMBROGIO_DATABASE_PASSWORD=<database-password>
 MISTRAL_API_KEY=<your-api-key>
 ```

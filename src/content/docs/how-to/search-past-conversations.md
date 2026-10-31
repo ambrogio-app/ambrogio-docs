@@ -13,10 +13,10 @@ The Memory agent answers questions such as *"When did I say the dentist appointm
 
 ## 1. Add the agent file
 
-Download the example agent of your backend release, for example `v0.17.0`:
+Download the example agent of your backend release, for example `v0.18.0`:
 
 ```bash
-curl -fsSLo agents/memory.json https://raw.githubusercontent.com/ambrogio-app/ambrogio-backend/v0.17.0/examples/agents/memory.json
+curl -fsSLo agents/memory.json https://raw.githubusercontent.com/ambrogio-app/ambrogio-backend/v0.18.0/examples/agents/memory.json
 ```
 
 It contains:

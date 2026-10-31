@@ -20,16 +20,25 @@ The backend and the clients are updated together. The backend offers one version
 
 ## Current state
 
-Release list checked on 27 October 2026. Ambrogio is in preview, and configuration may change between releases. Earlier releases are not covered: use the current ones.
+Release list checked on 31 October 2026. Ambrogio is in preview, and configuration may change between releases. Earlier releases are not covered: use the current ones.
 
 | Program | Latest release | Images | Interfaces |
 |---|---|---|---|
-| Backend | `v0.17.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.17.0` (amd64) | offers `ambrogio.v1` and HTTP API `v1` |
-| Terminal client | `v0.3.1` | none, run from a checkout of the tag | uses `ambrogio.v1` and HTTP API `v1` |
-| Web chat | `v0.3.1` | `ghcr.io/ambrogio-app/ambrogio-web:v0.3.1` (amd64, arm64) | uses `ambrogio.v1` and HTTP API `v1` |
-| Satellite | `v0.8.1` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.8.1` (amd64, arm64) | uses `ambrogio.v1` |
+| Backend | `v0.18.0` | `ghcr.io/ambrogio-app/ambrogio-backend:v0.18.0` (amd64) | offers `ambrogio.v1` and HTTP API `v1` |
+| Terminal client | `v0.4.0` | none, run from a checkout of the tag | uses `ambrogio.v1` and HTTP API `v1` |
+| Web chat | `v0.3.2` | `ghcr.io/ambrogio-app/ambrogio-web:v0.3.2` (amd64, arm64) | uses `ambrogio.v1` and HTTP API `v1` |
+| Satellite | `v0.9.0` | `ghcr.io/ambrogio-app/ambrogio-satellite:v0.9.0` (amd64, arm64) | uses `ambrogio.v1` |
 
 All four current releases work together. Each client release is tested in CI against the backend under development, through the backend's test entry point.
+
+## Changes from the previous releases
+
+From backend `v0.17.0`, terminal client `v0.3.1`, web chat `v0.3.1` and satellite `v0.8.1`:
+
+- Backend `v0.18.0`: `AMBROGIO_DATABASE_URL` must name a user and a password and contain no `?` or `#`; `PG*` variables are ignored. See [Backend configuration](../backend-configuration/). Empty entries of `AMBROGIO_ALLOWED_ORIGINS` are ignored. New `GET /health` endpoint, used by the image's Docker `HEALTHCHECK`. No database migration.
+- Terminal client `v0.4.0`: while a chat waits for its answer, only that chat is blocked; you can open and use other chats. See [Terminal client](../terminal-client/).
+- Web chat `v0.3.2`: text you type and do not send stays in its own chat.
+- Satellite `v0.9.0`: waits at most 5 seconds for the backend to confirm the session. See [Limits and timeouts](../limits-and-timeouts/).
 
 ## Release rules
 
