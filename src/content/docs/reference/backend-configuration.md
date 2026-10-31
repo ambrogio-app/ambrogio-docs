@@ -28,7 +28,7 @@ The backend reads its configuration once, at startup, from environment variables
 | `AMBROGIO_HTTP_PORT` | Integer, 1–65535. The same port serves HTTP and the WebSocket session. | `3000`, development only | yes |
 | `AMBROGIO_PUBLIC_HTTPS` | `true` or `false`. Set `true` when clients reach the backend only over HTTPS, typically through a reverse proxy. Enables the `Strict-Transport-Security` header. | `false`, development only | yes |
 | `AMBROGIO_HSTS_MAX_AGE_SECONDS` | Positive integer: `max-age` of the `Strict-Transport-Security` header. | none | when `AMBROGIO_PUBLIC_HTTPS` is `true` |
-| `AMBROGIO_ALLOWED_ORIGINS` | Comma-separated web origins allowed to call the API from a browser, for example `https://home.example.com`. Each entry is an exact origin: scheme, host and optional port, with no path and no trailing slash. `*` is not accepted. | unset: no origin is allowed | no |
+| `AMBROGIO_ALLOWED_ORIGINS` | Comma-separated web origins allowed to call the API from a browser, for example `https://home.example.com`. Each entry is an exact origin: scheme, host and optional port, with no path and no trailing slash. The backend ignores spaces around an entry and empty entries, such as a trailing comma. `*` is not accepted. | unset: no origin is allowed | no |
 
 `AMBROGIO_ALLOWED_ORIGINS` affects two things:
 
@@ -39,7 +39,7 @@ The backend reads its configuration once, at startup, from environment variables
 
 | Variable | Values | Default | Required in production |
 |---|---|---|---|
-| `AMBROGIO_DATABASE_URL` | URL of the PostgreSQL 18 database that stores conversations: `postgres://<user>:<password>@<host>:<port>/<database>`, or `postgresql://`. It needs a host and a database name and accepts no query parameters, such as `?sslmode=`. The backend connects without TLS, so the database belongs on the same machine or on your internal network. The user must be able to create tables: the backend creates and updates them at startup. Error messages and logs never show the URL or the password. Any other form stops the backend with `Invalid environment variable AMBROGIO_DATABASE_URL: expected a PostgreSQL URL without parameters`. | none | yes, in every environment |
+| `AMBROGIO_DATABASE_URL` | URL of the PostgreSQL 18 database that stores conversations: `postgres://<user>:<password>@<host>:<port>/<database>`, or `postgresql://`. It needs a host, a user, a password and a database name; the port defaults to `5432`. It accepts no query parameters, such as `?sslmode=`, and no fragment, not even an empty `?` or `#`. The backend ignores the PostgreSQL client variables such as `PGPASSWORD` or `PGSSLMODE` and any password file: the URL is the only source. The backend connects without TLS, so the database belongs on the same machine or on your internal network. The user must be able to create tables: the backend creates and updates them at startup. Error messages and logs never show the URL, the user or the password. Any other form stops the backend with `Invalid environment variable AMBROGIO_DATABASE_URL: expected a PostgreSQL URL without parameters`. | none | yes, in every environment |
 | `AMBROGIO_LANGUAGE` | `en` or `it`: language of the backend's own messages, agent answers and speech models. Any other value stops the backend from starting. | `en`, every environment | no |
 | `AMBROGIO_TIME_ZONE` | IANA time zone of the family, such as `Europe/Rome`. The agents get the current date and time in this zone; see [Current date and time](../agent-configuration/#current-date-and-time). | `UTC`, every environment | no |
 | `AMBROGIO_LIST_PAGE_SIZE` | Positive integer: conversations per page when a client does not ask for a size. | `20`, every environment | no |
@@ -72,6 +72,12 @@ Each listed language `<L>` (`EN` or `IT`) has a profile:
 The profile of `AMBROGIO_LANGUAGE` is the active one: its models are loaded before the server starts listening. The variables of the other listed profile are checked but its models are not loaded. Paths are inside the container and may refer to [bundled models](../bundled-models/) or to models mounted into the container. No voice variable has a default.
 
 Speech recognition runs while the client sends the audio: a worker thread decodes each frame as it arrives, using up to two CPU threads, and at `input.end` only the last part remains; see [Limits and timeouts](../limits-and-timeouts/#backend). The model recognises the spoken language by itself; the language of the profile is not passed to it. Real-time recognition needs an x86_64 CPU with AVX2; see [Before you install](../requirements/#backend). Speech synthesis uses up to four CPU threads. Audio has the sample rate of the loaded voice.
+
+## Health check
+
+The backend answers `GET /health` on the same port as the API, outside `/api`. The answer has an empty body: `200` while the backend accepts requests, `503` from the moment it starts to stop. The check does not test the database, the voice models, the MCP servers or the model providers, so a `200` tells you only that the backend is running.
+
+The Docker image declares a `HEALTHCHECK` that requests `/health` on `127.0.0.1` at `AMBROGIO_HTTP_PORT` inside the container. Docker reports the container as `healthy` only while the answer is `200`; `docker compose ps` shows the state. The check reaches the backend on `127.0.0.1`, so keep `AMBROGIO_HTTP_HOST` at `0.0.0.0`.
 
 ## Fixed paths in the Docker image
 

@@ -27,7 +27,7 @@ A satellite listens for the wake word in a room and talks to the backend over yo
    ```yaml title="~/ambrogio-satellite/compose.yaml"
    services:
      satellite:
-       image: ghcr.io/ambrogio-app/ambrogio-satellite:v0.8.1
+       image: ghcr.io/ambrogio-app/ambrogio-satellite:v0.9.0
        restart: unless-stopped
        network_mode: host
        stop_grace_period: 10s

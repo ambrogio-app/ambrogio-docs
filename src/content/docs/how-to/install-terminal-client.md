@@ -15,7 +15,7 @@ The terminal client is a chat in a terminal window, for any computer that can re
 ## Install
 
 ```bash
-git clone --branch v0.3.1 https://github.com/ambrogio-app/ambrogio-cli.git
+git clone --branch v0.4.0 https://github.com/ambrogio-app/ambrogio-cli.git
 cd ambrogio-cli
 npm install --global pnpm@12.11.2
 pnpm install --frozen-lockfile

@@ -45,6 +45,7 @@ Turns are never queued and never retried automatically.
 | Speech needed to start a request | 128 ms | no |
 | Silence that ends a request | 640 ms | no |
 | Continuous speech before the request is closed at the next short pause | 55 seconds | no |
+| Wait for the backend to confirm a new session | 5 seconds; then the satellite closes the connection and treats the backend as unavailable | no |
 | Wait for an outcome after you stop speaking | 60 seconds | no |
 | Wait for a follow-up reply | 15 seconds, restarted after each answer | `AMBROGIO_REPLY_TIMEOUT_MS` |
 | Level of other local audio during an interaction | set per installation, 100% otherwise | `AMBROGIO_ATTENUATION_LEVEL` |

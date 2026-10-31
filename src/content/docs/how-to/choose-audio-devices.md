@@ -12,7 +12,7 @@ The satellite listens with one microphone and answers through one speaker ([How 
 On the satellite's device, run the satellite image with a command that lists the devices, using the release of your `compose.yaml`:
 
 ```bash
-docker run --rm --device /dev/snd --entrypoint node ghcr.io/ambrogio-app/ambrogio-satellite:v0.8.1 \
+docker run --rm --device /dev/snd --entrypoint node ghcr.io/ambrogio-app/ambrogio-satellite:v0.9.0 \
   -e "import('decibri').then(d => { console.table(d.Microphone.devices()); console.table(d.Speaker.devices()); })"
 ```
 

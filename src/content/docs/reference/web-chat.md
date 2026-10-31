@@ -78,13 +78,14 @@ The `Server` header does not show the nginx version. HTTPS and HSTS are up to yo
 | `session.error` for the message | Shows "Protocol error." |
 | A turn still being answered when you open a chat | Shows "In progress. Refresh later to see the outcome." Press **Refresh** later. |
 | While a turn is being answered | You can open other chats, start a new one, refresh and send in other chats. Only the chat that is answering cannot send until the turn ends. Coming back to it shows the answer received so far. |
+| Text typed and not sent | Stays in its own chat: each chat has its own message field. |
 | **Refresh** | Reloads the first page of the list and the open chat. |
 | **More conversations** | Loads the next page. Shown only when there is one. |
 | Chat list | Each chat is named after its first message, up to 60 characters with "…". If its history cannot be read, it shows the first 8 characters of its ID. |
 | Screen narrower than 720 pixels | The list becomes a panel opened by the **Conversations** button; choosing a chat closes it. |
 | Colours | Follow the light or dark setting of the device. |
 
-The page ignores `expectsReply`: the message field is always available.
+The page ignores `expectsReply`: the message field is available again when a turn ends, whether or not the answer asks a question.
 
 ### Answers
 

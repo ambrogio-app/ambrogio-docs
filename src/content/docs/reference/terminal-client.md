@@ -55,10 +55,11 @@ The client must run in an interactive terminal of at least 70 × 14 characters.
 | `turn.completed` | The turn is done and saved. |
 | `turn.failed` or `turn.rejected` | Replaces the partial text with the backend's message. |
 | `turn.interrupted`, or the session drops before an outcome | Marks the turn as interrupted locally. |
+| While a turn is being answered | The input field of that chat is disabled: you can type, but `Enter` sends nothing until the turn ends. You can open other chats or a new one and send there. Coming back to the answering chat shows the answer received so far. |
 | A turn still being answered when you open a chat | Shows "Ambrogio: In progress. Refresh manually later." Press `Ctrl+R` later. |
 | Chat list | Each chat is named after its first message. If a chat's history cannot be loaded, it is shown with a short ID. |
 
-The client ignores `expectsReply`: the input field is always available.
+The client ignores `expectsReply`: the input field is available again when a turn ends, whether or not the answer asks a question.
 
 ## Compatibility
 
