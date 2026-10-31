@@ -20,7 +20,7 @@ So the logs tell you *that* something failed and where, not what was said.
 
 ## The `err` field
 
-Events about a failure carry an `err` object. For an error raised by Ambrogio itself it has `type`, `message` and `stack`, and `message` names what failed, such as `HTTP listener could not start`. When several independent failures happened, for example two resources that could not be closed, `type` is `LifecycleError` and `faults` lists each of them in the order they happened. Any other error becomes `{"type":"Error","message":"Unexpected backend failure","stack":"[redacted]"}` in the backend and the same with `Unexpected satellite failure` in the satellite.
+Events about a failure carry an `err` object. For an error raised by Ambrogio itself it has `type`, `message` and `stack`, and `message` names what failed, such as `HTTP listener could not start`. When several independent failures happened, for example two resources that could not be closed, `type` is `LifecycleError` and `faults` lists each of them in the order they happened. Any other error becomes `{"type":"Error","message":"Unexpected backend failure","stack":"[redacted]"}` in the backend and the same with `Unexpected satellite failure` in the satellite. An `AggregateError` from a library, which groups several errors, gets the same fixed message with `type` `AggregateError` and an `errors` list with each grouped error shown by these rules, in order. An error inside any other field of an event is shown the same way.
 
 ## Fatal errors
 
@@ -56,11 +56,11 @@ If the backend cannot start, it writes one `server_startup_failed` event (level 
 
 | Event | Level | Meaning |
 |---|---|---|
-| `satellite_ready` | info | Started and listening for the wake word. |
+| `satellite_ready` | info | Started and listening for the wake word. The line has only `level`, `time` and `event`. |
 | `satellite_wake_detected` | info | The wake word was detected and the speech detector confirmed speech in the 1.5 seconds that end with the detection. The line has only `level`, `time` and `event`. A detection ignored because it came less than 2 seconds after the previous one is not logged. |
 | `satellite_wake_rejected` | info | The keyword spotter detected the wake word, but the speech detector heard no speech in the 1.5 seconds that end with the detection, so the detection was discarded. The line has only `level`, `time` and `event`. |
 | `satellite_request_timing` | info | The reply to a request was played to the end. Durations in milliseconds: `speechMs` from the moment the speech detector confirmed your speech until the satellite sent `input.end`, `firstAudioMs` from `input.end` until the first audio of the reply arrived (only when the reply had audio), and `playedMs` from `input.end` until the reply finished playing. The satellite sends `input.end` once the speech detector has heard 0.64 seconds of silence, or when the request reaches 60 seconds. A request abandoned or ended by a failure writes no line. |
-| `satellite_session_unavailable` | info | The session to the backend could not be opened at startup. The satellite tries again at the next wake word. |
+| `satellite_session_unavailable` | info | The session to the backend could not be opened at startup: the backend could not be reached, or it did not confirm the session within 5 seconds. The satellite tries again at the next wake word. The line has only `level`, `time` and `event`. |
 | `invalid_arguments` | info | The command line has arguments; the satellite takes none. The satellite exits. |
 | `invalid_configuration` | info | The configuration was refused and the satellite exits with code `2`. `variable` names the environment variable and `condition` is `missing` (unset or empty) or `invalid` (a value the satellite does not accept, such as a wake word that the keyword spotting model's vocabulary cannot represent). Values are never logged. |
 | `satellite_voice_unavailable` | info | The backend answered a voice turn in text, because voice is disabled. The satellite plays the error tone instead and goes back to the wake word. |
